@@ -21,6 +21,7 @@ class ContainerVisitor;
 class StatementVisitor;
 class ExprVisitor;
 
+class InconsistentAstError : public std::exception { };
 
 /*
  * SimpleVariable is just a convenient class to indicate in function
@@ -29,10 +30,17 @@ class ExprVisitor;
  */
 class SimpleVariable {
   public:
+    SimpleVariable() : _name() { }
     SimpleVariable(std::string name) : _name(name) { }
+    SimpleVariable(const SimpleVariable& other) : _name(other._name) { }
 
     std::string get_name() {
         return _name;
+    }
+
+    SimpleVariable& operator =(const SimpleVariable& other) {
+        _name = other._name;
+        return *this;
     }
 
   private:
@@ -41,16 +49,29 @@ class SimpleVariable {
 
 class SimpleRoot {
   public:
-    typedef std::vector< std::shared_ptr<ProcAst> >     ProcListType;
-    typedef typename ProcListType::iterator             iterator;
+    typedef std::shared_ptr< 
+        const std::vector<ProcAst*> >           ProcListType;
+    typedef 
+        std::vector<ProcAst*>::const_iterator   iterator;
     
+    SimpleRoot(std::vector<ProcAst*> procs) : 
+        _procs(new std::vector<ProcAst*>(procs))
+    { }
 
-    iterator procs_begin() {
-        return _procs.begin();
+    SimpleRoot(ProcListType procs) :
+        _procs(procs)
+    { }
+
+    SimpleRoot(const SimpleRoot& other) :
+        _procs(other._procs)
+    { }
+
+    iterator begin() {
+        return _procs->begin();
     }
 
-    iterator procs_end() {
-        return _procs.end();
+    iterator end() {
+        return _procs->end();
     }
   private:
      ProcListType _procs;
@@ -66,7 +87,7 @@ class ProcAst {
     /**
      * Get the name of the procedure as a string.
      */
-    virtual std::string get_name() const = 0;
+    virtual std::string get_name() = 0;
 
     /**
      * Get the first statement node in the given procedure.
@@ -85,7 +106,7 @@ class StatementAst {
     /**
      * Get the line number of the AST node in the original source code.  
      */
-    virtual unsigned int get_line() const = 0;
+    virtual unsigned int get_line() = 0;
 
     /**
      * Get the next statement within the same scope. Returns NULL if it's the 
@@ -113,7 +134,7 @@ class StatementAst {
      * Get the procedure that contains the statement. All statements are always 
      * owned by certain procedure as there is no global scope in Simple.
      */
-    virtual ProcAst* get_proc_called() = 0;
+    virtual ProcAst* get_proc() = 0;
 
     /**
      * Accepts a statement visitor to determine the type of the statement using the 
@@ -149,7 +170,7 @@ class ConditionalAst : public ContainerAst {
     /**
      * Get the variable name used as the condition in the if statement. 
      */
-    virtual std::string get_variable() = 0;
+    virtual SimpleVariable* get_variable() = 0;
 
     /**
      * get the first statement in the then branch in the if statement.
