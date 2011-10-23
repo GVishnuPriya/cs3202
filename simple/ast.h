@@ -1,10 +1,43 @@
 
+#pragma once
 
-//namespace simple {
-//namespace ast {
+#include <memory>
 
-class ExprVisitor;
+namespace simple {
+namespace ast {
+
 class ProcAst;
+class StatementAst;
+class ContainerAst;
+class ConditionalAst;
+class WhileAst;
+class AssignmentAst;
+class CallAst;
+class ExprAst;
+class VariableAst;
+class ConstAst;
+class BinaryOpAst;
+class ContainerVisitor;
+class StatementVisitor;
+class ExprVisitor;
+
+
+/*
+ * SimpleVariable is just a convenient class to indicate in function
+ * parameters that it is accepting a simple variable instead of a string 
+ * that can mean anything.
+ */
+class SimpleVariable {
+  public:
+    SimpleVariable(std::string name) : _name(name) { }
+
+    std::string get_name() {
+        return _name;
+    }
+
+  private:
+    std::string _name;
+};
 
 class SimpleRoot {
   public:
@@ -17,10 +50,10 @@ class SimpleRoot {
     }
 
     iterator procs_end() {
-        return _procs_end();
+        return _procs.end();
     }
   private:
-     _procs;
+     ProcListType _procs;
 };
 
 /**
@@ -44,32 +77,16 @@ class ProcAst {
 };
 
 /**
- * SimpleAst is the root class of all AST nodes for the Simple programming 
- * language except the procedure node. It contains common methods shared by
- * all AST nodes. 
+ * StatementASt represents a single statement in the Simple programming 
+ * language.
  */
-class SimpleAst {
+class StatementAst {
   public:
     /**
      * Get the line number of the AST node in the original source code.  
      */
     virtual unsigned int get_line() const = 0;
 
-    /**
-     * Accept a SimpleVisitor for the visitor to determine the actual type of
-     * the AST using the visitor pattern.
-     */
-    virtual void accept_simple_visitor(SimpleVisitor* visitor) = 0;
-
-    virtual ~SimpleAst() { }
-};
-
-/**
- * StatementASt represents a single statement in the Simple programming 
- * language.
- */
-class StatementAst : public SimpleAst {
-  public:
     /**
      * Get the next statement within the same scope. Returns NULL if it's the 
      * last statement.
@@ -117,7 +134,7 @@ class ContainerAst : public StatementAst {
      * Accepts a container visitor to determine whether the container statement is 
      * an If node or While node using the visitor pattern. 
      */
-    virtual void accept_container_visitor(container_visitor* visitor) = 0;
+    virtual void accept_container_visitor(ContainerVisitor* visitor) = 0;
 
     virtual ~ContainerAst() { }
 };
@@ -303,5 +320,5 @@ class ExprVisitor {
 };
 
 
-//} // namespace ast
-//} // namespace simple
+} // namespace ast
+} // namespace simple

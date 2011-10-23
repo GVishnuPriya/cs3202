@@ -8,20 +8,6 @@ class ModifiesSolver {
     ModifiesSolver(std::shared_ptr<SimpleRoot> ast, SolverTable table) : _ast(ast) { }
 
     /*
-     * Dependencies allows a solver to depend on another solver so that 
-     * they can share memoized tables. the solver's dependencies are 
-     * guaranteed to be in the solver table during construction, or 
-     * runtime exception will be raised.
-     */
-    std::list<std::string> get_dependencies() {
-        return std::list<std::string>(); // no dependency
-    }
-
-    std::string get_name() {
-        return "Modifies"
-    }
-
-    /*
      * SOLVE RIGHT PART
      */
 

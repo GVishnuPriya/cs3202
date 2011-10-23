@@ -1,2 +1,14 @@
 rejected
+build/*
+dist/*
+Makefile
+unit_tests
+config.log
+*.o
+*.Po
 *.swp
+*.cache
+.dirstamp
+.deps
+/*.DS_Store
+/*.dep.inc
