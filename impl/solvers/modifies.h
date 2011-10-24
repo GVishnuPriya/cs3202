@@ -11,7 +11,7 @@ namespace solver {
 
 class ModifiesSolver {
   public:
-    ModifiesSolver(SimpleRoot, SolverTable *table) : _ast(ast) { }
+    ModifiesSolver(SimpleRoot ast, SolverTable *table) : _ast(ast) { }
 
     /*
      * SOLVE RIGHT PART
@@ -24,7 +24,8 @@ class ModifiesSolver {
 
     template <>
     ConditionSet solve_right<StatementAst>(StatementAst *ast) {
-        ModifiesRightStatementVisitor visitor(this);
+        StatementVisitorGenerator<ModifiesSolver, 
+            SolveRightVisitorTraits<ModifiesSolver> > visitor(this);
 
         ast->accept_statement_visitor(&visitor);
 
@@ -107,7 +108,7 @@ class ModifiesSolver {
     }
 
     template <typename Condition>
-    ConditionSet solve_variable(Condition *condition) {
+    ConditionSet solve_variable(Condition *condition, SimpleVariable *variable) {
         return ConditionSet(); // empty set
     }
 
@@ -235,93 +236,35 @@ class ModifiesSolver {
   private:
     std::shared_ptr<SimpleRoot> _ast_root;
 
-    class ModifiesRightStatementVisitor : public StatementVisitor {
-      public:
-        ModifiesRightStatementVisitor(ModifiesSolver *visitor) : _visitor(visitor) { }
-
-        virtual void visit_conditional(ConditionalAst *ast) {
-            _result = _solver->solve_right<ConditionalAst>(ast);
-        }
-
-        virtual void visit_while(WhileAst *ast) {
-            _result = _solver->solve_right<WhileAst>(ast);
-        }
-
-        virtual void visit_assignment(AssignmentAst *ast) {
-            _result = _solver->solve_right<AssignmentAst>(ast);
-        }
-
-        virtual void visit_call(CallAst *ast) {
-            _result = _solver->solve_right<CallAst>(ast);
-        }
-
-        ConditionSet return_result() {
-            return std::move(_result);
-        }
-
-      private:
-        ModifiesSolver *_solver;
-        ConditionSet _result;
-    };
-
-    class ModifiesLeftStatementVisitor : public StatementVisitor {
-      public:
-        ModifiesLeftStatementVisitor(ModifiesSolver *visitor) : _visitor(visitor) { }
-
-        virtual void visit_conditional(ConditionalAst *ast) {
-            _result = _solver->solve_left<ConditionalAst>(ast);
-        }
-
-        virtual void visit_while(WhileAst *ast) {
-            _result = _solver->solve_left<WhileAst>(ast);
-        }
-
-        virtual void visit_assignment(AssignmentAst *ast) {
-            _result = _solver->solve_left<AssignmentAst>(ast);
-        }
-
-        virtual void visit_call(CallAst *ast) {
-            _result = _solver->solve_left<CallAst>(ast);
-        }
-
-        ConditionSet return_result() {
-            return std::move(_result);
-        }
-
-      private:
-        ModifiesSolver *_solver;
-        ConditionSet _result;
-    };
-
     class ModifiesValidateStatementVisitor : public StatementVisitor {
       public:
         ModifiesValidateStatementVisitor(ModifiesSolver *visitor, SimpleVariable *var) : 
             _visitor(visitor), _var(var) { }
 
         virtual void visit_conditional(ConditionalAst *ast) {
-            _result = _solver->solve_right<ConditionalAst, SimpleVariable>(ast, _var);
+            _result = _solver->validate<ConditionalAst, SimpleVariable>(ast, _var);
         }
 
         virtual void visit_while(WhileAst *ast) {
-            _result = _solver->solve_right<WhileAst, SimpleVariable>(ast, _var);
+            _result = _solver->validate<WhileAst, SimpleVariable>(ast, _var);
         }
 
         virtual void visit_assignment(AssignmentAst *ast) {
-            _result = _solver->solve_right<AssignmentAst, SimpleVariable>(ast, _var);
+            _result = _solver->validate<AssignmentAst, SimpleVariable>(ast, _var);
         }
 
         virtual void visit_call(CallAst *ast) {
-            _result = _solver->solve_right<CallAst, SimpleVariable>(ast, _var);
+            _result = _solver->validate<CallAst, SimpleVariable>(ast, _var);
         }
 
         ConditionSet return_result() {
-            return std::move(_result);
+            return _result;
         }
 
       private:
         ModifiesSolver *_solver;
         SimpleVariable *_var;
-        ConditionSet _result;
+        bool _result;
     };
 
 };
