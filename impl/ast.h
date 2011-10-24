@@ -241,22 +241,15 @@ class SimpleAssignmentAst : public SimpleStatementAst<AssignmentAst> {
 
 class SimpleVariableAst : public VariableAst {
   public:
-    SimpleVariableAst() : _var(), _statement(0) { }
+    SimpleVariableAst() : _var() { }
+    SimpleVariableAst(const SimpleVariable& var) : _var(var) { }
 
     void set_variable(const SimpleVariable& var) {
         _var = var;
     }
 
-    void set_statement(StatementAst *statement) {
-        _statement = statement;
-    }
-
     SimpleVariable* get_variable() {
         return &_var;
-    }
-
-    StatementAst* get_statement() {
-        return _statement;
     }
 
     void accept_expr_visitor(ExprVisitor *visitor) {
@@ -267,29 +260,19 @@ class SimpleVariableAst : public VariableAst {
 
   private:
     SimpleVariable  _var;
-    StatementAst    *_statement;
 };
 
 class SimpleConstAst : public ConstAst {
   public:
-    SimpleConstAst() : _value(0), _statement(0) { }
+    SimpleConstAst() : _value(0) { }
+    SimpleConstAst(int value) : _value(value) { }
 
     void set_value(int value) {
         _value = value;
     }
-
-    void set_statement(StatementAst *statement) {
-        _statement = statement;
-    }
-
     int get_value() {
         return _value;
     }
-
-    StatementAst* get_statement() {
-        return _statement;
-    }
-
     void accept_expr_visitor(ExprVisitor *visitor) {
         visitor->visit_const(this);
     }
@@ -298,14 +281,12 @@ class SimpleConstAst : public ConstAst {
 
   private:
     int          _value;
-    StatementAst *_statement;
 };
 
 class SimpleBinaryOpAst : public BinaryOpAst {
   public:
     SimpleBinaryOpAst() : 
-        _lhs(0), _rhs(0), _op(0), 
-        _statement(0) 
+        _lhs(0), _rhs(0), _op(0)
     { }
 
     void set_lhs(ExprAst *lhs) {
@@ -318,10 +299,6 @@ class SimpleBinaryOpAst : public BinaryOpAst {
 
     void set_op(char op) {
         _op = op;
-    }
-
-    void set_statement(StatementAst *statement) {
-        _statement = statement;
     }
 
     ExprAst* get_lhs() {
@@ -340,16 +317,11 @@ class SimpleBinaryOpAst : public BinaryOpAst {
         visitor->visit_binary_op(this);
     }
 
-    StatementAst* get_statement() {
-        return _statement;
-    }
-
     ~SimpleBinaryOpAst() { }
   private:
     std::unique_ptr<ExprAst>    _lhs;
     std::unique_ptr<ExprAst>    _rhs;
     char                        _op;
-    StatementAst                *_statement;
 };
 
 } // namespace impl

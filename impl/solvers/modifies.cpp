@@ -45,7 +45,8 @@ template <>
 bool ModifiesSolver::validate<AssignmentAst, SimpleVariable>(
         AssignmentAst *ast, SimpleVariable *var) 
 {
-    return ast->get_variable()->equals(*var);
+    SimpleVariable *v = ast->get_variable();
+    return v->equals(*var);
 }
 
 template <>

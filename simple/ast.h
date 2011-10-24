@@ -34,6 +34,7 @@ class SimpleVariable {
   public:
     SimpleVariable() : _name() { }
     SimpleVariable(std::string name) : _name(name) { }
+    SimpleVariable(const char *name) : _name(name) { }
     SimpleVariable(const SimpleVariable& other) : _name(other._name) { }
 
     std::string get_name() {
@@ -57,36 +58,6 @@ class SimpleVariable {
     std::string _name;
 };
 
-class SimpleRoot {
-  public:
-    typedef std::shared_ptr< 
-        const std::vector<ProcAst*> >           ProcListType;
-    typedef 
-        std::vector<ProcAst*>::const_iterator   iterator;
-    
-    SimpleRoot(std::vector<ProcAst*> procs) : 
-        _procs(new std::vector<ProcAst*>(procs))
-    { }
-
-    SimpleRoot(ProcListType procs) :
-        _procs(procs)
-    { }
-
-    SimpleRoot(const SimpleRoot& other) :
-        _procs(other._procs)
-    { }
-
-    iterator begin() {
-        return _procs->begin();
-    }
-
-    iterator end() {
-        return _procs->end();
-    }
-  private:
-     ProcListType _procs;
-};
-
 /**
  * The ProcAst represents a procedure in the source code. It does not
  * share the same hierarchy with other AST nodes as the CS3201 
@@ -105,6 +76,78 @@ class ProcAst {
     virtual StatementAst* get_statement() = 0;
 
     virtual ~ProcAst() { }
+};
+
+class SimpleRoot {
+  public:
+    typedef std::shared_ptr< std::vector< 
+        std::unique_ptr<ProcAst> > >            ProcListType;
+    class iterator;
+    
+    SimpleRoot(std::vector<ProcAst*> procs) : 
+        _procs(new std::vector< std::unique_ptr<ProcAst> >()) 
+    { 
+        for(auto it = procs.begin(); it != procs.end(); ++it) {
+            _procs->push_back(std::unique_ptr<ProcAst>(*it));
+        }
+    }
+
+    /*
+     * Single proc construction
+     */
+    SimpleRoot(ProcAst *proc) : 
+        _procs(new std::vector< std::unique_ptr<ProcAst> >()) 
+    {
+        _procs->push_back(std::unique_ptr<ProcAst>(proc));
+    }
+
+    SimpleRoot(ProcListType procs) :
+        _procs(procs)
+    { }
+
+    SimpleRoot(const SimpleRoot& other) :
+        _procs(other._procs)
+    { }
+
+    iterator begin() {
+        return iterator(_procs->begin());
+    }
+
+    iterator end() {
+        return iterator(_procs->end());
+    }
+
+    ~SimpleRoot() { }
+
+    class iterator {
+      public:
+        typedef typename std::vector< 
+            std::unique_ptr<ProcAst> >::iterator    _iterator;
+        typedef ProcAst*                            value_type;
+
+        iterator(_iterator it) : _it(it) { }
+
+        iterator& operator ++() {
+            ++_it;
+            return *this;
+        }
+
+        ProcAst* operator *() {
+            return _it->get();
+        }
+
+        bool operator ==(const iterator& other) const {
+            return _it == other._it;
+        }
+
+        bool operator !=(const iterator& other) const {
+            return _it != other._it;
+        }
+      private:
+        _iterator _it;
+    };
+  private:
+     ProcListType _procs;
 };
 
 /**
@@ -258,11 +301,6 @@ class CallAst : public StatementAst {
  */
 class ExprAst {
   public:
-    /**
-     * Get the statement that contains the expression.
-     */
-    virtual StatementAst* get_statement() = 0;
-
     /**
      * accept an ExprVisitor to determine the type of the expression node.
      */

@@ -107,9 +107,15 @@ ConditionSet NextSolver::solve_previous(Condition *condition) {
     return ConditionSet();
 }
 
+class SolvePreviousVisitorTraits;
+
 template <>
 ConditionSet NextSolver::solve_previous<StatementAst>(StatementAst *ast) {
-    return ConditionSet(); //stub
+    StatementVisitorGenerator<NextSolver, SolvePreviousVisitorTraits>
+    visitor(this);
+
+    ast->accept_statement_visitor(&visitor);
+    return visitor.return_result();
 }
 
 template <>
@@ -253,6 +259,13 @@ void NextSolver::ValidateNextStatementVisitor::visit_call(CallAst *ast) {
     _result = _solver->validate_next<CallAst>(ast, _statement);
 }
 
+class SolvePreviousVisitorTraits {
+  public:
+    template <typename Ast>
+    static ConditionSet visit(NextSolver *solver, Ast *ast) {
+        return solver->solve_previous<Ast>(ast);
+    }
+};
 
 
 } // namespace solver

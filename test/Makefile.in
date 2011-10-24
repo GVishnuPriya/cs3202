@@ -47,7 +47,7 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
 am_unit_tests_OBJECTS = test_ast.$(OBJEXT) test_solver.$(OBJEXT) \
-	../impl/solvers/modifies.$(OBJEXT) \
+	test_modifies.$(OBJEXT) ../impl/solvers/modifies.$(OBJEXT) \
 	../impl/solvers/next.$(OBJEXT) gtest/gtest-all.$(OBJEXT) \
 	test_main.$(OBJEXT)
 unit_tests_OBJECTS = $(am_unit_tests_OBJECTS)
@@ -156,6 +156,7 @@ top_srcdir = @top_srcdir@
 unit_tests_SOURCES = \
   test_ast.cpp \
   test_solver.cpp \
+  test_modifies.cpp \
   ../impl/solvers/modifies.cpp \
   ../impl/solvers/next.cpp \
   gtest/gtest-all.cc \
@@ -269,6 +270,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/solvers/$(DEPDIR)/next.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_ast.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_modifies.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_solver.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gtest/$(DEPDIR)/gtest-all.Po@am__quote@
 

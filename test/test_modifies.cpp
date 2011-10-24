@@ -1,16 +1,21 @@
 
 #include "gtest/gtest.h"
+#include "impl/solvers/modifies.h"
 #include "impl/ast.h"
 
-using namespace simple::ast;
-using namespace simple::impl;
+namespace simple {
+namespace test {
 
-TEST(AstTest, BasicTest) {
+using namespace simple::ast;
+using namespace simple::solver;
+using namespace simple::impl::solver;
+
+TEST(ModifiesTest, BasicTest) {
     /*
      * proc test {
      *   x = 1;
      * }
-     */
+     *
     SimpleProcAst *proc = new SimpleProcAst("test");
     SimpleAssignmentAst *assign = new SimpleAssignmentAst();
     ASSERT_TRUE(assign);
@@ -24,7 +29,12 @@ TEST(AstTest, BasicTest) {
     proc->set_first_statement(assign);
 
     SimpleRoot root(proc);
-    
-    EXPECT_EQ(proc->get_statement(), assign);
-    EXPECT_TRUE(assign->get_variable()->equals(var));
+    ModifiesSolver solver(root, NULL);
+
+    ASSERT_TRUE(assign);
+    //EXPECT_TRUE((solver.validate<AssignmentAst, SimpleVariable>(assign, &var)));
+    */
+}
+
+}
 }
