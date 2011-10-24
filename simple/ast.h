@@ -196,7 +196,7 @@ class WhileAst : public ContainerAst {
     /**
      * Get the variable name used as the condition in the if statement.
      */
-    virtual SimpleVariable get_variable() = 0;
+    virtual SimpleVariable* get_variable() = 0;
 
     /**
      * Get the first statement in the while statement body.
@@ -214,7 +214,7 @@ class AssignmentAst : public StatementAst {
     /**
      * Get the name of the variable being assigned at the left side.
      */
-    virtual SimpleVariable get_lhs_variable() = 0;
+    virtual SimpleVariable* get_variable() = 0;
 
     /**
      * Get the expression node at the right hand side of the assignment.
@@ -235,7 +235,7 @@ class CallAst : public StatementAst {
     /**
      * Get the procedure node of the call statement that is calling.
      */
-    virtual ProcAst* get_proc() = 0;
+    virtual ProcAst* get_proc_called() = 0;
 
     virtual ~CallAst() { }
 };
@@ -271,7 +271,7 @@ class VariableAst : public ExprAst {
     /**
      * Get the name of the variable.
      */
-    virtual SimpleVariable get_variable() = 0;
+    virtual SimpleVariable* get_variable() = 0;
 
     virtual ~VariableAst() { }
 };
@@ -310,7 +310,7 @@ class BinaryOpAst : public ExprAst {
      * Get the operand. In Simple only three kinds of operands
      * are possible: plus (+), minus (-), and multiply (*).
      */
-    virtual char get_op() const = 0;
+    virtual char get_op() = 0;
 
     virtual ~BinaryOpAst() { }
 };

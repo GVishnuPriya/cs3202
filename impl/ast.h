@@ -102,7 +102,7 @@ class SimpleConditionalAst : public SimpleStatementAst<ConditionalAst> {
         _then_branch(0), _else_branch(0), _var()
     { }
 
-    void set_variable(SimpleVariable var) {
+    void set_variable(const SimpleVariable& var) {
         _var = var;
     }
 
@@ -142,6 +142,215 @@ class SimpleConditionalAst : public SimpleStatementAst<ConditionalAst> {
     SimpleVariable                  _var;
 };
 
+class SimpleWhileAst : public SimpleStatementAst<WhileAst> {
+  public:
+    SimpleWhileAst() : 
+        SimpleStatementAst<WhileAst>(),
+        _body(0), _var() 
+    { }
+
+    void set_variable(const SimpleVariable& var) {
+        _var = var;
+    }
+
+    void set_body(StatementAst *body) {
+        _body.reset(body);
+    }
+
+    StatementAst* get_body() {
+        return _body.get();
+    }
+
+    SimpleVariable* get_variable() {
+        return &_var;
+    }
+
+    void accept_statement_visitor(StatementVisitor *visitor) {
+        visitor->visit_while(this);
+    }
+
+    void accept_container_visitor(ContainerVisitor *visitor) {
+        visitor->visit_while(this);
+    }
+
+    ~SimpleWhileAst() { }
+
+  private:
+    std::unique_ptr<StatementAst>   _body;
+    SimpleVariable                  _var;
+};
+
+class SimpleCallAst : public SimpleStatementAst<CallAst> {
+  public:
+    SimpleCallAst() : 
+        SimpleStatementAst<CallAst>(), 
+        _proc_called(0) 
+    { }
+
+    void set_proc_called(ProcAst *proc) {
+        _proc_called = proc;
+    }
+
+    ProcAst* get_proc_called() {
+        return _proc_called;
+    }
+
+    void accept_statement_visitor(StatementVisitor *visitor) {
+        visitor->visit_call(this);
+    }
+
+    ~SimpleCallAst() { }
+
+  private:
+    ProcAst *_proc_called;
+};
+
+class SimpleAssignmentAst : public SimpleStatementAst<AssignmentAst> {
+  public:
+    SimpleAssignmentAst() : 
+        SimpleStatementAst<AssignmentAst>(),
+        _var(), _expr(0) 
+    { }
+
+    void set_variable(const SimpleVariable& var) {
+        _var = var;
+    }
+
+    void set_expr(ExprAst *expr) {
+        _expr.reset(expr);
+    }
+
+    SimpleVariable* get_variable() {
+        return &_var;
+    }
+
+    ExprAst* get_expr() {
+        return _expr.get();
+    }
+
+    void accept_statement_visitor(StatementVisitor *visitor) {
+        visitor->visit_assignment(this);
+    }
+
+    ~SimpleAssignmentAst() { }
+
+  private:
+    SimpleVariable            _var;
+    std::unique_ptr<ExprAst>  _expr;
+};
+
+class SimpleVariableAst : public VariableAst {
+  public:
+    SimpleVariableAst() : _var(), _statement(0) { }
+
+    void set_variable(const SimpleVariable& var) {
+        _var = var;
+    }
+
+    void set_statement(StatementAst *statement) {
+        _statement = statement;
+    }
+
+    SimpleVariable* get_variable() {
+        return &_var;
+    }
+
+    StatementAst* get_statement() {
+        return _statement;
+    }
+
+    void accept_expr_visitor(ExprVisitor *visitor) {
+        visitor->visit_variable(this);
+    }
+
+    ~SimpleVariableAst() { }
+
+  private:
+    SimpleVariable  _var;
+    StatementAst    *_statement;
+};
+
+class SimpleConstAst : public ConstAst {
+  public:
+    SimpleConstAst() : _value(0), _statement(0) { }
+
+    void set_value(int value) {
+        _value = value;
+    }
+
+    void set_statement(StatementAst *statement) {
+        _statement = statement;
+    }
+
+    int get_value() {
+        return _value;
+    }
+
+    StatementAst* get_statement() {
+        return _statement;
+    }
+
+    void accept_expr_visitor(ExprVisitor *visitor) {
+        visitor->visit_const(this);
+    }
+
+    ~SimpleConstAst() { }
+
+  private:
+    int          _value;
+    StatementAst *_statement;
+};
+
+class SimpleBinaryOpAst : public BinaryOpAst {
+  public:
+    SimpleBinaryOpAst() : 
+        _lhs(0), _rhs(0), _op(0), 
+        _statement(0) 
+    { }
+
+    void set_lhs(ExprAst *lhs) {
+        _lhs.reset(lhs);
+    }
+
+    void set_rhs(ExprAst *rhs) {
+        _rhs.reset(rhs);
+    }
+
+    void set_op(char op) {
+        _op = op;
+    }
+
+    void set_statement(StatementAst *statement) {
+        _statement = statement;
+    }
+
+    ExprAst* get_lhs() {
+        return _lhs.get();
+    }
+
+    ExprAst* get_rhs() {
+        return _rhs.get();
+    }
+
+    char get_op() {
+        return _op;
+    }
+
+    void accept_expr_visitor(ExprVisitor *visitor) {
+        visitor->visit_binary_op(this);
+    }
+
+    StatementAst* get_statement() {
+        return _statement;
+    }
+
+    ~SimpleBinaryOpAst() { }
+  private:
+    std::unique_ptr<ExprAst>    _lhs;
+    std::unique_ptr<ExprAst>    _rhs;
+    char                        _op;
+    StatementAst                *_statement;
+};
 
 } // namespace impl
 } // namespace simple
