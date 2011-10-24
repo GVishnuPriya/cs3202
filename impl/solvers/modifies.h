@@ -1,11 +1,17 @@
 
 #pragma once
 
+#include "simple/ast.h"
+#include "simple/condition.h"
 #include "simple/solver.h"
+
+namespace simple {
+namespace impl {
+namespace solver {
 
 class ModifiesSolver {
   public:
-    ModifiesSolver(std::shared_ptr<SimpleRoot> ast, SolverTable table) : _ast(ast) { }
+    ModifiesSolver(SimpleRoot, SolverTable *table) : _ast(ast) { }
 
     /*
      * SOLVE RIGHT PART
@@ -319,3 +325,7 @@ class ModifiesSolver {
     };
 
 };
+
+} // namespace solver
+} // namespace impl
+} // namespace simple
