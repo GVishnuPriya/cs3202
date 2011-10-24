@@ -8,60 +8,6 @@ namespace impl {
 
 using namespace simple::solver;
 
-template <typename Visitor, typename VisitorTraits>
-class StatementVisitorGenerator : public StatementVisitor {
-      public:
-        StatementVisitorGenerator(Visitor *visitor) : 
-            _visitor(visitor) { }
-
-        virtual void visit_conditional(ConditionalAst *ast) {
-            _result = VisitorTraits::visit<ConditionalAst>(_visitor, ast);
-        }
-
-        virtual void visit_while(WhileAst *ast) {
-            _result = VisitorTraits::visit<WhileAst>(_visitor, ast);
-        }
-
-        virtual void visit_assignment(AssignmentAst *ast) {
-            _result = VisitorTraits::visit<AssignmentAst>(_visitor, ast);
-        }
-
-        virtual void visit_call(CallAst *ast) {
-            _result = VisitorTraits::visit<CallAst>(_visitor, ast);
-        }
-
-        ConditionSet return_result() {
-            return std::move(_result);
-        }
-
-      private:
-        Visitor *_visitor;
-        ConditionSet _result;
-};
-
-template <typename Solver>
-class SolveRightVisitorTraits {
-  public:
-    template <typename Ast>
-    static ConditionSet visit(Solver *solver, Ast *ast) {
-        return solver->template solve_right<Ast>(ast);
-    }
-  private:
-    SolveRightVisitorTraits();
-};
-
-template <typename Solver>
-class SolveLeftVisitorTraits {
-  public:
-    template <typename Ast>
-    static ConditionSet visit(Solver *solver, Ast *ast) {
-        return solver->template solve_left<Ast>(ast);
-    }
-
-  private:
-    SolveLeftVisitorTraits();
-};
-
 
 template <typename ConcreteSolver>
 class SimpleSolverGenerator : public QuerySolver  {

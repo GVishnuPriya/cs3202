@@ -2,6 +2,8 @@
 #pragma once
 
 #include <memory>
+#include <string>
+#include <vector>
 
 namespace simple {
 namespace ast {
@@ -41,6 +43,14 @@ class SimpleVariable {
     SimpleVariable& operator =(const SimpleVariable& other) {
         _name = other._name;
         return *this;
+    }
+
+    bool equals(const SimpleVariable& other) {
+        return _name == other._name;
+    }
+
+    bool operator ==(const SimpleVariable& other) {
+        return equals(other);
     }
 
   private:

@@ -46,7 +46,9 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
-am_unit_tests_OBJECTS = test_ast.$(OBJEXT) gtest/gtest-all.$(OBJEXT) \
+am_unit_tests_OBJECTS = test_ast.$(OBJEXT) test_solver.$(OBJEXT) \
+	../impl/solvers/modifies.$(OBJEXT) \
+	../impl/solvers/next.$(OBJEXT) gtest/gtest-all.$(OBJEXT) \
 	test_main.$(OBJEXT)
 unit_tests_OBJECTS = $(am_unit_tests_OBJECTS)
 unit_tests_LDADD = $(LDADD)
@@ -153,6 +155,9 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 unit_tests_SOURCES = \
   test_ast.cpp \
+  test_solver.cpp \
+  ../impl/solvers/modifies.cpp \
+  ../impl/solvers/next.cpp \
   gtest/gtest-all.cc \
   test_main.cpp
 
@@ -229,6 +234,16 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+../impl/solvers/$(am__dirstamp):
+	@$(MKDIR_P) ../impl/solvers
+	@: > ../impl/solvers/$(am__dirstamp)
+../impl/solvers/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../impl/solvers/$(DEPDIR)
+	@: > ../impl/solvers/$(DEPDIR)/$(am__dirstamp)
+../impl/solvers/modifies.$(OBJEXT): ../impl/solvers/$(am__dirstamp) \
+	../impl/solvers/$(DEPDIR)/$(am__dirstamp)
+../impl/solvers/next.$(OBJEXT): ../impl/solvers/$(am__dirstamp) \
+	../impl/solvers/$(DEPDIR)/$(am__dirstamp)
 gtest/$(am__dirstamp):
 	@$(MKDIR_P) gtest
 	@: > gtest/$(am__dirstamp)
@@ -243,13 +258,18 @@ unit_tests$(EXEEXT): $(unit_tests_OBJECTS) $(unit_tests_DEPENDENCIES)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f ../impl/solvers/modifies.$(OBJEXT)
+	-rm -f ../impl/solvers/next.$(OBJEXT)
 	-rm -f gtest/gtest-all.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@../impl/solvers/$(DEPDIR)/modifies.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../impl/solvers/$(DEPDIR)/next.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_ast.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_solver.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gtest/$(DEPDIR)/gtest-all.Po@am__quote@
 
 .cc.o:
@@ -394,6 +414,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f ../impl/solvers/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../impl/solvers/$(am__dirstamp)
 	-rm -f gtest/$(DEPDIR)/$(am__dirstamp)
 	-rm -f gtest/$(am__dirstamp)
 
@@ -405,7 +427,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR) gtest/$(DEPDIR)
+	-rm -rf ../impl/solvers/$(DEPDIR) ./$(DEPDIR) gtest/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -451,7 +473,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR) gtest/$(DEPDIR)
+	-rm -rf ../impl/solvers/$(DEPDIR) ./$(DEPDIR) gtest/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

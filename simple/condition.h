@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <set>
 #include <memory>
 #include "simple/ast.h"
 
@@ -63,11 +64,19 @@ class ConditionSet {
         _set.insert(condition);
     }
 
+    void insert(SimpleCondition *condition) {
+        _set.insert(std::shared_ptr<SimpleCondition>(condition));
+    }
+
     void union_with(const ConditionSet& other) {
 
     }
 
     void intersect_with(const ConditionSet& other) {
+
+    }
+
+    bool is_empty() {
 
     }
 

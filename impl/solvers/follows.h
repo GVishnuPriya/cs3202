@@ -4,14 +4,20 @@
 #include "simple/ast.h"
 #include "simple/condition.h"
 #include "simple/solver.h"
+#include "impl/condition.h"
 
 namespace simple {
 namespace impl {
 namespace solver {
 
-class FollowsSolver {
+using namespace simple::ast;
+using namespace simple::solver;
+using namespace simple::condition;
+using namespace simple::impl;
+
+class FollowSolver {
   public:
-    FollowsSolver(SimpleRoot ast, SolverTable *table) : _ast(ast) { }
+    FollowSolver(SimpleRoot ast, SolverTable *table) : _ast(ast) { }
 
     /*
      * SOLVE RIGHT PART
@@ -21,25 +27,9 @@ class FollowsSolver {
         return ConditionSet();
     }
 
-    template <>
-    ConditionSet solve_right<StatementAst>(StatementAst *ast) {
-        ConditionSet result;
-
-        result.insert(new StatementCondition(ast->next()));
-        return result;
-    }
-
     template <typename Condition>
     ConditionSet solve_left(Condition *condition) {
         return ConditionSet();
-    }
-    
-    template <>
-    ConditionSet solve_left<StatementAst>(StatementAst *ast) {
-        ConditionSet result;
-
-        result.insert(new StatementCondition(ast->prev()));
-        return result;
     }
 
     template <typename Condition1, typename Condition2>
@@ -47,15 +37,32 @@ class FollowsSolver {
         return false;
     }
 
-    template <>
-    bool validate<StatementAst, StatementAst>(
-            StatementAst *left, StatementAst *right)
-    {
-        return left->next() == right;
-    }
+  private:
+    SimpleRoot _ast;
 };
 
+template <>
+ConditionSet FollowSolver::solve_right<StatementAst>(StatementAst *ast) {
+    ConditionSet result;
 
+    result.insert(new SimpleStatementCondition(ast->next()));
+    return result;
+}
+    
+template <>
+ConditionSet FollowSolver::solve_left<StatementAst>(StatementAst *ast) {
+    ConditionSet result;
+
+    result.insert(new SimpleStatementCondition(ast->prev()));
+    return result;
+}
+
+template <>
+bool FollowSolver::validate<StatementAst, StatementAst>(
+        StatementAst *left, StatementAst *right)
+{
+    return left->next() == right;
+}
 
 } // namespace solver
 } // namespace impl

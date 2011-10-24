@@ -2,6 +2,7 @@
 #pragma once
 
 #include "simple/ast.h"
+#include "simple/ast_utils.h"
 #include "simple/condition.h"
 #include "simple/solver.h"
 
@@ -9,189 +10,58 @@ namespace simple {
 namespace impl {
 namespace solver {
 
+using namespace simple::ast;
+using namespace simple::condition;
+using namespace simple::solver;
+using namespace simple::impl;
+using namespace simple::util;
+
+
 class NextSolver {
   public:
     NextSolver(SimpleRoot ast, SolverTable *table) : _ast(ast) { }
 
     template <typename Condition>
-    ConditionSet solve_right(Condition *condition) {
-        return ConditionSet();
-    }
-
-    template <>
-    ConditionSet solve_right<StatementAst>(StatementAst *ast) {
-        ConditionSet result;
-        
-        StatementVisitorGenerator<NextSolver,
-            SolveRightVisitorTraits<NextSolver> > visitor(this);
-        ast->accept_statement_visitor(&visitor);
-
-        /*
-         * If the statement ast has a container statement and is
-         * in the last of the list
-         */
-        if(ast->get_parent() && !ast->next()) {
-            if(is_statement_type<ConditionalAst>(ast->get_parent())) {
-                /*
-                 * If the statement is the last statement in an if clause,
-                 * then the next statement is the one following the 
-                 * if statement.
-                 */
-                result.insert(ast->get_parent()->next());
-            } else if(is_statement_type<WhileAst>(ast->get_parent())) {
-                /*
-                 * If the statement is the last statement in a while clause,
-                 * the the next statement is to back to the while clause 
-                 * itself.
-                 */
-                result.insert(ast->get_parent());
-            }
-        }
-
-        result.union_with(visitor.return_result());
-    }
-
-    template <>
-    ConditionSet solve_right<ConditionalAst>(ConditionalAst *ast) {
-        ConditionSet result;
-
-        /*
-         * The next statement executed after an if clause is either the 
-         * then branch or else branch
-         */
-        result.insert(new SimpleStatementCondition(ast->get_then_branch()));
-        result.insert(new SimpleStatementCondition(ast->get_else_branch()));
-
-        return result;
-    }
-
-    template <>
-    ConditionSet solve_right<WhileAst>(WhileAst *ast) {
-        ConditionSet result;
-
-        /*
-         * The next statement executed after a while clause is the first
-         * body statement or the statement following the while statement.
-         */
-        result.insert(new SimpleStatementCondition(ast->get_body()));
-
-        if(ast->next()) {
-            result.insert(new SimpleStatementCondition(ast->next()));
-        }
-        
-        return result;
-    }
-
-    template <>
-    ConditionSet solve_right<AssignmentAst>(AssignmentAst *ast) {
-        ConditionSet result;
-        if(ast->next()) {
-            result.insert(new SimpleStatementCondition(ast->next()));
-        }
-        return result;
-    }
-    
-    template <>
-    ConditionSet solve_right<CallAst>(CallAst *ast) {
-        ConditionSet result;
-        if(ast->next()) {
-            result.insert(new SimpleStatementCondition(ast->next()));
-        }
-        return result;
-    }
-
-    /*
-     * SOLVE LEFT PART
-     */
+    ConditionSet solve_right(Condition *condition);
 
     template <typename Condition>
-    ConditionSet solve_left(Condition *condition) {
-        return ConditionSet(); // empty set
-    }
-
-    template <>
-    ConditionSet solve_left<StatementAst>(StatementAst *ast) {
-        ConditionSet result;
-        
-        if(ast->prev()) {
-            result.union_with(solve_previous<StatementAst>(ast->prev()));
-        /*
-         * else the statement is the first statement and if it has a container.
-         */
-        } else if(ast->get_parent()) {
-            result.insert(new SimpleStatementCondition(ast->get_parent()));
-        }
-
-        StatementVisitorGenerator<NextSolver,
-            SolveLeftVisitorTraits<NextSolver> > visitor(this);
-        ast->visit(&visitor);
-
-        result.union_with(visitor.return_result());
-    }
-
-    template <>
-    ConditionSet solve_left<WhileAst>(WhileAst *ast) {
-        ConditionSet result;
-
-        result.insert(new SimpleStatementCondition(ast));
-    }
+    ConditionSet solve_left(Condition *condition);
 
     template <typename Condition>
-    ConditionSet solve_previous(Condition *condition) {
-        return ConditionSet();
-    }
+    ConditionSet solve_previous(Condition *condition);
 
-    template <>
-    ConditionSet solve_previous<StatementAst>(StatementAst *ast) {
+    template <typename Condition1, typename Condition2>
+    bool validate(Condition1 *condition1, Condition2 *condition2);
 
-    }
+    template <typename Condition>
+    bool validate_next(Condition *condition, StatementAst *statement);
 
-    template <>
-    ConditionSet solve_previous<WhileAst>(WhileAst *ast) {
-        ConditionSet result;
-        result.insert(new SimpleStatementCondition(ast));
-        return result;
-    }
-
-    template <>
-    ConditionSet solve_previous<AssignmentAst>(AssignmentAst *ast) {
-        ConditionSet result;
-        result.insert(new SimpleStatementCondition(ast));
-        return result;
-    }
-
-    template <>
-    ConditionSet solve_previous<CallAst>(CallAst *ast) {
-        ConditionSet result;
-        result.insert(new SimpleStatementCondition(ast));
-        return result;
-    }
-
-    template <>
-    ConditionSet solve_previous<ConditionalAst>(ConditionalAst *ast) {
-        ConditionSet result;
-        StatementAst *then_branch = ast->get_then_branch();
-        StatementAst *else_branch = ast->get_else_branch();
-
-        /*
-         * Go to the last statement in then and else branch
-         */
-        while(then_branch->next()) {
-            then_branch = then_branch->next();
-        }
-
-        while(else_branch->next()) {
-            else_branch = else_branch->next();
-        }
-
-        result.union_with(solve_previous<StatementAst>(then_branch));
-        result.union_with(solve_previous<StatementAst>(else_branch));
-
-        return result;
-    }
    
   private:
     SimpleRoot _ast;
+
+    class ValidateNextStatementVisitor : public StatementVisitor {
+      public:
+        ValidateNextStatementVisitor(
+            NextSolver *solver, StatementAst *statement) : 
+            _solver(solver), _statement(statement), 
+            _result(false) 
+        { }
+
+        void visit_conditional(ConditionalAst *ast);
+        void visit_while(WhileAst *ast);
+        void visit_assignment(AssignmentAst *ast);
+        void visit_call(CallAst *ast);
+
+        bool return_result() {
+            return _result;
+        }
+
+      private:
+        bool            _result;
+        NextSolver      *_solver;
+        StatementAst    *_statement;
+    };
 };
 
 } // namespace solver
