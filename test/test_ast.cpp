@@ -2,7 +2,7 @@
 #include "gtest/gtest.h"
 #include "impl/ast.h"
 
-using namespace simple::ast;
+using namespace simple;
 using namespace simple::impl;
 
 TEST(AstTest, BasicTest) {

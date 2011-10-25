@@ -6,7 +6,6 @@
 #include <vector>
 
 namespace simple {
-namespace ast {
 
 class ProcAst;
 class StatementAst;
@@ -389,5 +388,4 @@ class ExprVisitor {
 };
 
 
-} // namespace ast
 } // namespace simple

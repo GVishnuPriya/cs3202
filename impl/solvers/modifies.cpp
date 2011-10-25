@@ -5,12 +5,8 @@
 
 namespace simple {
 namespace impl {
-namespace solver {
 
-using namespace simple::ast;
-using namespace simple::condition;
-using namespace simple::solver;
-using namespace simple::impl;
+using namespace simple;
 
 template <typename Condition1, typename Condition2>
 bool validate(Condition1 *condition1, Condition2 *condition2) {
@@ -250,6 +246,5 @@ void ModifiesSolver::ModifiesValidateStatementVisitor::visit_call(CallAst *ast) 
     _result = _solver->validate<CallAst, SimpleVariable>(ast, _var);
 }
 
-} // namespace solver
 } // namespace impl
 } // namespace simple

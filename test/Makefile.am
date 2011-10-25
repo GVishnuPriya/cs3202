@@ -4,6 +4,8 @@ unit_tests_SOURCES = \
   test_ast.cpp \
   test_solver.cpp \
   test_modifies.cpp \
+  ../simple/condition.cpp \
+  ../simple/condition_utils.cpp \
   ../impl/solvers/modifies.cpp \
   ../impl/solvers/next.cpp \
   gtest/gtest-all.cc \

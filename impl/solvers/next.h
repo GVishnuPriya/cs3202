@@ -8,14 +8,8 @@
 
 namespace simple {
 namespace impl {
-namespace solver {
 
-using namespace simple::ast;
-using namespace simple::condition;
-using namespace simple::solver;
-using namespace simple::impl;
-using namespace simple::util;
-
+using namespace simple;
 
 class NextSolver {
   public:
@@ -64,6 +58,5 @@ class NextSolver {
     };
 };
 
-} // namespace solver
 } // namespace impl
 } // namespace simple

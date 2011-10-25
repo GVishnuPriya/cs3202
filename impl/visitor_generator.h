@@ -7,8 +7,7 @@
 namespace simple {
 namespace impl {
 
-using namespace simple::ast;
-using namespace simple::condition;
+using namespace simple;
 
 template <typename Visitor, typename VisitorTraits>
 class StatementVisitorGenerator : public StatementVisitor {

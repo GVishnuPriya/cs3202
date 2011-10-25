@@ -1,14 +1,11 @@
 
 #pragma once
 
-#include <set>
+#include <list>
 #include <memory>
 #include "simple/ast.h"
 
 namespace simple {
-namespace condition {
-
-using namespace simple::ast;
 
 class ConditionVisitor;
 
@@ -54,35 +51,38 @@ class ConditionVisitor {
 };
 
 
-class ConditionSet {
+class ConditionPtr : public std::shared_ptr<SimpleCondition> {
   public:
-    ConditionSet() : _set() { }
-    ConditionSet(const ConditionSet& other) : _set(other._set) { }
-    ConditionSet(ConditionSet&& other) : _set(std::move(other._set)) { }
+    ConditionPtr(SimpleCondition *condition);
+    ConditionPtr(const std::shared_ptr<SimpleCondition>& other);
+    ConditionPtr(std::shared_ptr<SimpleCondition>&& other);
+    ConditionPtr(const ConditionPtr& other);
+    ConditionPtr(ConditionPtr&& other);
 
-    void insert(std::shared_ptr<SimpleCondition> condition) {
-        _set.insert(condition);
-    }
+    bool equals(const ConditionPtr& other);
+    bool operator ==(const ConditionPtr& other);
 
-    void insert(SimpleCondition *condition) {
-        _set.insert(std::shared_ptr<SimpleCondition>(condition));
-    }
-
-    void union_with(const ConditionSet& other) {
-
-    }
-
-    void intersect_with(const ConditionSet& other) {
-
-    }
-
-    bool is_empty() {
-
-    }
-
-  private:
-    std::set< std::shared_ptr<SimpleCondition> > _set;
+    ~ConditionPtr();
 };
 
-} // namespace condition
+class ConditionSet {
+  public:
+    ConditionSet();
+    ConditionSet(const ConditionSet& other);
+    ConditionSet(ConditionSet&& other);
+
+    void insert(std::shared_ptr<SimpleCondition> condition);
+    void insert(SimpleCondition *condition);
+    void union_with(const ConditionSet& other);
+    void intersect_with(const ConditionSet& other);
+
+    bool is_empty() const;
+    bool equals(const ConditionSet& other) const;
+
+    ~ConditionSet();
+
+  private:
+    std::list<ConditionPtr> _set;
+};
+
 } // namespace simple

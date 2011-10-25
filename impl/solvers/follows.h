@@ -8,12 +8,8 @@
 
 namespace simple {
 namespace impl {
-namespace solver {
 
-using namespace simple::ast;
-using namespace simple::solver;
-using namespace simple::condition;
-using namespace simple::impl;
+using namespace simple;
 
 class FollowSolver {
   public:
@@ -64,6 +60,5 @@ bool FollowSolver::validate<StatementAst, StatementAst>(
     return left->next() == right;
 }
 
-} // namespace solver
 } // namespace impl
 } // namespace simple

@@ -6,7 +6,7 @@
 namespace simple {
 namespace impl {
 
-using namespace simple::ast;
+using namespace simple;
 
 class SimpleProcAst : public ProcAst {
   public:

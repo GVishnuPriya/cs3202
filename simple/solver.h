@@ -6,10 +6,8 @@
 #include "simple/condition.h"
 
 namespace simple {
-namespace solver {
 
-using namespace simple::ast;
-using namespace simple::condition;
+using namespace simple;
 
 class QuerySolver {
   public:
@@ -51,5 +49,4 @@ class SolverFactory {
     virtual std::string get_name() = 0;
 };
 
-} // namespace solver
 } // namespace matcher

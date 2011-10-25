@@ -6,8 +6,7 @@
 namespace simple {
 namespace impl {
 
-using namespace simple::solver;
-
+using namespace simple;
 
 template <typename ConcreteSolver>
 class SimpleSolverGenerator : public QuerySolver  {

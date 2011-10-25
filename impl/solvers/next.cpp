@@ -2,15 +2,13 @@
 #include "impl/condition.h"
 #include "impl/solvers/next.h"
 #include "impl/visitor_generator.h"
+#include "simple/ast_utils.h"
 
 namespace simple {
 namespace impl {
-namespace solver {
 
-using namespace simple::ast;
-using namespace simple::condition;
-using namespace simple::solver;
-using namespace simple::impl;
+using namespace simple;
+using simple::util::is_statement_type;
 
 template <typename Condition>
 ConditionSet NextSolver::solve_right(Condition *condition) {
@@ -268,6 +266,5 @@ class SolvePreviousVisitorTraits {
 };
 
 
-} // namespace solver
 } // namespace impl
 } // namespace simple

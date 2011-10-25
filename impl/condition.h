@@ -6,8 +6,7 @@
 namespace simple {
 namespace impl {
 
-using namespace simple::ast;
-using namespace simple::condition;
+using namespace simple;
 
 class SimpleStatementCondition : public StatementCondition {
   public:
