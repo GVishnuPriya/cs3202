@@ -1,15 +1,40 @@
 
-#include "simple/condition_utils.h"
-#include "simple/ast_utils.h"
+#include "simple/util/condition_utils.h"
+#include "simple/util/condition_visitor_generator.h"
+#include "simple/util/ast_utils.h"
 
 namespace simple {
 namespace util {
+
+class SameConditionVisitorTraits {
+  public:
+    typedef bool ResultType;
+
+    template <typename Condition1, typename Condition2>
+    static bool visit_condition(Condition1 *condition1, Condition2 *condition2) {
+        return is_same_condition<Condition1, Condition2>(condition1, condition2);
+    }
+};
+
+class LessThanConditionVisitorTraits {
+  public:
+    typedef bool ResultType;
+
+    template <typename Condition1, typename Condition2>
+    static bool visit_condition(Condition1 *condition1, Condition2 *condition2) {
+        return is_same_condition<Condition1, Condition2>(condition1, condition2);
+    }
+};
+
+
 
 template <>
 bool is_same_condition<SimpleCondition, SimpleCondition>(
         SimpleCondition *condition1, SimpleCondition *condition2) 
 {
-    FirstSameConditionVisitor visitor(condition2);
+    FirstConditionVisitorGenerator<SameConditionVisitorTraits> 
+    visitor(condition2);
+    
     condition1->accept_condition_visitor(&visitor);
     return visitor.return_result();
 }
@@ -47,7 +72,11 @@ template <>
 bool is_less_than_condition<SimpleCondition, SimpleCondition>(
         SimpleCondition *condition1, SimpleCondition *condition2)
 {
+    FirstConditionVisitorGenerator<LessThanConditionVisitorTraits> 
+    visitor(condition2);
 
+    condition1->accept_condition_visitor(&visitor);
+    return visitor.return_result();
 }
 
 template <>
@@ -100,91 +129,6 @@ bool is_less_than_condition<PatternCondition, PatternCondition>(
     return is_less_than_expr(condition1->get_expr_ast(), condition2->get_expr_ast());
 }
 
-
-
-FirstSameConditionVisitor::FirstSameConditionVisitor(SimpleCondition *condition2) : 
-    _condition2(condition2) 
-{ }
-
-void FirstSameConditionVisitor::visit_statement_condition(
-        StatementCondition *condition1) 
-{
-    SecondSameConditionVisitor<StatementCondition> visitor(condition1);
-    _condition2->accept_condition_visitor(&visitor);
-    _result = visitor.return_result();
-}
-
-void FirstSameConditionVisitor::visit_proc_condition(
-        ProcCondition *condition1) 
-{
-    SecondSameConditionVisitor<ProcCondition> visitor(condition1);
-    _condition2->accept_condition_visitor(&visitor);
-    _result = visitor.return_result();
-}
-
-void FirstSameConditionVisitor::visit_variable_condition(
-        VariableCondition *condition1)
-{
-    SecondSameConditionVisitor<VariableCondition> visitor(condition1);
-    _condition2->accept_condition_visitor(&visitor);
-    _result = visitor.return_result();
-}
-
-void FirstSameConditionVisitor::visit_pattern_condition(
-        PatternCondition *condition1) 
-{
-    SecondSameConditionVisitor<PatternCondition> visitor(condition1);
-    _condition2->accept_condition_visitor(&visitor);
-    _result = visitor.return_result();
-}
-
-bool FirstSameConditionVisitor::return_result() {
-    return _result;
-}
-
-template <typename FirstCondition>
-SecondSameConditionVisitor<FirstCondition>::
-SecondSameConditionVisitor(FirstCondition *condition1) :
-    _condition1(condition1)
-{ }
-
-template <typename FirstCondition>
-void SecondSameConditionVisitor<FirstCondition>::
-visit_statement_condition(StatementCondition *condition2) 
-{
-    _result = is_same_condition<
-        FirstCondition, StatementCondition>(_condition1, condition2);
-}
-
-template <typename FirstCondition>
-void SecondSameConditionVisitor<FirstCondition>::
-visit_proc_condition(ProcCondition *condition2) 
-{
-    _result = is_same_condition<
-        FirstCondition, ProcCondition>(_condition1, condition2);
-}
-
-template <typename FirstCondition>
-void SecondSameConditionVisitor<FirstCondition>::
-visit_variable_condition(VariableCondition *condition2) 
-{
-    _result = is_same_condition<
-        FirstCondition, VariableCondition>(_condition1, condition2);
-}
-
-template <typename FirstCondition>
-void SecondSameConditionVisitor<FirstCondition>::
-visit_pattern_condition(PatternCondition *condition2) 
-{
-    _result = is_same_condition<
-        FirstCondition, PatternCondition>(_condition1, condition2);
-}
-
-template <typename FirstCondition>
-bool SecondSameConditionVisitor<FirstCondition>::
-return_result() {
-    return _result;
-}
 
 } // namespace util
 } // namespace simple

@@ -2,7 +2,7 @@
 #include "impl/condition.h"
 #include "impl/solvers/next.h"
 #include "impl/visitor_generator.h"
-#include "simple/ast_utils.h"
+#include "simple/util/ast_utils.h"
 
 namespace simple {
 namespace impl {

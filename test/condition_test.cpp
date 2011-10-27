@@ -2,7 +2,7 @@
 #include "gtest/gtest.h"
 #include "impl/ast.h"
 #include "impl/condition.h"
-#include "simple/condition_utils.h"
+#include "simple/util/condition_utils.h"
 
 namespace simple {
 namespace test {

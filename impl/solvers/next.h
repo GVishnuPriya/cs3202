@@ -2,7 +2,7 @@
 #pragma once
 
 #include "simple/ast.h"
-#include "simple/ast_utils.h"
+#include "simple/util/ast_utils.h"
 #include "simple/condition.h"
 #include "simple/solver.h"
 

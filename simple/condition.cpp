@@ -1,7 +1,7 @@
 
 
 #include "simple/condition.h"
-#include "simple/condition_utils.h"
+#include "simple/util/condition_utils.h"
 
 namespace simple {
 

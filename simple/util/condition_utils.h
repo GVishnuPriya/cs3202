@@ -75,40 +75,5 @@ template <>
 bool is_less_than_condition<PatternCondition, PatternCondition>(
         PatternCondition *condition1, PatternCondition *condition2);
 
-
-
-class FirstSameConditionVisitor : public ConditionVisitor {
-  public:
-    FirstSameConditionVisitor(SimpleCondition *condition2);
-
-    void visit_statement_condition(StatementCondition *condition1);
-    void visit_proc_condition(ProcCondition *condition1);
-    void visit_variable_condition(VariableCondition *condition1);
-    void visit_pattern_condition(PatternCondition *condition1);
-
-    bool return_result();
-
-  private:
-    bool _result;
-    SimpleCondition *_condition2;
-};
-
-template <typename FirstCondition>
-class SecondSameConditionVisitor : public ConditionVisitor {
-  public:
-    SecondSameConditionVisitor(FirstCondition *condition1);
-
-    void visit_statement_condition(StatementCondition *condition2);
-    void visit_proc_condition(ProcCondition *condition2);
-    void visit_variable_condition(VariableCondition *condition2);
-    void visit_pattern_condition(PatternCondition *condition2);
-
-    bool return_result();
-
-  private:
-    bool _result;
-    FirstCondition *_condition1;
-};
-
 } // namespace util
 } // namespace simple
