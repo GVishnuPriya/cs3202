@@ -27,4 +27,6 @@ TEST(AstTest, BasicTest) {
     
     EXPECT_EQ(proc->get_statement(), assign);
     EXPECT_TRUE(assign->get_variable()->equals(var));
+
+    EXPECT_EQ(*root.begin(), proc);
 }

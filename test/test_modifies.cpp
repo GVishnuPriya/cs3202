@@ -2,6 +2,7 @@
 #include "gtest/gtest.h"
 #include "impl/solvers/modifies.h"
 #include "impl/ast.h"
+#include "impl/condition.h"
 
 namespace simple {
 namespace test {
@@ -45,6 +46,18 @@ TEST(ModifiesTest, FixtureTest1) {
     EXPECT_TRUE((solver.validate<StatementAst, SimpleVariable>(assign, &var3)));
     EXPECT_TRUE((solver.validate<AssignmentAst, SimpleVariable>(assign, &var3)));
     EXPECT_TRUE((solver.validate<ProcAst, SimpleVariable>(proc, &var3)));
+
+    ConditionSet expected_vars;
+    expected_vars.insert(new SimpleVariableCondition(SimpleVariable("x")));
+
+    EXPECT_EQ(solver.solve_right<StatementAst>(assign), expected_vars);
+    EXPECT_EQ(solver.solve_right<ProcAst>(proc), expected_vars);
+
+    ConditionSet expected_statements;
+    expected_statements.insert(new SimpleStatementCondition(assign));
+    expected_statements.insert(new SimpleProcCondition(proc));
+
+    EXPECT_EQ(solver.solve_left<SimpleVariable>(&var), expected_statements);
 }
 
 } // namespace test

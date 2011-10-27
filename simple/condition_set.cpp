@@ -27,6 +27,8 @@ void ConditionSet::insert(SimpleCondition *condition) {
 }
 
 void ConditionSet::union_with(const ConditionSet& other) {
+    if(other.is_empty()) { return; }
+
     for(std::set<ConditionPtr>::iterator it = other._set.begin();
             it != other._set.end(); ++it)
     {
@@ -35,6 +37,13 @@ void ConditionSet::union_with(const ConditionSet& other) {
 }
 
 void ConditionSet::intersect_with(const ConditionSet& other) {
+    if(other.is_empty()) {
+        // we are intersecting with empty set, and so
+        // the result is also an empty set.
+        _set.clear();
+        return; 
+    }
+
     std::set<ConditionPtr>::iterator it = _set.begin();
     while(it != _set.end()) {
         if(!other.has_element(*it)) {

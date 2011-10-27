@@ -3,11 +3,26 @@
 
 #include "simple/ast.h"
 #include "simple/condition.h"
+#include "simple/condition_set.h"
 
 namespace simple {
 namespace impl {
 
 using namespace simple;
+
+template <typename Solver>
+class SolveVariableVisitorTraits {
+  public:
+    typedef ConditionSet ResultType;
+
+    template <typename Ast>
+    static ConditionSet visit(Solver *solver, Ast *ast) {
+        return solver->template solve_variable<Ast>(ast);
+    }
+  private:
+    SolveVariableVisitorTraits();
+};
+
 
 template <typename Solver>
 class SolveRightVisitorTraits {

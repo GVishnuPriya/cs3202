@@ -117,12 +117,20 @@ class SimpleRoot {
         _procs(other._procs)
     { }
 
+    SimpleRoot(SimpleRoot&& other) :
+        _procs(std::move(other._procs))
+    { }
+
     iterator begin() {
         return iterator(_procs->begin());
     }
 
     iterator end() {
         return iterator(_procs->end());
+    }
+
+    SimpleRoot& operator =(const SimpleRoot& other) {
+        _procs = other._procs;
     }
 
     ~SimpleRoot() { }

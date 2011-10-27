@@ -31,27 +31,6 @@ class ModifiesSolver {
   private:
     SimpleRoot _ast;
 
-    class ModifiesValidateStatementVisitor : public StatementVisitor {
-      public:
-        ModifiesValidateStatementVisitor(
-            ModifiesSolver *solver, SimpleVariable *var) : 
-            _solver(solver), _var(var) { }
-
-        virtual void visit_conditional(ConditionalAst *ast);
-        virtual void visit_while(WhileAst *ast);
-        virtual void visit_assignment(AssignmentAst *ast);
-        virtual void visit_call(CallAst *ast);
-
-        bool return_result() {
-            return _result;
-        }
-
-      private:
-        ModifiesSolver *_solver;
-        SimpleVariable *_var;
-        bool _result;
-    };
-
 };
 
 } // namespace impl
