@@ -51,6 +51,9 @@ class ConditionSet {
     bool has_element(const ConditionPtr& other) const;
     size_t get_size() const;
 
+    bool operator ==(const ConditionSet& other) const;
+    bool operator !=(const ConditionSet& other) const;
+
     ~ConditionSet();
 
   private:

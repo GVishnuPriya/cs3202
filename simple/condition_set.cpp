@@ -35,11 +35,13 @@ void ConditionSet::union_with(const ConditionSet& other) {
 }
 
 void ConditionSet::intersect_with(const ConditionSet& other) {
-    for(std::set<ConditionPtr>::iterator it = other._set.begin();
-            it != other._set.end(); ++it)
-    {
-        if(!_set.count(*it)) {
-            _set.erase(*it);
+    std::set<ConditionPtr>::iterator it = _set.begin();
+    while(it != _set.end()) {
+        if(!other.has_element(*it)) {
+            std::set<ConditionPtr>::iterator old_it = it++;
+            _set.erase(old_it);
+        } else {
+            ++it;
         }
     }
 }
@@ -54,6 +56,14 @@ bool ConditionSet::equals(const ConditionSet& other) const {
 
 bool ConditionSet::equals(const std::set<ConditionPtr>& other) const {
     return _set == other;
+}
+
+bool ConditionSet::operator ==(const ConditionSet& other) const {
+    return equals(other);
+}
+
+bool ConditionSet::operator !=(const ConditionSet& other) const {
+    return !equals(other);
 }
 
 bool ConditionSet::has_element(const ConditionPtr& other) const {

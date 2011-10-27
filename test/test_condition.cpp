@@ -107,11 +107,12 @@ TEST(ConditionTest, EqualityTest) {
 TEST(ConditionTest, ConditionSetTest) {
     ConditionSet set1, set2, set3;
     
-    SimpleAssignmentAst statement1, statement2;
+    SimpleAssignmentAst statement1, statement2, statement3;
 
     ConditionPtr statement_condition1 = new SimpleStatementCondition(&statement1);
     ConditionPtr statement_condition2 = new SimpleStatementCondition(&statement1);
     ConditionPtr statement_condition3 = new SimpleStatementCondition(&statement2);
+    ConditionPtr statement_condition4 = new SimpleStatementCondition(&statement3);
 
     set1.insert(statement_condition1);
     EXPECT_TRUE(set1.has_element(statement_condition1));
@@ -126,14 +127,25 @@ TEST(ConditionTest, ConditionSetTest) {
 
     set2.insert(statement_condition1);
     EXPECT_FALSE(set2.has_element(statement_condition3));
-    set2.union_with(set1);
+    EXPECT_NE(set2, set1);
+    
+    set2.union_with(set1); // do union
+    
     EXPECT_TRUE(set2.has_element(statement_condition3));
+    EXPECT_EQ(set2, set1);
     EXPECT_EQ(set2.get_size(), 2);
 
     set3.insert(statement_condition3);
+    set3.insert(statement_condition4);
+    EXPECT_TRUE(set3.has_element(statement_condition4));
     EXPECT_FALSE(set3.has_element(statement_condition1));
-    set3.intersect_with(set1);
+    EXPECT_NE(set3, set1);
+
+    set3.intersect_with(set1); // do intersection
+    
+    EXPECT_FALSE(set3.has_element(statement_condition4));
     EXPECT_FALSE(set3.has_element(statement_condition1));
+    EXPECT_NE(set3, set1);
     EXPECT_EQ(set3.get_size(), 1);
 }
 
