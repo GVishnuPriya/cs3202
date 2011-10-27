@@ -56,8 +56,20 @@ bool is_less_than_condition<VariableCondition, StatementCondition>(
         VariableCondition *condition1, StatementCondition *condition2);
 
 template <>
+bool is_less_than_condition<VariableCondition, ProcCondition>(
+        VariableCondition *condition1, ProcCondition *condition2);
+
+template <>
 bool is_less_than_condition<PatternCondition, VariableCondition>(
         PatternCondition *condition1, VariableCondition *condition2);
+
+template <>
+bool is_less_than_condition<PatternCondition, StatementCondition>(
+        PatternCondition *condition1, StatementCondition *condition2);
+
+template <>
+bool is_less_than_condition<PatternCondition, ProcCondition>(
+        PatternCondition *condition1, ProcCondition *condition2);
 
 template <>
 bool is_less_than_condition<StatementCondition, StatementCondition>(

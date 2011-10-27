@@ -50,15 +50,15 @@ class SimpleVariableCondition : public VariableCondition {
         _var(var) 
     { }
 
-    SimpleVariable* get_variable() {
+    virtual SimpleVariable* get_variable() {
         return &_var;
     }
 
-    void accept_condition_visitor(ConditionVisitor *visitor) {
+    virtual void accept_condition_visitor(ConditionVisitor *visitor) {
         visitor->visit_variable_condition(this);
     }
 
-    ~SimpleVariableCondition() { }
+    virtual ~SimpleVariableCondition() { }
   private:
     SimpleVariable _var;
 };

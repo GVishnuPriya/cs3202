@@ -22,7 +22,7 @@ class LessThanConditionVisitorTraits {
 
     template <typename Condition1, typename Condition2>
     static bool visit_condition(Condition1 *condition1, Condition2 *condition2) {
-        return is_same_condition<Condition1, Condition2>(condition1, condition2);
+        return is_less_than_condition<Condition1, Condition2>(condition1, condition2);
     }
 };
 
@@ -50,7 +50,8 @@ template <>
 bool is_same_condition<VariableCondition, VariableCondition>(
         VariableCondition *condition1, VariableCondition *condition2)
 {
-    return condition1->get_variable()->equals(*condition2->get_variable());
+    return condition1->get_variable()->get_name() ==
+        condition2->get_variable()->get_name();
 }
 
 template <>
@@ -94,11 +95,34 @@ bool is_less_than_condition<VariableCondition, StatementCondition>(
 }
 
 template <>
+bool is_less_than_condition<VariableCondition, ProcCondition>(
+        VariableCondition *condition1, ProcCondition *condition2)
+{
+    return true;
+}
+
+template <>
 bool is_less_than_condition<PatternCondition, VariableCondition>(
         PatternCondition *condition1, VariableCondition *condition2)
 {
     return true;
 }
+
+template <>
+bool is_less_than_condition<PatternCondition, StatementCondition>(
+        PatternCondition *condition1, StatementCondition *condition2)
+{
+    return true;
+}
+
+
+template <>
+bool is_less_than_condition<PatternCondition, ProcCondition>(
+        PatternCondition *condition1, ProcCondition *condition2)
+{
+    return true;
+}
+
 
 template <>
 bool is_less_than_condition<StatementCondition, StatementCondition>(
@@ -111,7 +135,7 @@ template <>
 bool is_less_than_condition<VariableCondition, VariableCondition>(
         VariableCondition *condition1, VariableCondition *condition2)
 {
-    return  condition1->get_variable()->get_name() > 
+    return  condition1->get_variable()->get_name() < 
             condition2->get_variable()->get_name();
 }
 

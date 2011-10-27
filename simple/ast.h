@@ -32,8 +32,7 @@ class InconsistentAstError : public std::exception { };
 class SimpleVariable {
   public:
     SimpleVariable() : _name() { }
-    SimpleVariable(std::string name) : _name(name) { }
-    SimpleVariable(const char *name) : _name(name) { }
+    SimpleVariable(const std::string& name) : _name(name) { }
     SimpleVariable(const SimpleVariable& other) : _name(other._name) { }
 
     std::string get_name() {
@@ -52,6 +51,16 @@ class SimpleVariable {
     bool operator ==(const SimpleVariable& other) {
         return equals(other);
     }
+
+    bool operator <(const SimpleVariable& other) {
+        return _name < other._name;
+    }
+
+    bool operator >(const SimpleVariable& other) {
+        return _name > other._name;
+    }
+
+    ~SimpleVariable() { }
 
   private:
     std::string _name;

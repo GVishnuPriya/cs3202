@@ -4,6 +4,7 @@
 #include <list>
 #include "simple/ast.h"
 #include "simple/condition.h"
+#include "simple/condition_set.h"
 
 namespace simple {
 

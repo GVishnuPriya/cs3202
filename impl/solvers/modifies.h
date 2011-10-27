@@ -3,6 +3,7 @@
 
 #include "simple/ast.h"
 #include "simple/condition.h"
+#include "simple/condition_set.h"
 #include "simple/solver.h"
 #include "simple/util/statement_visitor_generator.h"
 
