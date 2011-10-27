@@ -6,6 +6,7 @@
 namespace simple {
 
 using simple::util::is_same_condition;
+using simple::util::is_less_than_condition;
 
 ConditionSet::ConditionSet() : 
     _set() 
@@ -70,8 +71,24 @@ bool ConditionPtr::operator ==(const ConditionPtr& other) {
     return equals(other);
 }
 
+bool ConditionPtr::operator <(const ConditionPtr& other) {
+    return less_than(other);
+}
+
+bool ConditionPtr::operator <=(const ConditionPtr& other) {
+    return less_than_eq(other);
+}
+
 bool ConditionPtr::equals(const ConditionPtr& other) {
     return is_same_condition(get(), other.get());
+}
+
+bool ConditionPtr::less_than(const ConditionPtr& other) {
+    return is_less_than_condition(get(), other.get());
+}
+
+bool ConditionPtr::less_than_eq(const ConditionPtr& other) {
+    return equals(other) || less_than(other);
 }
 
 ConditionPtr::~ConditionPtr() { }

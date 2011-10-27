@@ -9,7 +9,7 @@ namespace impl {
 using namespace simple;
 
 template <typename Condition1, typename Condition2>
-bool validate(Condition1 *condition1, Condition2 *condition2) {
+bool ModifiesSolver::validate(Condition1 *condition1, Condition2 *condition2) {
     return false;
 }
 

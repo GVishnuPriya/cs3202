@@ -1,7 +1,7 @@
 
 #include "impl/condition.h"
 #include "impl/solvers/next.h"
-#include "impl/visitor_generator.h"
+#include "simple/util/statement_visitor_generator.h"
 #include "simple/util/ast_utils.h"
 
 namespace simple {
@@ -105,7 +105,15 @@ ConditionSet NextSolver::solve_previous(Condition *condition) {
     return ConditionSet();
 }
 
-class SolvePreviousVisitorTraits;
+class SolvePreviousVisitorTraits {
+  public:
+    typedef ConditionSet ResultType;
+
+    template <typename Ast>
+    static ConditionSet visit(NextSolver *solver, Ast *ast) {
+        return solver->solve_previous<Ast>(ast);
+    }
+};
 
 template <>
 ConditionSet NextSolver::solve_previous<StatementAst>(StatementAst *ast) {
@@ -257,13 +265,6 @@ void NextSolver::ValidateNextStatementVisitor::visit_call(CallAst *ast) {
     _result = _solver->validate_next<CallAst>(ast, _statement);
 }
 
-class SolvePreviousVisitorTraits {
-  public:
-    template <typename Ast>
-    static ConditionSet visit(NextSolver *solver, Ast *ast) {
-        return solver->solve_previous<Ast>(ast);
-    }
-};
 
 
 } // namespace impl

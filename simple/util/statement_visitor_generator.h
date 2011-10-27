@@ -9,6 +9,33 @@ namespace impl {
 
 using namespace simple;
 
+template <typename Solver>
+class SolveRightVisitorTraits {
+  public:
+    typedef ConditionSet ResultType;
+
+    template <typename Ast>
+    static ConditionSet visit(Solver *solver, Ast *ast) {
+        return solver->template solve_right<Ast>(ast);
+    }
+  private:
+    SolveRightVisitorTraits();
+};
+
+template <typename Solver>
+class SolveLeftVisitorTraits {
+  public:
+    typedef ConditionSet ResultType;
+
+    template <typename Ast>
+    static ConditionSet visit(Solver *solver, Ast *ast) {
+        return solver->template solve_left<Ast>(ast);
+    }
+
+  private:
+    SolveLeftVisitorTraits();
+};
+
 template <typename Visitor, typename VisitorTraits>
 class StatementVisitorGenerator : public StatementVisitor {
       public:
@@ -31,38 +58,14 @@ class StatementVisitorGenerator : public StatementVisitor {
             _result = VisitorTraits::template visit<CallAst>(_visitor, ast);
         }
 
-        ConditionSet return_result() {
+        typename VisitorTraits::ResultType return_result() {
             return std::move(_result);
         }
 
       private:
         Visitor *_visitor;
-        ConditionSet _result;
+        typename VisitorTraits::ResultType _result;
 };
-
-template <typename Solver>
-class SolveRightVisitorTraits {
-  public:
-    template <typename Ast>
-    static ConditionSet visit(Solver *solver, Ast *ast) {
-        return solver->template solve_right<Ast>(ast);
-    }
-  private:
-    SolveRightVisitorTraits();
-};
-
-template <typename Solver>
-class SolveLeftVisitorTraits {
-  public:
-    template <typename Ast>
-    static ConditionSet visit(Solver *solver, Ast *ast) {
-        return solver->template solve_left<Ast>(ast);
-    }
-
-  private:
-    SolveLeftVisitorTraits();
-};
-
 
 
 }

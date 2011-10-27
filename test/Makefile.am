@@ -4,7 +4,7 @@ unit_tests_SOURCES = \
   test_ast.cpp \
   test_solver.cpp \
   test_modifies.cpp \
-  condition_test.cpp \
+  test_condition.cpp \
   ../simple/condition.cpp \
   ../simple/util/condition_utils.cpp \
   ../simple/util/ast_utils.cpp \

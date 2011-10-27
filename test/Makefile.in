@@ -47,7 +47,7 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
 am_unit_tests_OBJECTS = test_ast.$(OBJEXT) test_solver.$(OBJEXT) \
-	test_modifies.$(OBJEXT) condition_test.$(OBJEXT) \
+	test_modifies.$(OBJEXT) test_condition.$(OBJEXT) \
 	../simple/condition.$(OBJEXT) \
 	../simple/util/condition_utils.$(OBJEXT) \
 	../simple/util/ast_utils.$(OBJEXT) \
@@ -161,7 +161,7 @@ unit_tests_SOURCES = \
   test_ast.cpp \
   test_solver.cpp \
   test_modifies.cpp \
-  condition_test.cpp \
+  test_condition.cpp \
   ../simple/condition.cpp \
   ../simple/util/condition_utils.cpp \
   ../simple/util/ast_utils.cpp \
@@ -301,8 +301,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@../simple/$(DEPDIR)/condition.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../simple/util/$(DEPDIR)/ast_utils.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../simple/util/$(DEPDIR)/condition_utils.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/condition_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_ast.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_condition.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_modifies.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_solver.Po@am__quote@

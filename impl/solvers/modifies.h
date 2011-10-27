@@ -4,7 +4,7 @@
 #include "simple/ast.h"
 #include "simple/condition.h"
 #include "simple/solver.h"
-#include "impl/visitor_generator.h"
+#include "simple/util/statement_visitor_generator.h"
 
 namespace simple {
 namespace impl {

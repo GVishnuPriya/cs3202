@@ -60,7 +60,12 @@ class ConditionPtr : public std::shared_ptr<SimpleCondition> {
     ConditionPtr(ConditionPtr&& other);
 
     bool equals(const ConditionPtr& other);
+    bool less_than(const ConditionPtr& other);
+    bool less_than_eq(const ConditionPtr& other);
+
     bool operator ==(const ConditionPtr& other);
+    bool operator <(const ConditionPtr& other);
+    bool operator <=(const ConditionPtr& other);
 
     ~ConditionPtr();
 };
