@@ -50,10 +50,6 @@ class SimpleVariableCondition : public VariableCondition {
         _var(var) 
     { }
 
-    SimpleVariableCondition(const std::string name) : 
-        _var(name) 
-    { }
-
     SimpleVariable* get_variable() {
         return &_var;
     }

@@ -5,11 +5,6 @@
 namespace simple {
 namespace util {
 
-template <typename Condition1, typename Condition2>
-bool is_same_condition(Condition1 *condition1, Condition2 *condition2) {
-    return false;
-}
-
 template <>
 bool is_same_condition<SimpleCondition, SimpleCondition>(
         SimpleCondition *condition1, SimpleCondition *condition2) 
@@ -46,6 +41,66 @@ bool is_same_condition<PatternCondition, PatternCondition>(
 {
     return is_same_expr(condition1->get_expr_ast(), condition2->get_expr_ast());
 }
+
+
+template <>
+bool is_less_than_condition<SimpleCondition, SimpleCondition>(
+        SimpleCondition *condition1, SimpleCondition *condition2)
+{
+
+}
+
+template <>
+bool is_less_than_condition<StatementCondition, ProcCondition>(
+        StatementCondition *condition1, ProcCondition *condition2)
+{
+    return true;
+}
+
+template <>
+bool is_less_than_condition<VariableCondition, StatementCondition>(
+        VariableCondition *condition1, StatementCondition *condition2)
+{
+    return true;
+}
+
+template <>
+bool is_less_than_condition<PatternCondition, VariableCondition>(
+        PatternCondition *condition1, VariableCondition *condition2)
+{
+    return true;
+}
+
+template <>
+bool is_less_than_condition<StatementCondition, StatementCondition>(
+        StatementCondition *condition1, StatementCondition *condition2)
+{
+    return condition1->get_statement_ast() < condition2->get_statement_ast();
+}
+
+template <>
+bool is_less_than_condition<VariableCondition, VariableCondition>(
+        VariableCondition *condition1, VariableCondition *condition2)
+{
+    return  condition1->get_variable()->get_name() > 
+            condition2->get_variable()->get_name();
+}
+
+template <>
+bool is_less_than_condition<ProcCondition, ProcCondition>(
+        ProcCondition *condition1, ProcCondition *condition2)
+{
+    return condition1->get_proc_ast() < condition2->get_proc_ast();
+}
+
+template <>
+bool is_less_than_condition<PatternCondition, PatternCondition>(
+        PatternCondition *condition1, PatternCondition *condition2)
+{
+    return is_less_than_expr(condition1->get_expr_ast(), condition2->get_expr_ast());
+}
+
+
 
 FirstSameConditionVisitor::FirstSameConditionVisitor(SimpleCondition *condition2) : 
     _condition2(condition2) 

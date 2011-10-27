@@ -47,8 +47,10 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
 am_unit_tests_OBJECTS = test_ast.$(OBJEXT) test_solver.$(OBJEXT) \
-	test_modifies.$(OBJEXT) ../simple/condition.$(OBJEXT) \
+	test_modifies.$(OBJEXT) condition_test.$(OBJEXT) \
+	../simple/condition.$(OBJEXT) \
 	../simple/condition_utils.$(OBJEXT) \
+	../simple/ast_utils.$(OBJEXT) \
 	../impl/solvers/modifies.$(OBJEXT) \
 	../impl/solvers/next.$(OBJEXT) gtest/gtest-all.$(OBJEXT) \
 	test_main.$(OBJEXT)
@@ -159,8 +161,10 @@ unit_tests_SOURCES = \
   test_ast.cpp \
   test_solver.cpp \
   test_modifies.cpp \
+  condition_test.cpp \
   ../simple/condition.cpp \
   ../simple/condition_utils.cpp \
+  ../simple/ast_utils.cpp \
   ../impl/solvers/modifies.cpp \
   ../impl/solvers/next.cpp \
   gtest/gtest-all.cc \
@@ -249,6 +253,8 @@ clean-binPROGRAMS:
 	../simple/$(DEPDIR)/$(am__dirstamp)
 ../simple/condition_utils.$(OBJEXT): ../simple/$(am__dirstamp) \
 	../simple/$(DEPDIR)/$(am__dirstamp)
+../simple/ast_utils.$(OBJEXT): ../simple/$(am__dirstamp) \
+	../simple/$(DEPDIR)/$(am__dirstamp)
 ../impl/solvers/$(am__dirstamp):
 	@$(MKDIR_P) ../impl/solvers
 	@: > ../impl/solvers/$(am__dirstamp)
@@ -275,6 +281,7 @@ mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f ../impl/solvers/modifies.$(OBJEXT)
 	-rm -f ../impl/solvers/next.$(OBJEXT)
+	-rm -f ../simple/ast_utils.$(OBJEXT)
 	-rm -f ../simple/condition.$(OBJEXT)
 	-rm -f ../simple/condition_utils.$(OBJEXT)
 	-rm -f gtest/gtest-all.$(OBJEXT)
@@ -284,8 +291,10 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/solvers/$(DEPDIR)/modifies.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/solvers/$(DEPDIR)/next.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../simple/$(DEPDIR)/ast_utils.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../simple/$(DEPDIR)/condition.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../simple/$(DEPDIR)/condition_utils.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/condition_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_ast.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_modifies.Po@am__quote@
