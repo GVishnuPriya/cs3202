@@ -3,6 +3,7 @@
 
 #include <set>
 #include <memory>
+#include <iostream>
 #include "simple/condition.h"
 
 namespace simple {
@@ -36,9 +37,12 @@ class ConditionPtr {
 
 class ConditionSet {
   public:
+    typedef std::set<ConditionPtr>::const_iterator  iterator;
+
     ConditionSet();
     ConditionSet(const ConditionSet& other);
     ConditionSet(ConditionSet&& other);
+    ConditionSet(ConditionPtr condition);
 
     void insert(ConditionPtr condition);
     void insert(SimpleCondition *condition);
@@ -54,10 +58,16 @@ class ConditionSet {
     bool operator ==(const ConditionSet& other) const;
     bool operator !=(const ConditionSet& other) const;
 
+    iterator begin() const;
+    iterator end() const;
+
     ~ConditionSet();
 
   private:
     std::set<ConditionPtr> _set;
 };
+
+::std::ostream& operator<<(::std::ostream& os, const ConditionSet& set);
+
 
 } // namespace simple

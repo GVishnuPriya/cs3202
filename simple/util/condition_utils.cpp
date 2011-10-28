@@ -26,6 +26,50 @@ class LessThanConditionVisitorTraits {
     }
 };
 
+class ConditionPrinter : public ConditionVisitor {
+  public:
+    ConditionPrinter(SimpleCondition *condition) :
+        _result()
+    {
+        condition->accept_condition_visitor(this);
+    }
+
+    void visit_proc_condition(ProcCondition *condition) {
+        _result = "(ProcCondition ";
+        _result += condition->get_proc_ast()->get_name();
+        _result += ")";
+    }
+
+    void visit_statement_condition(StatementCondition *condition) {
+        _result = "(StatementCondition ";
+        _result += (long) condition->get_statement_ast();
+        _result += ")";
+    }
+
+    void visit_variable_condition(VariableCondition *condition) {
+        _result = "(VariableCondition ";
+        _result += condition->get_variable()->get_name();
+        _result += ")";
+    }
+
+    void visit_pattern_condition(PatternCondition *condition) {
+        _result = "(PatternCondition ";
+        _result += (long) condition->get_expr_ast();
+        _result += ")";
+    }
+
+    std::string return_result() {
+        return std::move(_result);
+    }
+  private:
+    std::string _result;
+};
+
+
+std::string condition_to_string(SimpleCondition *condition) {
+    ConditionPrinter printer(condition);
+    return printer.return_result();
+}
 
 
 template <>

@@ -104,7 +104,6 @@ TEST(ModifiesTest, QuirksTest) {
     SimpleVariable var_z("z");
     SimpleVariable var_a("a");
 
-
     SimpleConditionalAst *condition = new SimpleConditionalAst();
     set_proc(condition, proc1);
 
@@ -204,6 +203,32 @@ TEST(ModifiesTest, QuirksTest) {
     proc2_vars.insert(new SimpleVariableCondition(var_a));
     EXPECT_EQ(solver.solve_right<ProcAst>(proc2), proc2_vars);
     EXPECT_EQ(solver.solve_right<StatementAst>(stat2_2), proc2_vars);
+
+    ConditionSet x_statements;
+    x_statements.insert(new SimpleProcCondition(proc1));
+    x_statements.insert(new SimpleStatementCondition(condition));
+    x_statements.insert(new SimpleStatementCondition(stat1_1));
+    EXPECT_EQ(solver.solve_left<SimpleVariable>(&var_x), x_statements);
+
+    ConditionSet y_statements;
+    y_statements.insert(new SimpleProcCondition(proc1));
+    y_statements.insert(new SimpleStatementCondition(condition));
+    y_statements.insert(new SimpleStatementCondition(stat1_2));
+    EXPECT_EQ(solver.solve_left<SimpleVariable>(&var_y), y_statements);
+
+    ConditionSet z_statements;
+    z_statements.insert(new SimpleProcCondition(proc1));
+    z_statements.insert(new SimpleStatementCondition(loop));
+    z_statements.insert(new SimpleStatementCondition(stat2_1));
+    EXPECT_EQ(solver.solve_left<SimpleVariable>(&var_z), z_statements);
+
+    ConditionSet a_statements;
+    a_statements.insert(new SimpleProcCondition(proc1));
+    a_statements.insert(new SimpleProcCondition(proc2));
+    a_statements.insert(new SimpleStatementCondition(loop));
+    a_statements.insert(new SimpleStatementCondition(stat2_2));
+    a_statements.insert(new SimpleStatementCondition(stat3));
+    EXPECT_EQ(solver.solve_left<SimpleVariable>(&var_a), a_statements);
 }
 
 } // namespace test

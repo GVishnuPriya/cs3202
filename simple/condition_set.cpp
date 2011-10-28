@@ -1,4 +1,5 @@
 
+#include <iostream>
 #include "simple/condition_set.h"
 #include "simple/util/condition_utils.h"
 
@@ -6,6 +7,15 @@ namespace simple {
 
 using simple::util::is_same_condition;
 using simple::util::is_less_than_condition;
+using simple::util::condition_to_string;
+
+::std::ostream& operator<<(::std::ostream& os, const ConditionSet& set) {
+    os << "(ConditionSet ";
+    for(ConditionSet::iterator it = set.begin(); it != set.end(); ++it) {
+        os << condition_to_string(it->get());
+    }
+    os << ")";
+}
 
 ConditionSet::ConditionSet() : 
     _set() 
@@ -17,6 +27,12 @@ ConditionSet::ConditionSet(const ConditionSet& other) :
 ConditionSet::ConditionSet(ConditionSet&& other) : 
     _set(std::move(other._set)) 
 { }
+
+ConditionSet::ConditionSet(ConditionPtr condition) :
+    _set()
+{
+    insert(condition);
+}
 
 void ConditionSet::insert(ConditionPtr condition) {
     _set.insert(condition);
@@ -81,6 +97,14 @@ bool ConditionSet::has_element(const ConditionPtr& other) const {
 
 size_t ConditionSet::get_size() const {
     return _set.size();
+}
+
+std::set<ConditionPtr>::const_iterator ConditionSet::begin() const {
+    return _set.begin();
+}
+
+std::set<ConditionPtr>::const_iterator ConditionSet::end() const {
+    return _set.end();
 }
 
 ConditionSet::~ConditionSet() { }

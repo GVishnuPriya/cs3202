@@ -31,33 +31,138 @@ class NextSolver {
     template <typename Condition>
     bool validate_next(Condition *condition, StatementAst *statement);
 
-   
+    template <typename Container>
+    bool validate_container_next(Container *container, StatementAst *statement);
+
+    template <typename Container>
+    ConditionSet solve_container_next(Container *container);
+       
+    template <typename Ast>
+    ConditionSet solve_last_previous(Ast *ast);
+
   private:
     SimpleRoot _ast;
-
-    class ValidateNextStatementVisitor : public StatementVisitor {
-      public:
-        ValidateNextStatementVisitor(
-            NextSolver *solver, StatementAst *statement) : 
-            _solver(solver), _statement(statement), 
-            _result(false) 
-        { }
-
-        void visit_conditional(ConditionalAst *ast);
-        void visit_while(WhileAst *ast);
-        void visit_assignment(AssignmentAst *ast);
-        void visit_call(CallAst *ast);
-
-        bool return_result() {
-            return _result;
-        }
-
-      private:
-        bool            _result;
-        NextSolver      *_solver;
-        StatementAst    *_statement;
-    };
 };
+
+template <typename Condition>
+ConditionSet NextSolver::solve_right(Condition *condition) {
+    return ConditionSet();
+}
+
+template <typename Condition>
+ConditionSet NextSolver::solve_left(Condition *condition) {
+    return ConditionSet(); // empty set
+}
+
+template <typename Condition1, typename Condition2>
+bool NextSolver::validate(Condition1 *condition1, Condition2 *condition2) {
+    return false;
+}
+
+template <typename Condition>
+ConditionSet NextSolver::solve_previous(Condition *condition) {
+    return ConditionSet();
+}
+
+template <typename Condition>
+bool NextSolver::validate_next(Condition *condition, StatementAst *statement) {
+    return false;
+}
+
+template <typename Container>
+bool NextSolver::validate_container_next(Container *container, StatementAst *statement) {
+    return false;
+}
+
+template <typename Container>
+ConditionSet NextSolver::solve_container_next(Container *container) {
+    return ConditionSet();
+}
+
+template <typename Ast>
+ConditionSet NextSolver::solve_last_previous(Ast *ast) {
+    return ConditionSet();
+}
+
+template <>
+ConditionSet NextSolver::solve_right<StatementAst>(StatementAst *ast);
+
+template <>
+ConditionSet NextSolver::solve_right<ConditionalAst>(ConditionalAst *ast);
+
+template <>
+ConditionSet NextSolver::solve_right<WhileAst>(WhileAst *ast);
+
+template <>
+ConditionSet NextSolver::solve_right<AssignmentAst>(AssignmentAst *ast);
+
+template <>
+ConditionSet NextSolver::solve_right<CallAst>(CallAst *ast);
+
+template <>
+ConditionSet NextSolver::solve_left<StatementAst>(StatementAst *ast);
+
+template <>
+ConditionSet NextSolver::solve_previous<StatementAst>(StatementAst *ast);
+
+template <>
+ConditionSet NextSolver::solve_previous<WhileAst>(WhileAst *ast);
+
+template <>
+ConditionSet NextSolver::solve_previous<AssignmentAst>(AssignmentAst *ast);
+
+template <>
+ConditionSet NextSolver::solve_previous<CallAst>(CallAst *ast);
+
+template <>
+ConditionSet NextSolver::solve_previous<ConditionalAst>(ConditionalAst *ast);
+
+template <>
+bool NextSolver::validate<StatementAst, StatementAst>(
+        StatementAst *statement1, StatementAst *statement2);
+
+template <>
+bool NextSolver::validate_next<ConditionalAst>(ConditionalAst *condition, StatementAst *statement);
+
+template <>
+bool NextSolver::validate_next<WhileAst>(WhileAst *loop, StatementAst *statement);
+
+template <>
+bool NextSolver::validate_next<AssignmentAst>(AssignmentAst *assign, StatementAst *statement);
+
+template <>
+bool NextSolver::validate_next<CallAst>(CallAst *call, StatementAst *statement);
+
+template <>
+bool NextSolver::validate_container_next<ContainerAst>(ContainerAst *container, StatementAst *statement);
+
+template <>
+bool NextSolver::validate_container_next<ConditionalAst>(ConditionalAst *container, StatementAst *statement);
+
+template <>
+bool NextSolver::validate_container_next<WhileAst>(WhileAst *container, StatementAst *statement);
+
+
+template <>
+ConditionSet NextSolver::solve_container_next<ContainerAst>(ContainerAst *container);
+
+template <>
+ConditionSet NextSolver::solve_container_next<ConditionalAst>(ConditionalAst *condition);
+
+template <>
+ConditionSet NextSolver::solve_container_next<WhileAst>(WhileAst *loop);
+
+template <>
+ConditionSet NextSolver::solve_last_previous<StatementAst>(StatementAst *statement);
+
+template <>
+ConditionSet NextSolver::solve_last_previous<WhileAst>(WhileAst *loop);
+
+template <>
+ConditionSet NextSolver::solve_last_previous<AssignmentAst>(AssignmentAst *assign);
+
+template <>
+ConditionSet NextSolver::solve_last_previous<CallAst>(CallAst *call);
 
 } // namespace impl
 } // namespace simple

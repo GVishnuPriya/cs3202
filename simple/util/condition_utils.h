@@ -1,11 +1,14 @@
 
 #pragma once
 
+#include <string>
+#include <iostream>
 #include "simple/condition.h"
 
 namespace simple {
 namespace util {
 
+std::string condition_to_string(SimpleCondition *condition);
 
 template <typename Condition1, typename Condition2>
 bool is_same_condition(Condition1 *condition1, Condition2 *condition2) {
