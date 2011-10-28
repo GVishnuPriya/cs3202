@@ -9,115 +9,6 @@ namespace impl {
 
 using namespace simple;
 
-
-/*
- * Template declarations
- */
-
-template <typename Condition1, typename Condition2>
-bool ModifiesSolver::validate(Condition1 *condition1, Condition2 *condition2) {
-    return false;
-}
-
-template <typename Condition>
-ConditionSet ModifiesSolver::solve_right(Condition *condition) {
-    return ConditionSet(); // empty set
-}
-
-template <typename Condition>
-ConditionSet ModifiesSolver::solve_variable(Condition *condition, SimpleVariable *variable) {
-    return ConditionSet(); // empty set
-}
-
-template <typename Condition>
-ConditionSet ModifiesSolver::solve_left(Condition *condition) {
-    return ConditionSet(); // empty set
-}
-
-template <typename Condition>
-std::set<SimpleVariable> ModifiesSolver::index_variables(Condition *condition) {
-    return ConditionSet();
-}
-
-
-template <>
-bool ModifiesSolver::validate<StatementAst, SimpleVariable>(
-        StatementAst *ast, SimpleVariable *var);
-
-template <>
-bool ModifiesSolver::validate<ProcAst, SimpleVariable>(
-        ProcAst *ast, SimpleVariable *var);
-
-template <>
-bool ModifiesSolver::validate<AssignmentAst, SimpleVariable>(
-        AssignmentAst *ast, SimpleVariable *var);
-
-template <>
-bool ModifiesSolver::validate<ConditionalAst, SimpleVariable>(
-        ConditionalAst *ast, SimpleVariable *var); 
-
-template <>
-bool ModifiesSolver::validate<WhileAst, SimpleVariable>(
-        WhileAst *ast, SimpleVariable *var);
-
-template <>
-bool ModifiesSolver::validate<CallAst, SimpleVariable>(
-        CallAst *ast, SimpleVariable *var);
-
-template <>
-ConditionSet ModifiesSolver::solve_right<StatementAst>(StatementAst *ast);
-
-template <>
-ConditionSet ModifiesSolver::solve_right<ConditionalAst>(ConditionalAst *ast);
-
-template <>
-ConditionSet ModifiesSolver::solve_right<WhileAst>(WhileAst *ast);
-
-template <>
-ConditionSet ModifiesSolver::solve_right<ProcAst>(ProcAst *ast);
-
-template <>
-ConditionSet ModifiesSolver::solve_right<AssignmentAst>(AssignmentAst *ast);
-
-template <>
-ConditionSet ModifiesSolver::solve_right<CallAst>(CallAst *ast);
-
-template <>
-ConditionSet ModifiesSolver::solve_variable<AssignmentAst>(
-        AssignmentAst *ast, SimpleVariable *variable);
-
-template <>
-ConditionSet ModifiesSolver::solve_variable<CallAst>(CallAst *ast, SimpleVariable *variable);
-
-template <>
-ConditionSet ModifiesSolver::solve_variable<ProcAst>(ProcAst *ast, SimpleVariable *variable);
-
-template <>
-ConditionSet ModifiesSolver::solve_variable<StatementAst>(
-        StatementAst *ast, SimpleVariable *variable);
-
-template <>
-ConditionSet ModifiesSolver::solve_left<SimpleVariable>(SimpleVariable *variable);
-
-template <>
-std::set<SimpleVariable> ModifiesSolver::index_variables<ProcAst>(ProcAst *proc);
-
-template <>
-std::set<SimpleVariable> ModifiesSolver::index_variables<AssignmentAst>(AssignmentAst *assign);
-
-template <>
-std::set<SimpleVariable> ModifiesSolver::index_variables<WhileAst>(WhileAst *ast);
-
-template <>
-std::set<SimpleVariable> ModifiesSolver::index_variables<ConditionalAst>(ConditionalAst *ast);
-
-template <>
-std::set<SimpleVariable> ModifiesSolver::index_variables<CallAst>(CallAst *ast);
-
-template <>
-std::set<SimpleVariable> ModifiesSolver::index_variables<StatementAst>(StatementAst *statement);
-
-
 /*
  * Helper classes
  */
@@ -284,7 +175,7 @@ ConditionSet ModifiesSolver::solve_right<ConditionalAst>(ConditionalAst *ast) {
     StatementAst *el = ast->get_else_branch();
     while(el != NULL) {
         result.union_with(solve_right<StatementAst>(el));
-        then = then->next();
+        el = el->next();
     }
 
     return result;
@@ -297,6 +188,7 @@ ConditionSet ModifiesSolver::solve_right<WhileAst>(WhileAst *ast) {
     StatementAst *body = ast->get_body();
     while(body != NULL) {
         result.union_with(solve_right<StatementAst>(body));
+        body = body->next();
     }
 
     return result;
@@ -319,13 +211,13 @@ template <>
 ConditionSet ModifiesSolver::solve_right<AssignmentAst>(AssignmentAst *ast) {
     ConditionSet result;
     result.insert(new SimpleVariableCondition(
-            *ast->get_variable()));
+            *(ast->get_variable())));
     return result;
 }
 
 template <>
 ConditionSet ModifiesSolver::solve_right<CallAst>(CallAst *ast) {
-    return solve_right<ProcAst>(ast->get_proc());
+    return solve_right<ProcAst>(ast->get_proc_called());
 }
 
 template <>
