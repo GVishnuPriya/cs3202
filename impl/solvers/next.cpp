@@ -1,4 +1,5 @@
 
+#include <assert.h>
 #include "impl/condition.h"
 #include "impl/solvers/next.h"
 #include "simple/util/statement_visitor_generator.h"
@@ -96,6 +97,8 @@ ConditionSet NextSolver::solve_right<WhileAst>(WhileAst *ast) {
 
     if(ast->next()) {
         result.insert(new SimpleStatementCondition(ast->next()));
+    } else if(ast->get_parent()) {
+        result.union_with(solve_container_next<ContainerAst>(ast->get_parent()));
     }
     
     return result;
@@ -307,11 +310,11 @@ ConditionSet NextSolver::solve_last_previous<ConditionalAst>(ConditionalAst *con
     StatementAst *then_branch = condition->get_then_branch();
     StatementAst *else_branch = condition->get_else_branch();
 
-    while(!then_branch->next()) {
+    while(then_branch->next() != NULL) {
         then_branch = then_branch->next();
     }
 
-    while(!else_branch->next()) {
+    while(else_branch->next() != NULL) {
         else_branch = else_branch->next();
     }
 
@@ -357,7 +360,13 @@ bool NextSolver::validate_next<ConditionalAst>(ConditionalAst *condition, Statem
 template <>
 bool NextSolver::validate_next<WhileAst>(WhileAst *loop, StatementAst *statement)
 {
-    return (loop->get_body() == statement || loop->next() == statement);
+    if(loop->get_body() == statement || loop->next() == statement) {
+        return true;
+    } else if(!loop->next() && loop->get_parent()) {
+        return validate_container_next<ContainerAst>(loop->get_parent(), statement);
+    } else {
+        return false;
+    }
 }
 
 template <>

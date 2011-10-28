@@ -235,5 +235,126 @@ TEST(NextTest, WhileTest) {
     EXPECT_EQ(solver.solve_left<StatementAst>(after), after_prev); 
 }
 
+TEST(NextTest, QuirksTest) {
+    /*
+     * proc test {
+     *   a = 1          // first
+     *   while i {      // loop1
+     *     if j {       // condition1
+     *       b = 2      // assign1
+     *       while k {  // loop2
+     *         c = 3    // assign2
+     *       }
+     *     } else {
+     *       if l {     // condition2
+     *         d = 4    // assign3
+     *       } else {
+     *         e = 5    // assign4
+     *       }
+     *     }
+     *   }
+     *   f = 6          // last
+     * }
+     */
+
+    SimpleProcAst *proc = new SimpleProcAst("test");
+    SimpleAssignmentAst *first = new SimpleAssignmentAst();
+    set_proc(first, proc);
+
+    SimpleWhileAst *loop1 = new SimpleWhileAst();
+    set_next(first, loop1);
+
+    SimpleConditionalAst *condition1 = new SimpleConditionalAst();
+    set_while_body(condition1, loop1);
+
+    SimpleAssignmentAst *assign1 = new SimpleAssignmentAst();
+    set_then_branch(assign1, condition1);
+
+    SimpleWhileAst *loop2 = new SimpleWhileAst();
+    set_next(assign1, loop2);
+
+    SimpleAssignmentAst *assign2 = new SimpleAssignmentAst();
+    set_while_body(assign2, loop2);
+
+    SimpleConditionalAst *condition2 = new SimpleConditionalAst();
+    set_else_branch(condition2, condition1);
+
+    SimpleAssignmentAst *assign3 = new SimpleAssignmentAst();
+    set_then_branch(assign3, condition2);
+
+    SimpleAssignmentAst *assign4 = new SimpleAssignmentAst();
+    set_else_branch(assign4, condition2);
+
+    SimpleAssignmentAst *last = new SimpleAssignmentAst();
+    set_next(loop1, last);
+
+    SimpleRoot root(proc);
+    NextSolver solver(root, NULL);
+
+    EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(first, loop1)));
+    EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(loop1, condition1)));
+    EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(loop1, last)));
+    EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(condition1, assign1)));
+    EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(condition1, condition2)));
+    EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(assign1, loop2)));
+    EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(loop2, assign2)));
+    EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(loop2, loop1)));
+    EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(assign2, loop2)));
+    EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(condition2, assign3)));
+    EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(condition2, assign4)));
+    EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(assign3, loop1)));
+    EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(assign4, loop1)));
+
+    EXPECT_FALSE((solver.validate<StatementAst, StatementAst>(loop2, last)));
+    EXPECT_FALSE((solver.validate<StatementAst, StatementAst>(assign2, last)));
+    EXPECT_FALSE((solver.validate<StatementAst, StatementAst>(assign3, last)));
+    EXPECT_FALSE((solver.validate<StatementAst, StatementAst>(assign4, last)));
+    EXPECT_FALSE((solver.validate<StatementAst, StatementAst>(assign4, condition1)));
+
+    ConditionSet loop1_next;
+    loop1_next.insert(new SimpleStatementCondition(condition1));
+    loop1_next.insert(new SimpleStatementCondition(last));
+    EXPECT_EQ(solver.solve_right<StatementAst>(loop1), loop1_next);
+
+    ConditionSet assign34_next(new SimpleStatementCondition(loop1));
+    EXPECT_EQ(solver.solve_right<StatementAst>(assign3), assign34_next);
+    EXPECT_EQ(solver.solve_right<StatementAst>(assign4), assign34_next);
+
+    ConditionSet loop2_next;
+    loop2_next.insert(new SimpleStatementCondition(loop1));
+    loop2_next.insert(new SimpleStatementCondition(assign2));
+    EXPECT_EQ(solver.solve_right<StatementAst>(loop2), loop2_next);
+
+    ConditionSet condition1_next;
+    condition1_next.insert(new SimpleStatementCondition(assign1));
+    condition1_next.insert(new SimpleStatementCondition(condition2));
+    EXPECT_EQ(solver.solve_right<StatementAst>(condition1), condition1_next);
+
+    ConditionSet loop1_prev;
+    loop1_prev.insert(new SimpleStatementCondition(first));
+    loop1_prev.insert(new SimpleStatementCondition(loop2));
+    loop1_prev.insert(new SimpleStatementCondition(assign3));
+    loop1_prev.insert(new SimpleStatementCondition(assign4));
+    EXPECT_EQ(solver.solve_left<StatementAst>(loop1), loop1_prev);
+
+    ConditionSet loop2_prev;
+    loop2_prev.insert(new SimpleStatementCondition(assign1));
+    loop2_prev.insert(new SimpleStatementCondition(assign2));
+    EXPECT_EQ(solver.solve_left<StatementAst>(loop2), loop2_prev);
+
+    ConditionSet last_prev(new SimpleStatementCondition(loop1));
+    EXPECT_EQ(solver.solve_left<StatementAst>(last), last_prev);
+
+    ConditionSet assign34_prev(new SimpleStatementCondition(condition2));
+    EXPECT_EQ(solver.solve_left<StatementAst>(assign3), assign34_prev);
+    EXPECT_EQ(solver.solve_left<StatementAst>(assign4), assign34_prev);
+    
+    ConditionSet condition2_prev(new SimpleStatementCondition(condition1));
+    EXPECT_EQ(solver.solve_left<StatementAst>(condition2), condition2_prev);
+    
+    ConditionSet condition1_prev(new SimpleStatementCondition(loop1));
+    EXPECT_EQ(solver.solve_left<StatementAst>(condition1), condition1_prev);
+}
+
 } // namespace test
 } // namespace simple
