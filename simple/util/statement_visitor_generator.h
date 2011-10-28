@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <set>
 #include "simple/ast.h"
 #include "simple/condition.h"
 #include "simple/condition_set.h"
@@ -9,6 +10,19 @@ namespace simple {
 namespace impl {
 
 using namespace simple;
+
+template <typename Solver>
+class IndexVariableVisitorTraits {
+  public:
+    typedef std::set<SimpleVariable> ResultType;
+
+    template <typename Ast>
+    static std::set<SimpleVariable> visit(Solver *solver, Ast *ast) {
+        return solver->template index_variables<Ast>(ast);
+    }
+  private:
+    IndexVariableVisitorTraits();
+};
 
 template <typename Solver>
 class SolveVariableVisitorTraits {
@@ -22,7 +36,6 @@ class SolveVariableVisitorTraits {
   private:
     SolveVariableVisitorTraits();
 };
-
 
 template <typename Solver>
 class SolveRightVisitorTraits {

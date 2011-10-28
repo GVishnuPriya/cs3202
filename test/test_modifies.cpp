@@ -19,6 +19,8 @@ TEST(ModifiesTest, FixtureTest1) {
     SimpleProcAst *proc = new SimpleProcAst("test");
     SimpleAssignmentAst *assign = new SimpleAssignmentAst();
     SimpleVariable var("x");
+    SimpleVariable var2("y"); // different name
+    SimpleVariable var3("x"); // same name different pointer
 
     assign->set_variable(var);
     assign->set_expr(new SimpleConstAst(1));
@@ -35,13 +37,11 @@ TEST(ModifiesTest, FixtureTest1) {
     EXPECT_TRUE((solver.validate<StatementAst, SimpleVariable>(assign, &var)));
     EXPECT_TRUE((solver.validate<ProcAst, SimpleVariable>(proc, &var)));
 
-    SimpleVariable var2("y"); // different name
 
     EXPECT_FALSE((solver.validate<StatementAst, SimpleVariable>(assign, &var2)));
     EXPECT_FALSE((solver.validate<AssignmentAst, SimpleVariable>(assign, &var2)));
     EXPECT_FALSE((solver.validate<ProcAst, SimpleVariable>(proc, &var2)));
 
-    SimpleVariable var3("x"); // same name different pointer
 
     EXPECT_TRUE((solver.validate<StatementAst, SimpleVariable>(assign, &var3)));
     EXPECT_TRUE((solver.validate<AssignmentAst, SimpleVariable>(assign, &var3)));
@@ -58,6 +58,7 @@ TEST(ModifiesTest, FixtureTest1) {
     expected_statements.insert(new SimpleProcCondition(proc));
 
     EXPECT_EQ(solver.solve_left<SimpleVariable>(&var), expected_statements);
+    EXPECT_EQ(solver.solve_left<SimpleVariable>(&var2), ConditionSet());
 }
 
 } // namespace test
