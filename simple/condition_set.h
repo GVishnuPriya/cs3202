@@ -48,6 +48,7 @@ class ConditionSet {
     void insert(SimpleCondition *condition);
     void union_with(const ConditionSet& other);
     void intersect_with(const ConditionSet& other);
+    void remove(ConditionPtr condition);
 
     bool is_empty() const;
     bool equals(const ConditionSet& other) const;

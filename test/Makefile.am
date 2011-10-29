@@ -6,6 +6,7 @@ unit_tests_SOURCES = \
   test_modifies.cpp \
   test_condition.cpp \
   test_next.cpp \
+  test_matcher.cpp \
   ../simple/condition_set.cpp \
   ../simple/util/condition_utils.cpp \
   ../simple/util/ast_utils.cpp \

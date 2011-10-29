@@ -42,6 +42,10 @@ void ConditionSet::insert(SimpleCondition *condition) {
     _set.insert(ConditionPtr(condition));
 }
 
+void ConditionSet::remove(ConditionPtr condition) {
+    _set.erase(condition);
+}
+
 void ConditionSet::union_with(const ConditionSet& other) {
     if(other.is_empty()) { return; }
 

@@ -15,6 +15,8 @@ class QuerySolver {
   virtual ConditionSet solve_left(SimpleCondition *right_condition) = 0;
   virtual ConditionSet solve_right(SimpleCondition *left_condition) = 0;
   virtual bool validate(SimpleCondition *left_condition, SimpleCondition *right_condition) = 0;
+
+  virtual ~QuerySolver() { }
 };
 
 class SolverTable {
@@ -24,6 +26,8 @@ class SolverTable {
      * of the given name has not been created, NULL is returned.
      */
     virtual QuerySolver* get_solver(std::string solver_name) = 0;
+
+    virtual ~SolverTable() { }
 };
 
 class SolverFactory {
@@ -48,6 +52,8 @@ class SolverFactory {
      * i.e. Follows, Modifies.
      */
     virtual std::string get_name() = 0;
+
+    virtual ~SolverFactory() { }
 };
 
 } // namespace matcher

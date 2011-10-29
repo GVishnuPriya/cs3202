@@ -32,6 +32,8 @@ class ModifiesSolver {
 
     template <typename Condition>
     std::set<SimpleVariable> index_variables(Condition *condition);
+
+    ~ModifiesSolver() { }
   private:
     SimpleRoot _ast;
     std::map<SimpleVariable, ConditionSet> _var_index;
