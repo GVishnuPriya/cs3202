@@ -32,13 +32,26 @@ class SimpleProcAst : public ProcAst {
     std::unique_ptr<StatementAst> _statement;
 };
 
+class SimpleStatementAst {
+  public:
+    virtual void set_line(unsigned int line) = 0;
+    virtual void set_proc(ProcAst *proc) = 0;
+    virtual void set_container(ContainerAst *container) = 0;
+    virtual void set_next(StatementAst *next) = 0;
+    virtual void set_prev(StatementAst *prev) = 0;
+
+    virtual StatementAst* as_ast() = 0;
+
+    virtual ~SimpleStatementAst() { }
+};
+
 /*
  * Abstract Class
  */
 template <typename ParentType>
-class SimpleStatementAst : public ParentType {
+class SimpleStatementBase : public ParentType, public SimpleStatementAst {
   public:
-    SimpleStatementAst() :
+    SimpleStatementBase() :
         _line(0), _proc(0), _container(0),
         _next(0), _prev(0)
     { }
@@ -83,7 +96,11 @@ class SimpleStatementAst : public ParentType {
         return _proc;
     }
 
-    ~SimpleStatementAst() { }
+    StatementAst* as_ast() {
+        return this;
+    }
+
+    virtual ~SimpleStatementBase() { }
 
   protected:
     unsigned int _line;
@@ -95,10 +112,10 @@ class SimpleStatementAst : public ParentType {
     std::unique_ptr<StatementAst> _next;
 };
 
-class SimpleConditionalAst : public SimpleStatementAst<ConditionalAst> {
+class SimpleConditionalAst : public SimpleStatementBase<ConditionalAst> {
   public:
     SimpleConditionalAst() :
-        SimpleStatementAst<ConditionalAst>(),
+        SimpleStatementBase<ConditionalAst>(),
         _then_branch(0), _else_branch(0), _var()
     { }
 
@@ -142,10 +159,10 @@ class SimpleConditionalAst : public SimpleStatementAst<ConditionalAst> {
     SimpleVariable                  _var;
 };
 
-class SimpleWhileAst : public SimpleStatementAst<WhileAst> {
+class SimpleWhileAst : public SimpleStatementBase<WhileAst> {
   public:
     SimpleWhileAst() : 
-        SimpleStatementAst<WhileAst>(),
+        SimpleStatementBase<WhileAst>(),
         _body(0), _var() 
     { }
 
@@ -180,10 +197,10 @@ class SimpleWhileAst : public SimpleStatementAst<WhileAst> {
     SimpleVariable                  _var;
 };
 
-class SimpleCallAst : public SimpleStatementAst<CallAst> {
+class SimpleCallAst : public SimpleStatementBase<CallAst> {
   public:
     SimpleCallAst() : 
-        SimpleStatementAst<CallAst>(), 
+        SimpleStatementBase<CallAst>(), 
         _proc_called(0) 
     { }
 
@@ -205,10 +222,10 @@ class SimpleCallAst : public SimpleStatementAst<CallAst> {
     ProcAst *_proc_called;
 };
 
-class SimpleAssignmentAst : public SimpleStatementAst<AssignmentAst> {
+class SimpleAssignmentAst : public SimpleStatementBase<AssignmentAst> {
   public:
     SimpleAssignmentAst() : 
-        SimpleStatementAst<AssignmentAst>(),
+        SimpleStatementBase<AssignmentAst>(),
         _var(), _expr(0) 
     { }
 
