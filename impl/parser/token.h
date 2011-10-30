@@ -1,4 +1,6 @@
 
+#pragma once
+
 #include <exception>
 #include <string>
 
@@ -9,7 +11,9 @@ class InvalidTokenError : public std::exception { };
 
 class TokenType {
   public:
-    operator ==(const TokenType& other) const {
+    TokenType() { }
+
+    bool operator ==(const TokenType& other) const {
         return this == &other;
     }
   private:
@@ -92,9 +96,27 @@ class EqualToken : public SimpleToken {
     }
 
     static TokenType type;
-
-
 };
+
+class EOFToken : public SimpleToken { 
+  public:
+    virtual TokenType& get_type() {
+        return EOFToken::type;
+    }
+
+    static TokenType type;
+};
+
+class NewLineToken : public SimpleToken { 
+  public:
+    virtual TokenType& get_type() {
+        return NewLineToken::type;
+    }
+
+    static TokenType type;
+};
+
+
 
 
 class OperatorToken : public SimpleToken {

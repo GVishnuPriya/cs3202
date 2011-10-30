@@ -7,11 +7,13 @@ unit_tests_SOURCES = \
   test_condition.cpp \
   test_next.cpp \
   test_matcher.cpp \
+  test_parser.cpp \
   ../simple/condition_set.cpp \
   ../simple/util/condition_utils.cpp \
   ../simple/util/ast_utils.cpp \
   ../impl/solvers/modifies.cpp \
   ../impl/solvers/next.cpp \
+  ../impl/parser/token.cpp \
   gtest/gtest-all.cc \
   test_main.cpp
 

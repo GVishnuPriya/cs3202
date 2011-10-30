@@ -306,6 +306,10 @@ class SimpleBinaryOpAst : public BinaryOpAst {
         _lhs(0), _rhs(0), _op(0)
     { }
 
+    SimpleBinaryOpAst(char op, ExprAst *lhs, ExprAst *rhs) :
+        _lhs(lhs), _rhs(rhs), _op(op)
+    { }
+
     void set_lhs(ExprAst *lhs) {
         _lhs.reset(lhs);
     }

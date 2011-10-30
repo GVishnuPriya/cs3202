@@ -1,21 +1,26 @@
 
 #include <string>
+#include <map>
 #include <memory>
 #include <exception>
 #include "simple/ast.h"
 #include "simple/util/ast_utils.h"
 #include "impl/ast.h"
 #include "impl/parser/token.h"
+#include "impl/parser/tokenizer.h"
 
 namespace simple {
 namespace parser {
+
+using namespace simple::impl;
+using namespace simple;
 
 class ParserError : public std::exception { };
 
 class SimpleParser {
   public:
-    SimpleParser(SimpleTokenizer *tokenizer, Iterator begin, Iterator end) :
-        _tokenizer(tokenizer), _begin(begin), _end(end), _line(0)
+    SimpleParser(SimpleTokenizer *tokenizer) :
+        _tokenizer(tokenizer), _line(0)
     { }
 
     SimpleRoot parse_program() {
@@ -30,20 +35,20 @@ class SimpleParser {
     SimpleStatementAst* parse_statement(ProcAst *proc, ContainerAst *parent = NULL) {
         std::string identifier = current_token_as<IdentifierToken>()->get_content();
         SimpleStatementAst *statement;
-        int line = get_line_num();
+        unsigned int line = current_line();
 
         if(identifier == "if") {
             statement = parse_conditional(proc, parent);
         } else if(identifier == "while") {
             statement = parse_while(proc, parent);
         } else if(identifier == "call") {
-            satement = parse_call();
+            statement = parse_call();
         } else {
             statement = parse_assignment();
         }
 
         statement->set_proc(proc);
-        statement->set_parent(parent);
+        statement->set_container(parent);
         statement->set_line(line);
 
         return statement;
@@ -53,6 +58,10 @@ class SimpleParser {
         if(current_token_as<IdentifierToken>()->get_content() != "proc") {
             throw ParserError();
         }
+
+        // unfortunately proc declaration does not counted as a line in CS3201
+        --_line; 
+
         std::string name = next_token_as<
             IdentifierToken>()->get_content(); // eat 'proc'
 
@@ -61,7 +70,7 @@ class SimpleParser {
         next_token(); // eat '{'
 
         SimpleStatementAst *current_stat = parse_statement(proc);
-        proc->set_first_statement(current_stat);
+        proc->set_first_statement(current_stat->as_ast());
 
         while(!current_token_is<CloseBraceToken>()) {
             SimpleStatementAst *next_stat = parse_statement(proc);
@@ -99,13 +108,13 @@ class SimpleParser {
         // eat 'if'
         SimpleVariable var(next_token_as<IdentifierToken>()->get_content());
         SimpleConditionalAst *condition = new SimpleConditionalAst();
-        condition->set_var(var);
+        condition->set_variable(var);
 
         next_token_as<OpenBraceToken>(); // eat var name
         next_token(); // eat '{'
 
         SimpleStatementAst *current = parse_statement(proc, condition);
-        condition->set_then_branch(current);
+        condition->set_then_branch(current->as_ast());
         
         while(!current_token_is<CloseBraceToken>()) {
             SimpleStatementAst *next = parse_statement(proc, condition);
@@ -117,8 +126,8 @@ class SimpleParser {
 
         next_token(); // eat '}'
 
-        *current = parse_statement(proc, condition);
-        condition->set_else_branch(current);
+        current = parse_statement(proc, condition);
+        condition->set_else_branch(current->as_ast());
         
         while(!current_token_is<CloseBraceToken>()) {
             SimpleStatementAst *next = parse_statement(proc, condition);
@@ -141,13 +150,13 @@ class SimpleParser {
         // eat 'while'
         SimpleVariable var(next_token_as<IdentifierToken>()->get_content());
         SimpleWhileAst *loop = new SimpleWhileAst();
-        loop->set_var(var);
+        loop->set_variable(var);
 
         next_token_as<OpenBraceToken>(); // eat var name
         next_token(); // eat '{'
 
         SimpleStatementAst *current = parse_statement(proc, loop);
-        condition->set_body(current);
+        loop->set_body(current->as_ast());
         
         while(!current_token_is<CloseBraceToken>()) {
             SimpleStatementAst *next = parse_statement(proc, loop);
@@ -186,20 +195,24 @@ class SimpleParser {
 
         return call;
     }
+
+    unsigned int current_line() {
+        return _line;
+    }
   protected:
-    template <TokenType>
-    TokenType* next_token_as() {
-        return token_cast<TokenType>(next_token());
+    template <typename Token>
+    Token* next_token_as() {
+        return token_cast<Token>(next_token());
     }
 
-    template <TokenType>
-    SimpleToken* current_token_as() {
-        return token_cast<TokenType>(current_token());
+    template <typename Token>
+    Token* current_token_as() {
+        return token_cast<Token>(current_token());
     }
 
-    template <TokenType>
+    template <typename Token>
     bool current_token_is() {
-        if(try_token<TokenType>(current_token()) != NULL) {
+        if(try_token<Token>(current_token()) != NULL) {
             return true;
         } else {
             return false;
@@ -207,15 +220,20 @@ class SimpleParser {
     }
 
     SimpleToken* next_token() {
-        _current_token.reset(_tokenizer->next_token());
-        return _current_token.get();
+        _current_token = _tokenizer->next_token();
+        if(current_token_is<NewLineToken>()) {
+            ++_line;
+            return next_token();
+        } else {
+            return _current_token;
+        }
     }
 
     SimpleToken* current_token() {
-        return _current_token.get();
+        return _current_token;
     }
 
-    SimpleExprAst* parse_binary_op_rhs(int precedence, ExprAst* lhs) {
+    ExprAst* parse_binary_op_rhs(int precedence, ExprAst* lhs) {
         while(true) {
             int current_precedence = operator_precedence();
             if(current_precedence < precedence) {
@@ -234,7 +252,7 @@ class SimpleParser {
         }
     }
 
-    SimpleExprAst* parse_primary() {
+    ExprAst* parse_primary() {
         SimpleToken *token = current_token();
         if(try_token<IdentifierToken>(token)) {
             return parse_variable();
@@ -248,9 +266,9 @@ class SimpleParser {
     }
 
     SimpleConstAst* parse_const() {
-        int = current_token_as<IntegerToken>()->get_value();
+        int value = current_token_as<IntegerToken>()->get_value();
         next_token();
-        return new SimpleConstAst(int);
+        return new SimpleConstAst(value);
     }
 
     SimpleVariableAst* parse_variable() {
@@ -259,11 +277,11 @@ class SimpleParser {
         return new SimpleVariableAst(name);
     }
 
-    SimpleExprAst* parse_parent_expr() {
+    ExprAst* parse_parent_expr() {
         current_token_as<OpenBracketToken>();
         next_token(); // eat'('
 
-        SimpleExprAst *expr = parse_expr();
+        ExprAst *expr = parse_expr();
 
         current_token_as<CloseBracketToken>();
         next_token(); // eat ')'
@@ -291,13 +309,18 @@ class SimpleParser {
         }
     }
   private:
-    Iterator _begin;
-    Iterator _end;
     unsigned int _line;
     std::map<std::string, SimpleProcAst*> _procs_table;
 
-    std::unique_ptr<SimpleToken> _current_token;
+    /*
+     * The tokenizer takes ownership of the produced token pointers
+     * so that it can reuse the token objects in future. Current token
+     * is assumed to be destroyed once next_token() is called.
+     */
+    SimpleToken* _current_token;
     std::vector<ProcAst*> _proc;
+
+    std::unique_ptr<SimpleTokenizer> _tokenizer;
 };
 
 } // namespace parser

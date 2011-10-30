@@ -49,12 +49,12 @@ am__dirstamp = $(am__leading_dot)dirstamp
 am_unit_tests_OBJECTS = test_ast.$(OBJEXT) test_solver.$(OBJEXT) \
 	test_modifies.$(OBJEXT) test_condition.$(OBJEXT) \
 	test_next.$(OBJEXT) test_matcher.$(OBJEXT) \
-	../simple/condition_set.$(OBJEXT) \
+	test_parser.$(OBJEXT) ../simple/condition_set.$(OBJEXT) \
 	../simple/util/condition_utils.$(OBJEXT) \
 	../simple/util/ast_utils.$(OBJEXT) \
 	../impl/solvers/modifies.$(OBJEXT) \
-	../impl/solvers/next.$(OBJEXT) gtest/gtest-all.$(OBJEXT) \
-	test_main.$(OBJEXT)
+	../impl/solvers/next.$(OBJEXT) ../impl/parser/token.$(OBJEXT) \
+	gtest/gtest-all.$(OBJEXT) test_main.$(OBJEXT)
 unit_tests_OBJECTS = $(am_unit_tests_OBJECTS)
 unit_tests_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
@@ -165,11 +165,13 @@ unit_tests_SOURCES = \
   test_condition.cpp \
   test_next.cpp \
   test_matcher.cpp \
+  test_parser.cpp \
   ../simple/condition_set.cpp \
   ../simple/util/condition_utils.cpp \
   ../simple/util/ast_utils.cpp \
   ../impl/solvers/modifies.cpp \
   ../impl/solvers/next.cpp \
+  ../impl/parser/token.cpp \
   gtest/gtest-all.cc \
   test_main.cpp
 
@@ -275,6 +277,14 @@ clean-binPROGRAMS:
 	../impl/solvers/$(DEPDIR)/$(am__dirstamp)
 ../impl/solvers/next.$(OBJEXT): ../impl/solvers/$(am__dirstamp) \
 	../impl/solvers/$(DEPDIR)/$(am__dirstamp)
+../impl/parser/$(am__dirstamp):
+	@$(MKDIR_P) ../impl/parser
+	@: > ../impl/parser/$(am__dirstamp)
+../impl/parser/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../impl/parser/$(DEPDIR)
+	@: > ../impl/parser/$(DEPDIR)/$(am__dirstamp)
+../impl/parser/token.$(OBJEXT): ../impl/parser/$(am__dirstamp) \
+	../impl/parser/$(DEPDIR)/$(am__dirstamp)
 gtest/$(am__dirstamp):
 	@$(MKDIR_P) gtest
 	@: > gtest/$(am__dirstamp)
@@ -289,6 +299,7 @@ unit_tests$(EXEEXT): $(unit_tests_OBJECTS) $(unit_tests_DEPENDENCIES)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f ../impl/parser/token.$(OBJEXT)
 	-rm -f ../impl/solvers/modifies.$(OBJEXT)
 	-rm -f ../impl/solvers/next.$(OBJEXT)
 	-rm -f ../simple/condition_set.$(OBJEXT)
@@ -299,6 +310,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@../impl/parser/$(DEPDIR)/token.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/solvers/$(DEPDIR)/modifies.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/solvers/$(DEPDIR)/next.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../simple/$(DEPDIR)/condition_set.Po@am__quote@
@@ -310,6 +322,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_matcher.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_modifies.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_next.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_parser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_solver.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gtest/$(DEPDIR)/gtest-all.Po@am__quote@
 
@@ -455,6 +468,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f ../impl/parser/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../impl/parser/$(am__dirstamp)
 	-rm -f ../impl/solvers/$(DEPDIR)/$(am__dirstamp)
 	-rm -f ../impl/solvers/$(am__dirstamp)
 	-rm -f ../simple/$(DEPDIR)/$(am__dirstamp)
@@ -472,7 +487,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ../impl/solvers/$(DEPDIR) ../simple/$(DEPDIR) ../simple/util/$(DEPDIR) ./$(DEPDIR) gtest/$(DEPDIR)
+	-rm -rf ../impl/parser/$(DEPDIR) ../impl/solvers/$(DEPDIR) ../simple/$(DEPDIR) ../simple/util/$(DEPDIR) ./$(DEPDIR) gtest/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -518,7 +533,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ../impl/solvers/$(DEPDIR) ../simple/$(DEPDIR) ../simple/util/$(DEPDIR) ./$(DEPDIR) gtest/$(DEPDIR)
+	-rm -rf ../impl/parser/$(DEPDIR) ../impl/solvers/$(DEPDIR) ../simple/$(DEPDIR) ../simple/util/$(DEPDIR) ./$(DEPDIR) gtest/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
