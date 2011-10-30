@@ -183,9 +183,10 @@ ConditionSet NextSolver::solve_container_next<WhileAst>(WhileAst *loop) {
 class SolvePreviousVisitorTraits {
   public:
     typedef ConditionSet ResultType;
+    typedef int ContextType;
 
     template <typename Ast>
-    static ConditionSet visit(NextSolver *solver, Ast *ast) {
+    static ConditionSet visit(NextSolver *solver, Ast *ast, int *context = NULL) {
         return solver->solve_previous<Ast>(ast);
     }
 };
@@ -287,9 +288,10 @@ ConditionSet NextSolver::solve_left<WhileAst>(WhileAst *ast) {
 class LastPreviousVisitorTraits {
   public:
     typedef ConditionSet    ResultType;
+    typedef int ContextType;
 
     template <typename Ast>
-    static ConditionSet visit(NextSolver *solver, Ast *ast) {
+    static ConditionSet visit(NextSolver *solver, Ast *ast, int *context = NULL) {
         return solver->solve_last_previous<Ast>(ast);
     }
   private:

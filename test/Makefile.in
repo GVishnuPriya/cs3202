@@ -47,10 +47,11 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
 am_unit_tests_OBJECTS = test_ast.$(OBJEXT) test_solver.$(OBJEXT) \
-	test_modifies.$(OBJEXT) test_condition.$(OBJEXT) \
-	test_next.$(OBJEXT) test_matcher.$(OBJEXT) \
-	test_parser.$(OBJEXT) test_tokenizer.$(OBJEXT) \
-	../simple/condition_set.$(OBJEXT) \
+	test_follows.$(OBJEXT) test_ifollows.$(OBJEXT) \
+	test_parent.$(OBJEXT) test_modifies.$(OBJEXT) \
+	test_condition.$(OBJEXT) test_next.$(OBJEXT) \
+	test_matcher.$(OBJEXT) test_parser.$(OBJEXT) \
+	test_tokenizer.$(OBJEXT) ../simple/condition_set.$(OBJEXT) \
 	../simple/util/condition_utils.$(OBJEXT) \
 	../simple/util/ast_utils.$(OBJEXT) \
 	../impl/solvers/modifies.$(OBJEXT) \
@@ -162,6 +163,9 @@ top_srcdir = @top_srcdir@
 unit_tests_SOURCES = \
   test_ast.cpp \
   test_solver.cpp \
+  test_follows.cpp \
+  test_ifollows.cpp \
+  test_parent.cpp \
   test_modifies.cpp \
   test_condition.cpp \
   test_next.cpp \
@@ -320,10 +324,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@../simple/util/$(DEPDIR)/condition_utils.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_ast.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_condition.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_follows.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_ifollows.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_matcher.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_modifies.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_next.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_parent.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_parser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_solver.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_tokenizer.Po@am__quote@

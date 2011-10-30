@@ -11,9 +11,9 @@ namespace impl {
 
 using namespace simple;
 
-class FollowSolver {
+class IFollowSolver {
   public:
-    FollowSolver(SimpleRoot ast, SolverTable *table) : _ast(ast) { }
+    IFollowSolver(SimpleRoot ast, SolverTable *table) : _ast(ast) { }
 
     /*
      * SOLVE RIGHT PART
@@ -38,30 +38,42 @@ class FollowSolver {
 };
 
 template <>
-ConditionSet FollowSolver::solve_right<StatementAst>(StatementAst *ast) {
+ConditionSet IFollowSolver::solve_right<StatementAst>(StatementAst *statement) {
     ConditionSet result;
 
-    if(ast->next()) {
-        result.insert(new SimpleStatementCondition(ast->next()));
+    if(statement->next()) {
+        while(statement->next() != NULL) {
+            result.insert(new SimpleStatementCondition(statement->next()));
+            statement = statement->next();
+        }
     }
     return result;
 }
     
 template <>
-ConditionSet FollowSolver::solve_left<StatementAst>(StatementAst *ast) {
+ConditionSet IFollowSolver::solve_left<StatementAst>(StatementAst *statement) {
     ConditionSet result;
 
-    if(ast->prev()) {
-        result.insert(new SimpleStatementCondition(ast->prev()));
+    if(statement->prev()) {
+        while(statement->prev() != NULL) {
+            result.insert(new SimpleStatementCondition(statement->prev()));
+            statement = statement->prev();
+        }
     }
     return result;
 }
 
 template <>
-bool FollowSolver::validate<StatementAst, StatementAst>(
+bool IFollowSolver::validate<StatementAst, StatementAst>(
         StatementAst *left, StatementAst *right)
 {
-    return left->next() == right;
+    while(left->next() != NULL) {
+        if(left->next() == right) {
+            return true;
+        }
+        left = left->next();
+    }
+    return false;
 }
 
 } // namespace impl

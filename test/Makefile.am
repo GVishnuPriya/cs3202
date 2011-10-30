@@ -3,6 +3,9 @@ bin_PROGRAMS = unit_tests
 unit_tests_SOURCES = \
   test_ast.cpp \
   test_solver.cpp \
+  test_follows.cpp \
+  test_ifollows.cpp \
+  test_parent.cpp \
   test_modifies.cpp \
   test_condition.cpp \
   test_next.cpp \

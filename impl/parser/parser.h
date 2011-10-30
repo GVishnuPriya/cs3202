@@ -20,7 +20,8 @@ class ParserError : public std::exception { };
 class SimpleParser {
   public:
     SimpleParser(SimpleTokenizer *tokenizer) :
-        _tokenizer(tokenizer), _line(0)
+        _tokenizer(tokenizer), _line(1),
+        _line_table(new std::map<int, StatementAst*>())
     { 
         next_token();
     }
@@ -42,7 +43,8 @@ class SimpleParser {
     SimpleStatementAst* parse_statement(ProcAst *proc, ContainerAst *parent = NULL) {
         std::string identifier = current_token_as<IdentifierToken>()->get_content();
         SimpleStatementAst *statement;
-        unsigned int line = current_line();
+
+        int line = current_line();
 
         if(identifier == "if") {
             statement = parse_conditional(proc, parent);
@@ -56,7 +58,7 @@ class SimpleParser {
 
         statement->set_proc(proc);
         statement->set_container(parent);
-        statement->set_line(line);
+        set_line(statement, line);
 
         return statement;
     }
@@ -203,7 +205,7 @@ class SimpleParser {
         return call;
     }
 
-    unsigned int current_line() {
+    int current_line() {
         return _line;
     }
 
@@ -224,6 +226,9 @@ class SimpleParser {
         return token_cast<Token>(current_token());
     }
 
+    std::shared_ptr<std::map<int, StatementAst*> > get_line_table() {
+        return _line_table;
+    }
   protected:
     template <typename Token>
     Token* next_token_as() {
@@ -359,9 +364,15 @@ class SimpleParser {
             }
         }
     }
+
+    void set_line(SimpleStatementAst *statement, int line) {
+        statement->set_line(line);
+        (*_line_table.get())[line] = statement->as_ast();
+    }
   private:
-    unsigned int _line;
+    int _line;
     std::map<std::string, SimpleProcAst*> _procs_table;
+    std::shared_ptr<std::map<int, StatementAst*> > _line_table;
 
     /*
      * The tokenizer takes ownership of the produced token pointers

@@ -525,27 +525,126 @@ TEST(ParserTest, IntegratedParserTest) {
     EXPECT_TRUE((is_same_statement_list(
                     root.get_proc("test1")->get_statement(),
                     assign1)));
+
+    EXPECT_TRUE((is_same_statement_list(
+                    root.get_proc("test2")->get_statement(),
+                    assign5)));
 }
 
 TEST(ParserTest, FullItegrationTest) {
     std::string source = 
-        "proc test1 { "
-        "   a = 1; "
-        "   while i { "
-        "       call test2; "
-        "       if j { "
-        "           x = (x+y)*(3+z); "
-        "       } else { "
-        "           y = 2; } } "
-        "   b = 4; } "
-        "proc test2 { "
-        "   c = 3; } ";
+        "proc test1 { \n"
+        "   a = 1; \n"
+        "   while i { \n"
+        "       call test2; \n"
+        "       if j { \n"
+        "           x = (x+y)*(3+z); } else { \n"
+        "           y = 2; } } \n"
+        "   b = 4; } \n"
+        "proc test2 { \n"
+        "   c = 3; } \n";
 
     SimpleParser parser(new IteratorTokenizer<
             std::string::iterator>(source.begin(), source.end()));
 
     SimpleRoot root = parser.parse_program();
 
+    EXPECT_TRUE(root.get_proc("test1") != NULL);
+    EXPECT_TRUE(root.get_proc("test2") != NULL);
+
+    parser.current_token_as<EOFToken>();
+
+    SimpleVariable var_a("a");
+    SimpleVariable var_b("b");
+    SimpleVariable var_c("c");
+    SimpleVariable var_i("i");
+    SimpleVariable var_j("j");
+    SimpleVariable var_x("x");
+    SimpleVariable var_y("y");
+    SimpleVariable var_z("z");
+
+    SimpleProcAst proc1("test1");
+    SimpleProcAst proc2("test2");
+
+    SimpleAssignmentAst *assign1 = new SimpleAssignmentAst();
+    assign1->set_variable(var_a);
+    assign1->set_expr(new SimpleConstAst(1));
+    set_proc(assign1, &proc1);
+    
+    SimpleWhileAst *loop = new SimpleWhileAst();
+    loop->set_variable(var_i);
+    set_next(assign1, loop);
+
+    SimpleCallAst *call = new SimpleCallAst();
+    call->set_proc_called(&proc2);
+    set_while_body(call, loop);
+
+    SimpleConditionalAst *condition = new SimpleConditionalAst();
+    condition->set_variable(var_j);
+    set_next(call, condition);
+
+    SimpleAssignmentAst *assign2 = new SimpleAssignmentAst();
+    assign2->set_variable(var_x);
+    assign2->set_expr(new SimpleBinaryOpAst('*',
+           new SimpleBinaryOpAst('+',
+               new SimpleVariableAst(var_x),
+               new SimpleVariableAst(var_y)),
+           new SimpleBinaryOpAst('+',
+               new SimpleConstAst(3),
+               new SimpleVariableAst(var_z))));
+    set_then_branch(assign2, condition);
+
+    SimpleAssignmentAst *assign3 = new SimpleAssignmentAst();
+    assign3->set_variable(var_y);
+    assign3->set_expr(new SimpleConstAst(2));
+    set_else_branch(assign3, condition);
+
+    SimpleAssignmentAst *assign4 = new SimpleAssignmentAst();
+    assign4->set_variable(var_b);
+    assign4->set_expr(new SimpleConstAst(4));
+    set_next(loop, assign4);
+
+    SimpleAssignmentAst *assign5 = new SimpleAssignmentAst();
+    assign5->set_variable(var_c);
+    assign5->set_expr(new SimpleConstAst(3));
+    set_proc(assign5, &proc2);
+
+    StatementAst *statement = root.get_proc("test1")->get_statement();
+    StatementAst *statement2 = root.get_proc("test2")->get_statement();
+
+    EXPECT_TRUE((is_same_statement_list(statement, assign1)));
+    EXPECT_TRUE((is_same_statement_list(statement2, assign5)));
+
+    std::map<int, StatementAst*> line_table = *parser.get_line_table().get();
+
+    EXPECT_EQ(statement->get_line(), 1);
+    EXPECT_TRUE(line_table[1] == statement);
+
+    statement = statement->next();
+    EXPECT_EQ(statement->get_line(), 2);
+    EXPECT_TRUE(line_table[2] == statement);
+
+    statement = statement->next();
+    EXPECT_EQ(statement->get_line(), 7);
+    EXPECT_TRUE(line_table[7] == statement);
+
+    EXPECT_TRUE((is_same_statement<StatementAst, StatementAst>(
+                line_table[3], call)));
+
+    EXPECT_TRUE((is_same_statement<StatementAst, StatementAst>(
+                line_table[4], condition)));
+
+    EXPECT_TRUE((is_same_statement<StatementAst, StatementAst>(
+                line_table[5], assign2)));
+
+    EXPECT_TRUE((is_same_statement<StatementAst, StatementAst>(
+                line_table[6], assign3)));
+
+    EXPECT_TRUE(statement->next() == NULL);
+
+    EXPECT_EQ(statement2->get_line(), 8);
+
+    EXPECT_EQ(parser.current_line(), 9);
 }
 
 
