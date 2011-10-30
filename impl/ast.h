@@ -204,6 +204,11 @@ class SimpleCallAst : public SimpleStatementBase<CallAst> {
         _proc_called(0) 
     { }
 
+    SimpleCallAst(ProcAst *proc) : 
+        SimpleStatementBase<CallAst>(), 
+        _proc_called(proc) 
+    { }
+
     void set_proc_called(ProcAst *proc) {
         _proc_called = proc;
     }

@@ -3,9 +3,11 @@ bin_PROGRAMS = unit_tests
 unit_tests_SOURCES = \
   test_ast.cpp \
   test_solver.cpp \
+  test_call.cpp \
   test_follows.cpp \
   test_ifollows.cpp \
   test_parent.cpp \
+  test_iparent.cpp \
   test_modifies.cpp \
   test_condition.cpp \
   test_next.cpp \
@@ -17,6 +19,7 @@ unit_tests_SOURCES = \
   ../simple/util/ast_utils.cpp \
   ../impl/solvers/modifies.cpp \
   ../impl/solvers/next.cpp \
+  ../impl/solvers/call.cpp \
   ../impl/parser/token.cpp \
   gtest/gtest-all.cc \
   test_main.cpp
