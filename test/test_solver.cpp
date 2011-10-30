@@ -76,7 +76,7 @@ TEST(SolverTest, BasicTest) {
     procs.push_back(proc1);
     procs.push_back(proc2);
 
-    SimpleRoot root(procs);
+    SimpleRoot root(procs.begin(), procs.end());
 
     SimpleStatementCondition loop_condition(loop);
     SimpleStatementCondition stat1_condition(stat1_1);

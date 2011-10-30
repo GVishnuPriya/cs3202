@@ -260,6 +260,7 @@ class SimpleVariableAst : public VariableAst {
   public:
     SimpleVariableAst() : _var() { }
     SimpleVariableAst(const SimpleVariable& var) : _var(var) { }
+    SimpleVariableAst(const char *var) : _var(var) { }
 
     void set_variable(const SimpleVariable& var) {
         _var = var;

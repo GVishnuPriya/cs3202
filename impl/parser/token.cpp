@@ -4,17 +4,17 @@
 namespace simple {
 namespace parser {
 
-TokenType OpenBraceToken::type;
-TokenType CloseBraceToken::type;
-TokenType OpenBracketToken::type;
-TokenType CloseBracketToken::type;
-TokenType SemiColonToken::type;
-TokenType EqualToken::type;
-TokenType EOFToken::type;
-TokenType NewLineToken::type;
-TokenType OperatorToken::type;
-TokenType IntegerToken::type;
-TokenType IdentifierToken::type;
+TokenType OpenBraceToken::type("OpenBraceToken");
+TokenType CloseBraceToken::type("OpenBraceToken");
+TokenType OpenBracketToken::type("OpenBracketToken");
+TokenType CloseBracketToken::type("CloseBracketToken");
+TokenType SemiColonToken::type("SemiColonToken");
+TokenType EqualToken::type("EqualToken");
+TokenType EOFToken::type("EOFToken");
+TokenType NewLineToken::type("NewLineToken");
+TokenType OperatorToken::type("OperatorToken");
+TokenType IntegerToken::type("IntegerToken");
+TokenType IdentifierToken::type("IdentifierToken");
 
 } // namespace parser
 } // namespace simple

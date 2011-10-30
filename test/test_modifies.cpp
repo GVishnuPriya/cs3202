@@ -138,7 +138,7 @@ TEST(ModifiesTest, QuirksTest) {
     procs.push_back(proc1);
     procs.push_back(proc2);
 
-    SimpleRoot root(procs);
+    SimpleRoot root(procs.begin(), procs.end());
     ModifiesSolver solver(root, NULL);
 
     EXPECT_TRUE((solver.validate<StatementAst, SimpleVariable>(condition, &var_x)));

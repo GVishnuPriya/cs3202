@@ -16,6 +16,11 @@ bool is_statement_type(StatementAst *ast) {
 }
 
 template <typename Ast1, typename Ast2>
+bool is_same_statement(Ast1 *ast1, Ast2 *ast2) {
+    return false;
+}
+
+template <typename Ast1, typename Ast2>
 bool is_same_expr(Ast1 *ast1, Ast2 *ast2) {
     return false;
 }
@@ -56,6 +61,25 @@ inline void set_else_branch(SimpleStatementAst *ast, SimpleConditionalAst *condi
     condition->set_else_branch(ast->as_ast());
     set_parent(ast, condition);
 }
+
+template <>
+bool is_same_statement<StatementAst, StatementAst>(StatementAst *stat1, StatementAst *stat2);
+
+template <>
+bool is_same_statement<AssignmentAst, AssignmentAst>(AssignmentAst *assign1, AssignmentAst *assign2);
+
+template <>
+bool is_same_statement<CallAst, CallAst>(CallAst *call1, CallAst *call2);
+
+template <>
+bool is_same_statement<WhileAst, WhileAst>(WhileAst *loop1, WhileAst *loop2);
+
+template <>
+bool is_same_statement<ConditionalAst, ConditionalAst>(ConditionalAst *condition1, ConditionalAst *condition2);
+
+bool is_same_statement_list(StatementAst *statement1, StatementAst *statement2);
+
+
 
 template <>
 bool is_same_expr<ExprAst, ExprAst>(ExprAst *ast1, ExprAst *ast2);

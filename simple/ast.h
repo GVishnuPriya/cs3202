@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <string>
-#include <vector>
+#include <map>
 
 namespace simple {
 
@@ -88,15 +88,16 @@ class ProcAst {
 
 class SimpleRoot {
   public:
-    typedef std::shared_ptr< std::vector< 
-        std::unique_ptr<ProcAst> > >            ProcListType;
+    typedef std::map<std::string, std::shared_ptr<ProcAst> > ProcListType;
+
     class iterator;
-    
-    SimpleRoot(std::vector<ProcAst*> procs) : 
-        _procs(new std::vector< std::unique_ptr<ProcAst> >()) 
-    { 
-        for(auto it = procs.begin(); it != procs.end(); ++it) {
-            _procs->push_back(std::unique_ptr<ProcAst>(*it));
+
+    template <typename Iterator>
+    SimpleRoot(Iterator it, Iterator end) :
+        _procs(new ProcListType())
+    {
+        for(; it != end; ++it) {
+            insert_proc(*it);
         }
     }
 
@@ -104,12 +105,12 @@ class SimpleRoot {
      * Single proc construction
      */
     SimpleRoot(ProcAst *proc) : 
-        _procs(new std::vector< std::unique_ptr<ProcAst> >()) 
+        _procs(new ProcListType()) 
     {
-        _procs->push_back(std::unique_ptr<ProcAst>(proc));
+        insert_proc(proc);
     }
 
-    SimpleRoot(ProcListType procs) :
+    SimpleRoot(ProcListType *procs) :
         _procs(procs)
     { }
 
@@ -120,6 +121,14 @@ class SimpleRoot {
     SimpleRoot(SimpleRoot&& other) :
         _procs(std::move(other._procs))
     { }
+
+    ProcAst* get_proc(const std::string& name) {
+        if(_procs->count(name) == 0) {
+            return NULL;
+        } else {
+            return (*_procs.get())[name].get();
+        }
+    }
 
     iterator begin() {
         return iterator(_procs->begin());
@@ -137,8 +146,7 @@ class SimpleRoot {
 
     class iterator {
       public:
-        typedef typename std::vector< 
-            std::unique_ptr<ProcAst> >::iterator    _iterator;
+        typedef typename  ProcListType::iterator    _iterator;
         typedef ProcAst*                            value_type;
 
         iterator(_iterator it) : _it(it) { }
@@ -149,7 +157,7 @@ class SimpleRoot {
         }
 
         ProcAst* operator *() {
-            return _it->get();
+            return _it->second.get();
         }
 
         bool operator ==(const iterator& other) const {
@@ -163,7 +171,11 @@ class SimpleRoot {
         _iterator _it;
     };
   private:
-     ProcListType _procs;
+    void insert_proc(ProcAst *proc) {
+        (*_procs.get())[proc->get_name()].reset(proc);
+    }
+
+    std::shared_ptr<ProcListType> _procs;
 };
 
 /**

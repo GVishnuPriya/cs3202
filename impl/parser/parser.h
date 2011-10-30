@@ -21,10 +21,17 @@ class SimpleParser {
   public:
     SimpleParser(SimpleTokenizer *tokenizer) :
         _tokenizer(tokenizer), _line(0)
-    { }
+    { 
+        next_token();
+    }
 
     SimpleRoot parse_program() {
+        while(!current_token_is<EOFToken>()) {
+            _procs.push_back(parse_proc());
+        }
 
+        validate_all_procs_exist();
+        return SimpleRoot(_procs.begin(), _procs.end());
     }
 
     ExprAst* parse_expr() {
@@ -65,7 +72,8 @@ class SimpleParser {
         std::string name = next_token_as<
             IdentifierToken>()->get_content(); // eat 'proc'
 
-        SimpleProcAst *proc = new SimpleProcAst(name);
+        SimpleProcAst *proc = get_or_create_proc(name);
+
         next_token_as<OpenBraceToken>(); // eat name
         next_token(); // eat '{'
 
@@ -124,7 +132,13 @@ class SimpleParser {
             current = next;
         }
 
-        next_token(); // eat '}'
+        // eat '}'
+        if(next_token_as<IdentifierToken>()->get_content() != "else") {
+            throw ParserError();
+        }
+
+        next_token_as<OpenBraceToken>(); // eat 'else'
+        next_token(); // eat '{'
 
         current = parse_statement(proc, condition);
         condition->set_else_branch(current->as_ast());
@@ -178,14 +192,7 @@ class SimpleParser {
 
         // eat 'call'
         std::string proc_name(next_token_as<IdentifierToken>()->get_content());
-        SimpleProcAst *proc;
-
-        if(_procs_table.count(proc_name) == 0) {
-            proc = new SimpleProcAst(proc_name);
-            _procs_table[proc_name] = proc;
-        } else {
-            proc = _procs_table[proc_name];
-        }
+        SimpleProcAst *proc = get_or_create_proc(proc_name);
 
         SimpleCallAst *call = new SimpleCallAst();
         call->set_proc_called(proc);
@@ -199,15 +206,28 @@ class SimpleParser {
     unsigned int current_line() {
         return _line;
     }
-  protected:
-    template <typename Token>
-    Token* next_token_as() {
-        return token_cast<Token>(next_token());
+
+    std::map<std::string, SimpleProcAst*>& get_procs_table() {
+        return _procs_table;
+    }
+
+    SimpleProcAst* get_proc(const std::string& proc_name) {
+        if(_procs_table.count(proc_name) == 0) {
+            return NULL;
+        } else {
+            return _procs_table[proc_name];
+        }
     }
 
     template <typename Token>
     Token* current_token_as() {
         return token_cast<Token>(current_token());
+    }
+
+  protected:
+    template <typename Token>
+    Token* next_token_as() {
+        return token_cast<Token>(next_token());
     }
 
     template <typename Token>
@@ -231,6 +251,19 @@ class SimpleParser {
 
     SimpleToken* current_token() {
         return _current_token;
+    }
+
+    SimpleProcAst* get_or_create_proc(const std::string& proc_name) {
+        SimpleProcAst *proc;
+
+        if(_procs_table.count(proc_name) == 0) {
+            proc = new SimpleProcAst(proc_name);
+            _procs_table[proc_name] = proc;
+        } else {
+            proc = _procs_table[proc_name];
+        }
+
+        return proc;
     }
 
     ExprAst* parse_binary_op_rhs(int precedence, ExprAst* lhs) {
@@ -308,6 +341,24 @@ class SimpleParser {
             return -1;
         }
     }
+
+    /*
+     * Validate if all call statements refer to a valid procedure.
+     */
+    void validate_all_procs_exist() {
+        if(_procs.size() != _procs_table.size()) {
+            throw ParserError();
+        }
+
+        for(std::vector<ProcAst*>::iterator it = _procs.begin();
+                it != _procs.end(); ++it)
+        {
+            if(_procs_table.count((*it)->get_name()) != 1 ||
+               _procs_table[(*it)->get_name()] != *it) {
+                throw ParserError();
+            }
+        }
+    }
   private:
     unsigned int _line;
     std::map<std::string, SimpleProcAst*> _procs_table;
@@ -318,7 +369,7 @@ class SimpleParser {
      * is assumed to be destroyed once next_token() is called.
      */
     SimpleToken* _current_token;
-    std::vector<ProcAst*> _proc;
+    std::vector<ProcAst*> _procs;
 
     std::unique_ptr<SimpleTokenizer> _tokenizer;
 };

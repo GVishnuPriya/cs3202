@@ -7,22 +7,58 @@
 namespace simple {
 namespace parser {
 
-class InvalidTokenError : public std::exception { };
+class NoMoreTokenError : public std::exception { };
+
+
+class InvalidTokenError : public std::exception { 
+  public:
+    InvalidTokenError() :
+        _token("Invalid Token")
+    { }
+    
+    InvalidTokenError(char token) : 
+        _token("Invalid Token: ") 
+    { 
+        _token += token;
+    }
+
+    InvalidTokenError(std::string message) :
+        _token(message)
+    {
+
+    }
+
+    virtual const char* what() const throw() {
+        return _token.c_str();
+    }
+
+    virtual ~InvalidTokenError() throw() { }
+  private:
+    std::string _token;
+
+};
 
 class TokenType {
   public:
-    TokenType() { }
+    TokenType(std::string name) : _name(name) { }
 
     bool operator ==(const TokenType& other) const {
         return this == &other;
     }
+
+    std::string get_name() {
+        return _name;
+    }
   private:
     TokenType(const TokenType& other) = delete;
+
+    std::string _name;
 };
 
 class SimpleToken { 
   public:
     virtual TokenType& get_type() = 0;
+    virtual ~SimpleToken() { }
 };
 
 template <typename Token>
@@ -30,7 +66,11 @@ Token* token_cast(SimpleToken *token) {
     if(token->get_type() == Token::type) {
         return static_cast<Token*>(token);
     } else {
-        throw InvalidTokenError();
+        std::string message = "Invalid token_cast from ";
+        message += token->get_type().get_name();
+        message += " to ";
+        message += Token::type.get_name();
+        throw InvalidTokenError(message);
     }
 }
 
