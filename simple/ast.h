@@ -146,7 +146,7 @@ class SimpleRoot {
 
     class iterator {
       public:
-        typedef typename  ProcListType::iterator    _iterator;
+        typedef ProcListType::iterator    _iterator;
         typedef ProcAst*                            value_type;
 
         iterator(_iterator it) : _it(it) { }

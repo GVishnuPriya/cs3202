@@ -50,7 +50,7 @@ class TokenType {
         return _name;
     }
   private:
-    TokenType(const TokenType& other) = delete;
+    TokenType(const TokenType& other);
 
     std::string _name;
 };

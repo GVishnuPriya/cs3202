@@ -378,7 +378,9 @@ bool NextSolver::validate_next<AssignmentAst>(AssignmentAst *assign, StatementAs
         return assign->next() == statement;
     } else if(assign->get_parent()) {
         return validate_container_next<ContainerAst>(assign->get_parent(), statement);
-    }
+    } else {
+        return false;
+	}
 }
 
 template <>
@@ -388,7 +390,9 @@ bool NextSolver::validate_next<CallAst>(CallAst *call, StatementAst *statement)
         return call->next() == statement;
     } else if(call->get_parent()) {
         return validate_container_next<ContainerAst>(call->get_parent(), statement);
-    }
+    } else {
+        return false;
+	}
 }
 
 class ValidateNextContainerVisitor : public ContainerVisitor {

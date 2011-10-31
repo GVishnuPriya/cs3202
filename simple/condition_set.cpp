@@ -15,6 +15,7 @@ using simple::util::condition_to_string;
         os << condition_to_string(it->get());
     }
     os << ")";
+	return os;
 }
 
 ConditionSet::ConditionSet() : 

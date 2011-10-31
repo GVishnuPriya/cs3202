@@ -13,7 +13,6 @@ TEST(AstTest, BasicTest) {
      */
     SimpleProcAst *proc = new SimpleProcAst("test");
     SimpleAssignmentAst *assign = new SimpleAssignmentAst();
-    ASSERT_TRUE(assign);
     SimpleVariable var("x");
 
     assign->set_variable(var);

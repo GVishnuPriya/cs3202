@@ -12,3 +12,10 @@ config.log
 .deps
 /*.DS_Store
 /*.dep.inc
+Debug/
+*.opensdf
+*.sdf
+*.sln
+*.v11.suo
+*.vcxproj
+*.vcxproj.filters
