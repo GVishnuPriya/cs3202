@@ -11,11 +11,10 @@ namespace simple {
 namespace impl {
 
 using namespace simple;
-using namespace simple::impl;
 
-class CallSolver {
+class ICallSolver {
   public:
-    CallSolver(SimpleRoot ast, SolverTable *table);
+    ICallSolver(SimpleRoot ast, SolverTable *table);
 
     /*
      * SOLVE RIGHT PART
@@ -49,28 +48,28 @@ class CallSolver {
 };
 
 template <>
-ConditionSet CallSolver::solve_right<ProcAst>(ProcAst *proc);
+ConditionSet ICallSolver::solve_right<ProcAst>(ProcAst *proc);
 
 template <>
-ConditionSet CallSolver::solve_left<ProcAst>(ProcAst *proc);
+ConditionSet ICallSolver::solve_left<ProcAst>(ProcAst *proc);
 
 template <>
-bool CallSolver::validate<ProcAst, ProcAst>(ProcAst *proc1, ProcAst *proc2);
+bool ICallSolver::validate<ProcAst, ProcAst>(ProcAst *proc1, ProcAst *proc2);
 
 template <>
-void CallSolver::index_calls<StatementAst>(StatementAst *statement);
+void ICallSolver::index_calls<StatementAst>(StatementAst *statement);
 
 template <>
-void CallSolver::index_calls<ProcAst>(ProcAst *proc);
+void ICallSolver::index_calls<ProcAst>(ProcAst *proc);
 
 template <>
-void CallSolver::index_calls<CallAst>(CallAst *call);
+void ICallSolver::index_calls<CallAst>(CallAst *call);
 
 template <>
-void CallSolver::index_calls<WhileAst>(WhileAst *loop);
+void ICallSolver::index_calls<WhileAst>(WhileAst *loop);
 
 template <>
-void CallSolver::index_calls<ConditionalAst>(ConditionalAst *condition);
+void ICallSolver::index_calls<ConditionalAst>(ConditionalAst *condition);
 
 
 

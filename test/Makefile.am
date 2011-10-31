@@ -4,6 +4,7 @@ unit_tests_SOURCES = \
   test_ast.cpp \
   test_solver.cpp \
   test_call.cpp \
+  test_icall.cpp \
   test_follows.cpp \
   test_ifollows.cpp \
   test_parent.cpp \
@@ -20,6 +21,7 @@ unit_tests_SOURCES = \
   ../impl/solvers/modifies.cpp \
   ../impl/solvers/next.cpp \
   ../impl/solvers/call.cpp \
+  ../impl/solvers/icall.cpp \
   ../impl/parser/token.cpp \
   gtest/gtest-all.cc \
   test_main.cpp
