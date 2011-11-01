@@ -140,6 +140,7 @@ class SimpleRoot {
 
     SimpleRoot& operator =(const SimpleRoot& other) {
         _procs = other._procs;
+        return *this;
     }
 
     ~SimpleRoot() { }

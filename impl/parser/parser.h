@@ -20,8 +20,9 @@ class ParserError : public std::exception { };
 class SimpleParser {
   public:
     SimpleParser(SimpleTokenizer *tokenizer) :
-        _tokenizer(tokenizer), _line(1),
-        _line_table(new std::map<int, StatementAst*>())
+        _line(1),
+        _line_table(new std::map<int, StatementAst*>()),
+        _tokenizer(tokenizer)
     { 
         next_token();
     }

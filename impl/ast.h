@@ -53,7 +53,7 @@ class SimpleStatementBase : public ParentType, public SimpleStatementAst {
   public:
     SimpleStatementBase() :
         _line(0), _proc(0), _container(0),
-        _next(nullptr), _prev(0)
+        _prev(0), _next()
     { }
 
     void set_line(unsigned int line) {
@@ -116,7 +116,7 @@ class SimpleConditionalAst : public SimpleStatementBase<ConditionalAst> {
   public:
     SimpleConditionalAst() :
         SimpleStatementBase<ConditionalAst>(),
-        _then_branch(nullptr), _else_branch(nullptr), _var()
+        _then_branch(), _else_branch(), _var()
     { }
 
     void set_variable(const SimpleVariable& var) {
@@ -163,7 +163,7 @@ class SimpleWhileAst : public SimpleStatementBase<WhileAst> {
   public:
     SimpleWhileAst() : 
         SimpleStatementBase<WhileAst>(),
-        _body(nullptr), _var() 
+        _body(), _var() 
     { }
 
     void set_variable(const SimpleVariable& var) {
@@ -231,7 +231,7 @@ class SimpleAssignmentAst : public SimpleStatementBase<AssignmentAst> {
   public:
     SimpleAssignmentAst() : 
         SimpleStatementBase<AssignmentAst>(),
-        _var(), _expr(nullptr) 
+        _var(), _expr() 
     { }
 
     void set_variable(const SimpleVariable& var) {
@@ -309,7 +309,7 @@ class SimpleConstAst : public ConstAst {
 class SimpleBinaryOpAst : public BinaryOpAst {
   public:
     SimpleBinaryOpAst() : 
-        _lhs(nullptr), _rhs(nullptr), _op(' ')
+        _lhs(), _rhs(), _op(' ')
     { }
 
     SimpleBinaryOpAst(char op, ExprAst *lhs, ExprAst *rhs) :

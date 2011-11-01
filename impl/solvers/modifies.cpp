@@ -253,6 +253,7 @@ ConditionSet ModifiesSolver::solve_variable<CallAst>(CallAst *ast, SimpleVariabl
     if(validate<CallAst, SimpleVariable>(ast, variable)) {
         ConditionSet result;
         result.insert(new SimpleStatementCondition(ast));
+        return result;
     } else {
         return ConditionSet(); // empty set
     }

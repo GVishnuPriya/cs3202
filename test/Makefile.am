@@ -26,5 +26,5 @@ unit_tests_SOURCES = \
   gtest/gtest-all.cc \
   test_main.cpp
 
-AM_CPPFLAGS = -lpthread -std=c++0x
+AM_CPPFLAGS = -lpthread -std=c++0x -Wall
 AM_LDFLAGS = -lpthread

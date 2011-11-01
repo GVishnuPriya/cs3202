@@ -15,8 +15,8 @@ class ValidateNextStatementVisitor : public StatementVisitor {
   public:
     ValidateNextStatementVisitor(
         NextSolver *solver, StatementAst *statement) : 
-        _solver(solver), _statement(statement), 
-        _result(false) 
+        _result(false), _solver(solver), 
+        _statement(statement)
     { }
 
     void visit_conditional(ConditionalAst *ast);
