@@ -11,6 +11,52 @@ namespace impl {
 using namespace simple;
 using simple::util::is_statement_type;
 
+class SolveNextVisitorTraits {
+  public:
+    typedef StatementSet ResultType;
+    typedef int ContextType;
+
+    template <typename Ast>
+    static StatementSet visit(NextSolver *solver, Ast *ast, int *context = NULL) {
+        return solver->solve_next<Ast>(ast);
+    }
+};
+
+class SolvePreviousVisitorTraits {
+  public:
+    typedef StatementSet ResultType;
+    typedef int ContextType;
+
+    template <typename Ast>
+    static StatementSet visit(NextSolver *solver, Ast *ast, int *context = NULL) {
+        return solver->solve_previous<Ast>(ast);
+    }
+};
+
+class SolvePreceedingPreviousVisitorTraits {
+  public:
+    typedef StatementSet ResultType;
+    typedef int ContextType;
+
+    template <typename Ast>
+    static StatementSet visit(NextSolver *solver, Ast *ast, int *context = NULL) {
+        return solver->solve_preceeding_previous<Ast>(ast);
+    }
+};
+
+class SolveLastPreviousVisitorTraits {
+  public:
+    typedef StatementSet    ResultType;
+    typedef int ContextType;
+
+    template <typename Ast>
+    static StatementSet visit(NextSolver *solver, Ast *ast, int *context = NULL) {
+        return solver->solve_last_previous<Ast>(ast);
+    }
+};
+
+
+
 class ValidateNextStatementVisitor : public StatementVisitor {
   public:
     ValidateNextStatementVisitor(
@@ -34,13 +80,40 @@ class ValidateNextStatementVisitor : public StatementVisitor {
     StatementAst    *_statement;
 };
 
-
 template <>
 ConditionSet NextSolver::solve_right<StatementAst>(StatementAst *ast) {
+    StatementSet statements = solve_next<StatementAst>(ast);
     ConditionSet result;
+
+    for(StatementSet::iterator it = statements.begin(); 
+            it!= statements.end(); ++it)
+    {
+        result.insert(new SimpleStatementCondition(*it));
+    }
+    return result;
+}
+
+template <>
+ConditionSet NextSolver::solve_left<StatementAst>(StatementAst *ast) {
+    StatementSet statements = solve_previous<StatementAst>(ast);
+    ConditionSet result;
+
+    for(StatementSet::iterator it = statements.begin(); 
+            it!= statements.end(); ++it)
+    {
+        result.insert(new SimpleStatementCondition(*it));
+    }
+    return result;
+}
+
+
+
+template <>
+StatementSet NextSolver::solve_next<StatementAst>(StatementAst *ast) {
+    StatementSet result;
     
     StatementVisitorGenerator<NextSolver,
-        SolveRightVisitorTraits<NextSolver> > visitor(this);
+        SolveNextVisitorTraits> visitor(this);
     ast->accept_statement_visitor(&visitor);
 
     /*
@@ -54,8 +127,7 @@ ConditionSet NextSolver::solve_right<StatementAst>(StatementAst *ast) {
              * then the next statement is the one following the 
              * if statement.
              */
-            result.insert(new SimpleStatementCondition(
-                        ast->get_parent()->next()));
+            result.insert(ast->get_parent()->next());
 
         } else if(is_statement_type<WhileAst>(ast->get_parent())) {
             /*
@@ -63,42 +135,42 @@ ConditionSet NextSolver::solve_right<StatementAst>(StatementAst *ast) {
              * the the next statement is to back to the while clause 
              * itself.
              */
-            result.insert(new SimpleStatementCondition(ast->get_parent()));
+            result.insert(ast->get_parent());
         }
     }
 
-    result.union_with(visitor.return_result());
+    union_set(result, visitor.return_result());
     return result;
 }
 
 template <>
-ConditionSet NextSolver::solve_right<ConditionalAst>(ConditionalAst *ast) {
-    ConditionSet result;
+StatementSet NextSolver::solve_next<ConditionalAst>(ConditionalAst *ast) {
+    StatementSet result;
 
     /*
      * The next statement executed after an if clause is either the 
      * then branch or else branch
      */
-    result.insert(new SimpleStatementCondition(ast->get_then_branch()));
-    result.insert(new SimpleStatementCondition(ast->get_else_branch()));
+    result.insert(ast->get_then_branch());
+    result.insert(ast->get_else_branch());
 
     return result;
 }
 
 template <>
-ConditionSet NextSolver::solve_right<WhileAst>(WhileAst *ast) {
-    ConditionSet result;
+StatementSet NextSolver::solve_next<WhileAst>(WhileAst *ast) {
+    StatementSet result;
 
     /*
      * The next statement executed after a while clause is the first
      * body statement or the statement following the while statement.
      */
-    result.insert(new SimpleStatementCondition(ast->get_body()));
+    result.insert(ast->get_body());
 
     if(ast->next()) {
-        result.insert(new SimpleStatementCondition(ast->next()));
+        result.insert(ast->next());
     } else if(ast->get_parent()) {
-        result.union_with(solve_container_next<ContainerAst>(ast->get_parent()));
+        union_set(result, solve_container_next<ContainerAst>(ast->get_parent()));
     }
     
     return result;
@@ -106,28 +178,28 @@ ConditionSet NextSolver::solve_right<WhileAst>(WhileAst *ast) {
 
 
 template <>
-ConditionSet NextSolver::solve_right<AssignmentAst>(AssignmentAst *ast) {
+StatementSet NextSolver::solve_next<AssignmentAst>(AssignmentAst *ast) {
     if(ast->next()) {
-        ConditionSet result;
-        result.insert(new SimpleStatementCondition(ast->next()));
+        StatementSet result;
+        result.insert(ast->next());
         return result;
     } else if(ast->get_parent()) {
         return solve_container_next<ContainerAst>(ast->get_parent());
     } else {
-        return ConditionSet();
+        return StatementSet();
     }
 }
 
 template <>
-ConditionSet NextSolver::solve_right<CallAst>(CallAst *ast) {
+StatementSet NextSolver::solve_next<CallAst>(CallAst *ast) {
     if(ast->next()) {
-        ConditionSet result;
-        result.insert(new SimpleStatementCondition(ast->next()));
+        StatementSet result;
+        result.insert(ast->next());
         return result;
     } else if(ast->get_parent()) {
         return solve_container_next<ContainerAst>(ast->get_parent());
     } else {
-        return ConditionSet();
+        return StatementSet();
     }
 }
 
@@ -145,55 +217,44 @@ class SolveNextContainerVisitor : public ContainerVisitor {
         _result = _solver->solve_container_next<WhileAst>(container);
     }
 
-    ConditionSet return_result() {
+    StatementSet return_result() {
         return std::move(_result);
     }
   private:
     NextSolver *_solver;
-    ConditionSet _result;
+    StatementSet _result;
 };
 
 template <>
-ConditionSet NextSolver::solve_container_next<ContainerAst>(ContainerAst *container) {
+StatementSet NextSolver::solve_container_next<ContainerAst>(ContainerAst *container) {
     SolveNextContainerVisitor visitor(this);
     container->accept_container_visitor(&visitor);
     return visitor.return_result();
 }
 
 template <>
-ConditionSet NextSolver::solve_container_next<ConditionalAst>(ConditionalAst *condition) {
+StatementSet NextSolver::solve_container_next<ConditionalAst>(ConditionalAst *condition) {
     if(condition->next()) {
-        ConditionSet result;
-        result.insert(new SimpleStatementCondition(condition->next()));
+        StatementSet result;
+        result.insert(condition->next());
         return result;
     } else if(condition->get_parent()){
         return solve_container_next<ContainerAst>(condition->get_parent());
     } else {
-        return ConditionSet();
+        return StatementSet();
     }
 }
 
 template <>
-ConditionSet NextSolver::solve_container_next<WhileAst>(WhileAst *loop) {
-    ConditionSet result;
-    result.insert(new SimpleStatementCondition(loop));
+StatementSet NextSolver::solve_container_next<WhileAst>(WhileAst *loop) {
+    StatementSet result;
+    result.insert(loop);
     return result;
 }
 
-class SolvePreviousVisitorTraits {
-  public:
-    typedef ConditionSet ResultType;
-    typedef int ContextType;
-
-    template <typename Ast>
-    static ConditionSet visit(NextSolver *solver, Ast *ast, int *context = NULL) {
-        return solver->solve_previous<Ast>(ast);
-    }
-};
-
 template <>
-ConditionSet NextSolver::solve_previous<StatementAst>(StatementAst *ast) {
-    StatementVisitorGenerator<NextSolver, SolvePreviousVisitorTraits>
+StatementSet NextSolver::solve_preceeding_previous<StatementAst>(StatementAst *ast) {
+    StatementVisitorGenerator<NextSolver, SolvePreceedingPreviousVisitorTraits>
     visitor(this);
 
     ast->accept_statement_visitor(&visitor);
@@ -201,29 +262,29 @@ ConditionSet NextSolver::solve_previous<StatementAst>(StatementAst *ast) {
 }
 
 template <>
-ConditionSet NextSolver::solve_previous<WhileAst>(WhileAst *ast) {
-    ConditionSet result;
-    result.insert(new SimpleStatementCondition(ast));
+StatementSet NextSolver::solve_preceeding_previous<WhileAst>(WhileAst *ast) {
+    StatementSet result;
+    result.insert(ast);
     return result;
 }
 
 template <>
-ConditionSet NextSolver::solve_previous<AssignmentAst>(AssignmentAst *ast) {
-    ConditionSet result;
-    result.insert(new SimpleStatementCondition(ast));
+StatementSet NextSolver::solve_preceeding_previous<AssignmentAst>(AssignmentAst *ast) {
+    StatementSet result;
+    result.insert(ast);
     return result;
 }
 
 template <>
-ConditionSet NextSolver::solve_previous<CallAst>(CallAst *ast) {
-    ConditionSet result;
-    result.insert(new SimpleStatementCondition(ast));
+StatementSet NextSolver::solve_preceeding_previous<CallAst>(CallAst *ast) {
+    StatementSet result;
+    result.insert(ast);
     return result;
 }
 
 template <>
-ConditionSet NextSolver::solve_previous<ConditionalAst>(ConditionalAst *ast) {
-    ConditionSet result;
+StatementSet NextSolver::solve_preceeding_previous<ConditionalAst>(ConditionalAst *ast) {
+    StatementSet result;
     StatementAst *then_branch = ast->get_then_branch();
     StatementAst *else_branch = ast->get_else_branch();
 
@@ -238,15 +299,15 @@ ConditionSet NextSolver::solve_previous<ConditionalAst>(ConditionalAst *ast) {
         else_branch = else_branch->next();
     }
 
-    result.union_with(solve_previous<StatementAst>(then_branch));
-    result.union_with(solve_previous<StatementAst>(else_branch));
+    union_set(result, solve_preceeding_previous<StatementAst>(then_branch));
+    union_set(result, solve_preceeding_previous<StatementAst>(else_branch));
 
     return result;
 }
 
 template <>
-ConditionSet NextSolver::solve_left<StatementAst>(StatementAst *ast) {
-    ConditionSet result;
+StatementSet NextSolver::solve_previous<StatementAst>(StatementAst *ast) {
+    StatementSet result;
     
     /*
      * If the statement is not the first, then we look at it's previous
@@ -254,60 +315,47 @@ ConditionSet NextSolver::solve_left<StatementAst>(StatementAst *ast) {
      * statement, which becomes handy according to the Next() specification.
      */
     if(ast->prev()) {
-        result.union_with(solve_previous<StatementAst>(ast->prev()));
+        union_set(result, solve_preceeding_previous<StatementAst>(ast->prev()));
     /*
      * else the statement is the first statement and if it has a container,
      * then the container is the previous statement.
      */
     } else if(ast->get_parent()) {
-        result.insert(new SimpleStatementCondition(ast->get_parent()));
+        result.insert(ast->get_parent());
     }
 
     StatementVisitorGenerator<NextSolver,
-        SolveLeftVisitorTraits<NextSolver> > visitor(this);
+        SolvePreviousVisitorTraits> visitor(this);
     ast->accept_statement_visitor(&visitor);
 
-    result.union_with(visitor.return_result());
+    union_set(result, visitor.return_result());
 
     return result;
 }
 
 template <>
-ConditionSet NextSolver::solve_left<WhileAst>(WhileAst *ast) {
-    ConditionSet result;
+StatementSet NextSolver::solve_previous<WhileAst>(WhileAst *ast) {
+    StatementSet result;
 
     StatementAst *body = ast->get_body();
     while(body->next() != NULL) {
         body = body->next();
     }
-    result.union_with(solve_last_previous<StatementAst>(body));
+    union_set(result, solve_last_previous<StatementAst>(body));
 
     return result;
 }
 
-class LastPreviousVisitorTraits {
-  public:
-    typedef ConditionSet    ResultType;
-    typedef int ContextType;
-
-    template <typename Ast>
-    static ConditionSet visit(NextSolver *solver, Ast *ast, int *context = NULL) {
-        return solver->solve_last_previous<Ast>(ast);
-    }
-  private:
-    LastPreviousVisitorTraits();
-};
-
 template <>
-ConditionSet NextSolver::solve_last_previous<StatementAst>(StatementAst *statement) {
-    StatementVisitorGenerator<NextSolver, LastPreviousVisitorTraits>
+StatementSet NextSolver::solve_last_previous<StatementAst>(StatementAst *statement) {
+    StatementVisitorGenerator<NextSolver, SolveLastPreviousVisitorTraits>
     visitor(this);
     statement->accept_statement_visitor(&visitor);
     return visitor.return_result();
 }
 
 template <>
-ConditionSet NextSolver::solve_last_previous<ConditionalAst>(ConditionalAst *condition) {
+StatementSet NextSolver::solve_last_previous<ConditionalAst>(ConditionalAst *condition) {
 
     StatementAst *then_branch = condition->get_then_branch();
     StatementAst *else_branch = condition->get_else_branch();
@@ -320,26 +368,32 @@ ConditionSet NextSolver::solve_last_previous<ConditionalAst>(ConditionalAst *con
         else_branch = else_branch->next();
     }
 
-    ConditionSet result = solve_last_previous<StatementAst>(then_branch);
-    result.union_with(solve_last_previous<StatementAst>(else_branch));
+    StatementSet result = solve_last_previous<StatementAst>(then_branch);
+    union_set(result, solve_last_previous<StatementAst>(else_branch));
 
     return result;
 };
 
 template <>
-ConditionSet NextSolver::solve_last_previous<WhileAst>(WhileAst *loop) {
-    return ConditionSet(new SimpleStatementCondition(loop));
+StatementSet NextSolver::solve_last_previous<WhileAst>(WhileAst *loop) {
+    StatementSet result;
+    result.insert(loop);
+    return result;
 }
 
 template <>
-ConditionSet NextSolver::solve_last_previous<AssignmentAst>(AssignmentAst *assign) {
-    return ConditionSet(new SimpleStatementCondition(assign));
+StatementSet NextSolver::solve_last_previous<AssignmentAst>(AssignmentAst *assign) {
+    StatementSet result;
+    result.insert(assign);
+    return result;
 }
 
 
 template <>
-ConditionSet NextSolver::solve_last_previous<CallAst>(CallAst *call) {
-    return ConditionSet(new SimpleStatementCondition(call));
+StatementSet NextSolver::solve_last_previous<CallAst>(CallAst *call) {
+    StatementSet result;
+    result.insert(call);
+    return result;
 }
 
 

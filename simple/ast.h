@@ -104,78 +104,36 @@ class SimpleRoot {
     /*
      * Single proc construction
      */
-    SimpleRoot(ProcAst *proc) : 
-        _procs(new ProcListType()) 
-    {
-        insert_proc(proc);
-    }
+    SimpleRoot(ProcAst *proc);
+    SimpleRoot(ProcListType *procs);
+    SimpleRoot(const SimpleRoot& other);
+    SimpleRoot(SimpleRoot&& other);
 
-    SimpleRoot(ProcListType *procs) :
-        _procs(procs)
-    { }
+    ProcAst* get_proc(const std::string& name);
 
-    SimpleRoot(const SimpleRoot& other) :
-        _procs(other._procs)
-    { }
+    iterator begin();
+    iterator end();
 
-    SimpleRoot(SimpleRoot&& other) :
-        _procs(std::move(other._procs))
-    { }
+    SimpleRoot& operator =(const SimpleRoot& other);
 
-    ProcAst* get_proc(const std::string& name) {
-        if(_procs->count(name) == 0) {
-            return NULL;
-        } else {
-            return (*_procs.get())[name].get();
-        }
-    }
-
-    iterator begin() {
-        return iterator(_procs->begin());
-    }
-
-    iterator end() {
-        return iterator(_procs->end());
-    }
-
-    SimpleRoot& operator =(const SimpleRoot& other) {
-        _procs = other._procs;
-        return *this;
-    }
-
-    ~SimpleRoot() { }
+    ~SimpleRoot();
 
     class iterator {
       public:
         typedef ProcListType::iterator    _iterator;
-        typedef ProcAst*                            value_type;
+        typedef ProcAst*                  value_type;
 
-        iterator(_iterator it) : _it(it) { }
-
-        iterator& operator ++() {
-            ++_it;
-            return *this;
-        }
-
-        ProcAst* operator *() {
-            return _it->second.get();
-        }
-
-        bool operator ==(const iterator& other) const {
-            return _it == other._it;
-        }
-
-        bool operator !=(const iterator& other) const {
-            return _it != other._it;
-        }
+        iterator(_iterator it);
+        iterator& operator ++();
+        ProcAst* operator *();
+        bool operator ==(const iterator& other) const;
+        bool operator !=(const iterator& other) const;
       private:
         _iterator _it;
     };
-  private:
-    void insert_proc(ProcAst *proc) {
-        (*_procs.get())[proc->get_name()].reset(proc);
-    }
 
+  private:
+    void insert_proc(ProcAst *proc);
     std::shared_ptr<ProcListType> _procs;
 };
 

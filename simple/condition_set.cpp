@@ -48,13 +48,7 @@ void ConditionSet::remove(ConditionPtr condition) {
 }
 
 void ConditionSet::union_with(const ConditionSet& other) {
-    if(other.is_empty()) { return; }
-
-    for(std::set<ConditionPtr>::iterator it = other._set.begin();
-            it != other._set.end(); ++it)
-    {
-        _set.insert(*it);
-    }
+    union_set(_set, other._set);
 }
 
 void ConditionSet::intersect_with(const ConditionSet& other) {
@@ -136,6 +130,10 @@ ConditionPtr::ConditionPtr(ConditionPtr&& other) :
 
 SimpleCondition* ConditionPtr::get() const {
     return _ptr.get();
+}
+
+ConditionPtr::operator SimpleCondition*() const {
+    return get();
 }
 
 bool ConditionPtr::operator ==(const ConditionPtr& other) const {

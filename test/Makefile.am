@@ -15,6 +15,7 @@ unit_tests_SOURCES = \
   test_matcher.cpp \
   test_parser.cpp \
   test_tokenizer.cpp \
+  ../simple/ast.cpp \
   ../simple/condition_set.cpp \
   ../simple/util/condition_utils.cpp \
   ../simple/util/ast_utils.cpp \

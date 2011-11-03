@@ -2,6 +2,7 @@
 #pragma once
 
 #include <list>
+#include <exception>
 #include "simple/ast.h"
 #include "simple/condition.h"
 #include "simple/condition_set.h"
@@ -9,6 +10,8 @@
 namespace simple {
 
 using namespace simple;
+
+class SolverDependencyException : public std::exception { };
 
 class QuerySolver {
   public:
@@ -25,7 +28,9 @@ class SolverTable {
      * Get a solver that has been created at the moment. If the solver 
      * of the given name has not been created, NULL is returned.
      */
-    virtual QuerySolver* get_solver(std::string solver_name) = 0;
+    virtual QuerySolver* get_solver(const std::string& solver_name) = 0;
+
+    virtual bool has_solver(const std::string& solver_name) = 0;
 
     virtual ~SolverTable() { }
 };
@@ -45,7 +50,7 @@ class SolverFactory {
      * guaranteed to be in the solver table during construction, or 
      * runtime exception will be raised.
      */
-    virtual std::list<std::string> get_dependencies() = 0;
+    virtual const std::list<std::string>& get_dependencies() = 0;
 
     /*
      * Get the name of the solver, which is the same as the query name,

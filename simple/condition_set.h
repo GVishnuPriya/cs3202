@@ -8,6 +8,19 @@
 
 namespace simple {
 
+template <typename T>
+void union_set(std::set<T>& set1, const std::set<T>& set2) {
+    if(set2.size() == 0) {
+        return;
+    }
+    
+    for(typename std::set<T>::iterator it = set2.begin();
+            it != set2.end(); ++it)
+    {
+        set1.insert(*it);
+    }
+}
+
 class ConditionPtr {
   public:
     ConditionPtr(SimpleCondition *condition);
@@ -22,6 +35,7 @@ class ConditionPtr {
     bool less_than(const ConditionPtr& other) const ;
     bool less_than_eq(const ConditionPtr& other) const;
 
+    operator SimpleCondition*() const;
     bool operator ==(const ConditionPtr& other) const;
     bool operator !=(const ConditionPtr& other) const;
     bool operator <(const ConditionPtr& other) const;
