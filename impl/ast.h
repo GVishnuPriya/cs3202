@@ -76,7 +76,7 @@ class SimpleStatementBase : public ParentType, public SimpleStatementAst {
         _prev = statement;
     }
 
-    unsigned int get_line() {
+    int get_line() {
         return _line;
     }
     
@@ -103,7 +103,7 @@ class SimpleStatementBase : public ParentType, public SimpleStatementAst {
     virtual ~SimpleStatementBase() { }
 
   protected:
-    unsigned int _line;
+    int _line;
     ProcAst *_proc;
     ContainerAst *_container;
     StatementAst *_prev;

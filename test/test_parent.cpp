@@ -65,7 +65,7 @@ TEST(ParentTest, TrivialTest) {
     set_next(loop1, last);
 
     SimpleRoot root(proc);
-    ParentSolver solver(root, NULL);
+    ParentSolver solver(root);
 
     EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(loop1, condition1)));
     EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(condition1, assign1)));

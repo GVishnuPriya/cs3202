@@ -14,7 +14,7 @@ using namespace simple;
 
 class ICallSolver {
   public:
-    ICallSolver(SimpleRoot ast, SolverTable *table);
+    ICallSolver(SimpleRoot ast);
 
     /*
      * SOLVE RIGHT PART
@@ -38,7 +38,6 @@ class ICallSolver {
     void index_calls(Condition *condition) {
         // no-op
     }
-
 
   private:
     typedef std::map<ProcAst*, std::set<ProcAst*> > ProcIndex;

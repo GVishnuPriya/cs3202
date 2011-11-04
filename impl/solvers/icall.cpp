@@ -10,7 +10,7 @@ namespace impl {
 using namespace simple;
 using namespace simple::impl;
 
-ICallSolver::ICallSolver(SimpleRoot ast, SolverTable *table) : 
+ICallSolver::ICallSolver(SimpleRoot ast) : 
     _ast(ast) 
 { 
     for(SimpleRoot::iterator it = _ast.begin(); 

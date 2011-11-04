@@ -77,7 +77,7 @@ TEST(CallTest, TrivialTest) {
     procs.push_back(proc4);
 
     SimpleRoot root(procs.begin(), procs.end());
-    CallSolver solver(root, NULL);
+    CallSolver solver(root);
 
     EXPECT_TRUE((solver.validate<ProcAst, ProcAst>(proc1, proc2)));
     EXPECT_TRUE((solver.validate<ProcAst, ProcAst>(proc1, proc3)));

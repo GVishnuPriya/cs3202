@@ -12,6 +12,7 @@ unit_tests_SOURCES = \
   test_modifies.cpp \
   test_condition.cpp \
   test_next.cpp \
+  test_inext.cpp \
   test_matcher.cpp \
   test_parser.cpp \
   test_tokenizer.cpp \
@@ -21,6 +22,7 @@ unit_tests_SOURCES = \
   ../simple/util/ast_utils.cpp \
   ../impl/solvers/modifies.cpp \
   ../impl/solvers/next.cpp \
+  ../impl/solvers/inext.cpp \
   ../impl/solvers/call.cpp \
   ../impl/solvers/icall.cpp \
   ../impl/parser/token.cpp \

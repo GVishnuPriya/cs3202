@@ -15,7 +15,7 @@ using namespace simple::impl;
 
 class CallSolver {
   public:
-    CallSolver(SimpleRoot ast, SolverTable *table);
+    CallSolver(SimpleRoot ast);
 
     /*
      * SOLVE RIGHT PART

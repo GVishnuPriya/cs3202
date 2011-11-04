@@ -17,7 +17,7 @@ typedef std::set<StatementAst*> StatementSet;
 
 class NextSolver {
   public:
-    NextSolver(SimpleRoot ast, SolverTable *table) : _ast(ast) { }
+    NextSolver(SimpleRoot ast) : _ast(ast) { }
 
     template <typename Condition>
     ConditionSet solve_right(Condition *condition);

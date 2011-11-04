@@ -60,7 +60,7 @@ class ModifiesVariableVisitorAdapter {
 };
 
 
-ModifiesSolver::ModifiesSolver(const SimpleRoot& ast, SolverTable *table) : 
+ModifiesSolver::ModifiesSolver(const SimpleRoot& ast) : 
     _ast(ast) 
 {
    for(SimpleRoot::iterator it = _ast.begin(); it != _ast.end(); ++it) {

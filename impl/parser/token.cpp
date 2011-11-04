@@ -9,12 +9,14 @@ TokenType CloseBraceToken::type("OpenBraceToken");
 TokenType OpenBracketToken::type("OpenBracketToken");
 TokenType CloseBracketToken::type("CloseBracketToken");
 TokenType SemiColonToken::type("SemiColonToken");
+TokenType CommaToken::type("CommaToken");
 TokenType EqualToken::type("EqualToken");
 TokenType EOFToken::type("EOFToken");
 TokenType NewLineToken::type("NewLineToken");
 TokenType OperatorToken::type("OperatorToken");
 TokenType IntegerToken::type("IntegerToken");
 TokenType IdentifierToken::type("IdentifierToken");
+TokenType LiteralToken::type("LiteralToken");
 
 } // namespace parser
 } // namespace simple

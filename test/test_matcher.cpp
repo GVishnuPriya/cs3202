@@ -39,7 +39,8 @@ TEST(MatcherTest, ModifiesTest) {
     SimpleRoot root(proc);
     
     SimpleSolverGenerator<ModifiesSolver> *solver = 
-        new SimpleSolverGenerator<ModifiesSolver>(root, NULL);
+        new SimpleSolverGenerator<ModifiesSolver>(
+        new ModifiesSolver(root));
 
     ModifiesSolver *modifies = solver->get_solver();
 
@@ -117,7 +118,7 @@ TEST(MatcherTest, NextTest) {
 
     SimpleRoot root(proc);
     SimpleSolverGenerator<NextSolver> *next_solver = 
-        new SimpleSolverGenerator<NextSolver>(root, NULL);
+        new SimpleSolverGenerator<NextSolver>(new NextSolver(root));
 
     NextSolver *next = next_solver->get_solver();
 
@@ -141,7 +142,7 @@ TEST(MatcherTest, NextTest) {
     EXPECT_EQ(next->solve_right<StatementAst>(stat3), stat23_next);
     
     SimpleSolverGenerator<ModifiesSolver> *modifies_solver = 
-        new SimpleSolverGenerator<ModifiesSolver>(root, NULL);
+        new SimpleSolverGenerator<ModifiesSolver>(new ModifiesSolver(root));
 
     ModifiesSolver *modifies = modifies_solver->get_solver();
 

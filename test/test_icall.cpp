@@ -80,7 +80,7 @@ TEST(ICallTest, TrivialTest) {
     procs.push_back(proc4);
 
     SimpleRoot root(procs.begin(), procs.end());
-    ICallSolver solver(root, NULL);
+    ICallSolver solver(root);
 
     EXPECT_TRUE((solver.validate<ProcAst, ProcAst>(proc1, proc2)));
     EXPECT_TRUE((solver.validate<ProcAst, ProcAst>(proc1, proc3)));

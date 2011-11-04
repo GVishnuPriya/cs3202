@@ -84,7 +84,7 @@ TEST(IFollowsTest, TrivialTest) {
     set_next(after, after2);
 
     SimpleRoot root(proc);
-    IFollowSolver solver(root, NULL);
+    IFollowSolver solver(root);
 
     EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(before, condition)));
     EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(before, after)));

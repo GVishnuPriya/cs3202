@@ -119,6 +119,16 @@ class CloseBracketToken : public SimpleToken {
     static TokenType type;
 };
 
+class CommaToken : public SimpleToken { 
+  public:
+    virtual TokenType& get_type() {
+        return CommaToken::type;
+    }
+
+    static TokenType type;
+};
+
+
 
 class SemiColonToken : public SimpleToken { 
   public:
@@ -192,6 +202,26 @@ class IntegerToken : public SimpleToken {
   private:
     int _value;
 };
+
+class LiteralToken : public SimpleToken {
+  public:
+    LiteralToken(const std::string& content) :
+        _content(content)
+    { }
+
+    const std::string& get_content() const {
+        return _content;
+    }
+
+    virtual TokenType& get_type() {
+        return LiteralToken::type;
+    }
+
+    static TokenType type;
+  private:
+    std::string _content;
+};
+
 
 class IdentifierToken : public SimpleToken {
   public:

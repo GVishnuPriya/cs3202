@@ -33,7 +33,7 @@ TEST(ModifiesTest, FixtureTest1) {
 
     SimpleRoot root(proc);
 
-    ModifiesSolver solver(root, NULL);
+    ModifiesSolver solver(root);
 
     /*
      * Test true validation
@@ -139,7 +139,7 @@ TEST(ModifiesTest, QuirksTest) {
     procs.push_back(proc2);
 
     SimpleRoot root(procs.begin(), procs.end());
-    ModifiesSolver solver(root, NULL);
+    ModifiesSolver solver(root);
 
     EXPECT_TRUE((solver.validate<StatementAst, SimpleVariable>(condition, &var_x)));
     EXPECT_TRUE((solver.validate<StatementAst, SimpleVariable>(condition, &var_y)));

@@ -146,7 +146,7 @@ class StatementAst {
     /**
      * Get the line number of the AST node in the original source code.  
      */
-    virtual unsigned int get_line() = 0;
+    virtual int get_line() = 0;
 
     /**
      * Get the next statement within the same scope. Returns NULL if it's the 

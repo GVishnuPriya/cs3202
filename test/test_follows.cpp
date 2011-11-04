@@ -63,7 +63,7 @@ TEST(FollowsTest, TrivialTest) {
     set_next(condition, after);
 
     SimpleRoot root(proc);
-    FollowSolver solver(root, NULL);
+    FollowSolver solver(root);
 
     EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(before, condition)));
     EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(condition, after)));

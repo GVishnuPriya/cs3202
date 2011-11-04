@@ -16,7 +16,7 @@ using namespace simple;
 
 class ModifiesSolver {
   public:
-    ModifiesSolver(const SimpleRoot& ast, SolverTable *table);
+    ModifiesSolver(const SimpleRoot& ast);
 
     template <typename Condition1, typename Condition2>
     bool validate(Condition1 *condition1, Condition2 *condition2);

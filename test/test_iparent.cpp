@@ -65,7 +65,7 @@ TEST(IParentTest, TrivialTest) {
     set_next(loop1, last);
 
     SimpleRoot root(proc);
-    IParentSolver solver(root, NULL);
+    IParentSolver solver(root);
 
     EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(condition1, assign1)));
     EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(condition1, loop2)));

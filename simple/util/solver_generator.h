@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <memory>
 #include "simple/solver.h"
 
 namespace simple {
@@ -152,32 +153,32 @@ class SimpleSolverGenerator : public QuerySolver  {
     };
 
   public:
-    SimpleSolverGenerator(SimpleRoot ast, SolverTable *table) : _solver(ast, table) { }
+    SimpleSolverGenerator(ConcreteSolver *solver) : _solver(solver) { }
 
     virtual ConditionSet solve_left(SimpleCondition *right_condition) {
-        SolverLeftVisitor visitor(&_solver);
+        SolverLeftVisitor visitor(_solver.get());
         right_condition->accept_condition_visitor(&visitor);
         return visitor.return_result();
     }
 
     virtual ConditionSet solve_right(SimpleCondition *left_condition) {
-        SolverRightVisitor visitor(&_solver);
+        SolverRightVisitor visitor(_solver.get());
         left_condition->accept_condition_visitor(&visitor);
         return visitor.return_result();
     }
 
     virtual bool validate(SimpleCondition *left_condition, SimpleCondition *right_condition) {
-        FirstSolverVisitor visitor(&_solver, right_condition);
+        FirstSolverVisitor visitor(_solver.get(), right_condition);
         left_condition->accept_condition_visitor(&visitor);
         return visitor.return_result();
     }
 
     ConcreteSolver* get_solver() {
-        return &_solver;
+        return _solver.get();
     }
 
   private:
-    ConcreteSolver _solver;
+    std::unique_ptr<ConcreteSolver> _solver;
 
 };
     

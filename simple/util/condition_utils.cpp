@@ -1,4 +1,5 @@
 
+#include <sstream>
 #include "simple/util/condition_utils.h"
 #include "simple/util/condition_visitor_generator.h"
 #include "simple/util/ast_utils.h"
@@ -41,9 +42,11 @@ class ConditionPrinter : public ConditionVisitor {
     }
 
     void visit_statement_condition(StatementCondition *condition) {
-        _result = "(StatementCondition ";
-        _result += (long) condition->get_statement_ast();
-        _result += ")";
+        std::stringstream out;
+        out << "(StatementCondition ";
+        out << condition->get_statement_ast()->get_line();
+        out << ")";
+        _result = out.str();
     }
 
     void visit_variable_condition(VariableCondition *condition) {

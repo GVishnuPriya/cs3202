@@ -3,6 +3,7 @@
 
 #include <map>
 #include "simple/solver.h"
+#include "impl/solvers/next.h"
 #include "simple/condition_set.h"
 #include "simple/ast.h"
 
@@ -13,67 +14,51 @@ using namespace simple;
 
 class INextSolver {
   public:
-    typedef std::set<StatementAst*>                 StatementSet;
-    typedef std::map<StatementAst*, StatementSet >  INextTable;
+    typedef std::map<StatementAst*, StatementSet>  INextTable;
 
-    NextSolver(SimpleRoot ast, SolverTable *table) :
-        _ast(ast), _next_solver(table->get_solver("Next"))
+    INextSolver(SimpleRoot ast, NextSolver *solver) :
+        _ast(ast), _next_solver(solver)
     { }
 
-
-    const StatementSet& solve_inext(StatementAst *statement) {
-        if(is_next_cached(statement)) {
-            return _inext_cache[statement];
-        } else {
-            StatementSet& current_set = _inext_cache[statement]; // initialize
-            StatementSet direct_next = solve_direct_next(statement);
-            for(StatementSet::iterator it = direct_next.begin();
-                it != direct_next.end(); ++it)
-            {
-                union_set(current_set, solve_inext(*it));
-            }
-
-            return current_set;
-        }
+    template <typename Condition>
+    ConditionSet solve_right(Condition *condition) {
+        return ConditionSet();
     }
 
-    const StatementSet& solve_iprev(StatementAst *statement) {
-        if(is_prev_cached(statement)) {
-            return _iprev_cache[statement];
-        } else {
-
-        }
+    template <typename Condition>
+    ConditionSet solve_left(Condition *condition) {
+        return ConditionSet();
     }
 
-    bool is_next_cached(StatementAst *statement) {
-        return _inext_cache.count(statement) > 0;
+    template <typename Condition1, typename Condition2>
+    bool validate(Condition1 *condition1, Condition2 *condition2) {
+        return false;
     }
 
-    bool is_prev_cached(StatementAst *statement) {
-        return _iprev_cache.count(statement) > 0;
-    }
+    void solve_inext(StatementAst *statement, std::list<StatementSet*> results);
+    void solve_iprev(StatementAst *statement, std::list<StatementSet*> results);
 
+    void index_inext(StatementAst *statement, const std::list<StatementSet*>& results);
+    void index_iprev(StatementAst *statement, const std::list<StatementSet*>& results);
 
   private:
     SimpleRoot _ast;
-    QuerySolver *_next_solver;
+    NextSolver *_next_solver;
     INextTable _inext_cache;
     INextTable _iprev_cache;
+    INextTable _inext_partial_cache;
+    INextTable _iprev_partial_cache;
 };
 
 template <>
-StatementSet index_next<StatementAst>(StatementAst *statement) {
-    SimpleStatementCondition condition(statement);
-    ConditionSet direct_next = _next_solver->solve_right
-
-}
+bool INextSolver::validate<StatementAst, StatementAst>(
+        StatementAst *statement1, StatementAst *statement2);
 
 template <>
-validate INextSolver::validate<StatementAst, StatementAst>(
-        StatementAst *statement1, StatementAst *statement2)
-{
-    return solve_inext(statement1).count(statment2) > 0;
-}
+ConditionSet INextSolver::solve_right<StatementAst>(StatementAst *statement);
+
+template <>
+ConditionSet INextSolver::solve_left<StatementAst>(StatementAst *statement);
 
 }
 }

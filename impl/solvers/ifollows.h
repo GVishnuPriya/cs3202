@@ -13,7 +13,7 @@ using namespace simple;
 
 class IFollowSolver {
   public:
-    IFollowSolver(SimpleRoot ast, SolverTable *table) : _ast(ast) { }
+    IFollowSolver(SimpleRoot ast) : _ast(ast) { }
 
     /*
      * SOLVE RIGHT PART

@@ -15,7 +15,7 @@ using namespace simple::impl;
 
 class ParentSolver {
   public:
-    ParentSolver(SimpleRoot ast, SolverTable *table) : _ast(ast) { }
+    ParentSolver(SimpleRoot ast) : _ast(ast) { }
 
     /*
      * SOLVE RIGHT PART

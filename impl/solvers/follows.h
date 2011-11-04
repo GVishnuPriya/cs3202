@@ -13,7 +13,7 @@ using namespace simple;
 
 class FollowSolver {
   public:
-    FollowSolver(SimpleRoot ast, SolverTable *table) : _ast(ast) { }
+    FollowSolver(SimpleRoot ast) : _ast(ast) { }
 
     /*
      * SOLVE RIGHT PART

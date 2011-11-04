@@ -82,8 +82,8 @@ TEST(SolverTest, BasicTest) {
     SimpleStatementCondition stat1_condition(stat1_1);
     SimpleVariableCondition z_condition(var_z);
     
-    SimpleSolverGenerator<ModifiesSolver> modifies_solver(root, NULL);
-    SimpleSolverGenerator<NextSolver> next_solver(root, NULL);
+    SimpleSolverGenerator<ModifiesSolver> modifies_solver(new ModifiesSolver(root));
+    SimpleSolverGenerator<NextSolver> next_solver(new NextSolver(root));
     
     QuerySolver *modifies_interface = &modifies_solver;
     EXPECT_EQ((modifies_interface->validate(&loop_condition, &z_condition)), 

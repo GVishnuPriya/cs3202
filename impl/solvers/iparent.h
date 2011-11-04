@@ -15,7 +15,7 @@ using namespace simple::impl;
 
 class IParentSolver {
   public:
-    IParentSolver(SimpleRoot ast, SolverTable *table) : _ast(ast) { }
+    IParentSolver(SimpleRoot ast) : _ast(ast) { }
 
     /*
      * SOLVE RIGHT PART
