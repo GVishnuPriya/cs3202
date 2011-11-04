@@ -276,6 +276,81 @@ TEST(INextTest, WhileTest) {
     EXPECT_EQ(solver.solve_left<StatementAst>(after), loop_prev); 
 }
 
+TEST(INextTest, QuirksTest) {
+    /*
+     * proc test {
+     *   a1 = 11
+     *   a2 = 12
+     *   while i {      // loop1
+     *     if j {       // condition1
+     *       b1 = 21
+     *       b2 = 22
+     *       b3 = 23
+     *       b4 = 24
+     *       while k {  // loop2
+     *         c1 = 31
+     *         c2 = 32
+     *         c3 = 33
+     *         c4 = 34
+     *         c5 = 35
+     *       }
+     *     } else {
+     *       if l {     // condition2
+     *         d1 = 41
+     *         d2 = 42
+     *         d3 = 43
+     *         d4 = 44
+     *       } else {
+     *         e1 = 51
+     *         e2 = 52
+     *         e3 = 53
+     *         e4 = 54
+     *       }
+     *       f1 = 61
+     *       f2 = 62
+     *     }
+     *   }
+     *   g1 = 71
+     *   g2 = 72
+     * }
+     */
+
+    SimpleProcAst *proc = new SimpleProcAst("test");
+    SimpleAssignmentAst *first = new SimpleAssignmentAst();
+    set_proc(first, proc);
+
+    SimpleWhileAst *loop1 = new SimpleWhileAst();
+    set_next(first, loop1);
+
+    SimpleConditionalAst *condition1 = new SimpleConditionalAst();
+    set_while_body(condition1, loop1);
+
+    SimpleAssignmentAst *assign1 = new SimpleAssignmentAst();
+    set_then_branch(assign1, condition1);
+
+    SimpleWhileAst *loop2 = new SimpleWhileAst();
+    set_next(assign1, loop2);
+
+    SimpleAssignmentAst *assign2 = new SimpleAssignmentAst();
+    set_while_body(assign2, loop2);
+
+    SimpleConditionalAst *condition2 = new SimpleConditionalAst();
+    set_else_branch(condition2, condition1);
+
+    SimpleAssignmentAst *assign3 = new SimpleAssignmentAst();
+    set_then_branch(assign3, condition2);
+
+    SimpleAssignmentAst *assign4 = new SimpleAssignmentAst();
+    set_else_branch(assign4, condition2);
+
+    SimpleAssignmentAst *last = new SimpleAssignmentAst();
+    set_next(loop1, last);
+
+    SimpleRoot root(proc);
+    NextSolver solver(root);
+
+
+}
 
 
 

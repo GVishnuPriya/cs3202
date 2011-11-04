@@ -35,11 +35,8 @@ class INextSolver {
         return false;
     }
 
-    void solve_inext(StatementAst *statement, std::list<StatementSet*> results);
-    void solve_iprev(StatementAst *statement, std::list<StatementSet*> results);
-
-    void index_inext(StatementAst *statement, const std::list<StatementSet*>& results);
-    void index_iprev(StatementAst *statement, const std::list<StatementSet*>& results);
+    void solve_inext(StatementAst *statement, StatementSet& results);
+    void solve_iprev(StatementAst *statement, StatementSet& results);
 
   private:
     SimpleRoot _ast;
