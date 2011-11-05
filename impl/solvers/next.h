@@ -13,9 +13,15 @@ namespace impl {
 
 using namespace simple;
 
-typedef std::set<StatementAst*> StatementSet;
+class NextQuerySolver {
+  public:
+    virtual StatementSet solve_next_statement(StatementAst *statement) = 0;
+    virtual StatementSet solve_prev_statement(StatementAst *statement) = 0;
 
-class NextSolver {
+    virtual ~NextQuerySolver() { }
+};
+
+class NextSolver : public NextQuerySolver {
   public:
     NextSolver(SimpleRoot ast) : _ast(ast) { }
 
@@ -24,6 +30,9 @@ class NextSolver {
 
     template <typename Condition>
     ConditionSet solve_left(Condition *condition);
+
+    StatementSet solve_next_statement(StatementAst *statement);
+    StatementSet solve_prev_statement(StatementAst *statement);
 
     template <typename Condition>
     StatementSet solve_next(Condition *condition);

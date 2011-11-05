@@ -106,6 +106,13 @@ ConditionSet NextSolver::solve_left<StatementAst>(StatementAst *ast) {
     return result;
 }
 
+StatementSet NextSolver::solve_next_statement(StatementAst *statement) {
+    return solve_next<StatementAst>(statement);
+}
+
+StatementSet NextSolver::solve_prev_statement(StatementAst *statement) {
+    return solve_previous<StatementAst>(statement);
+}
 
 
 template <>

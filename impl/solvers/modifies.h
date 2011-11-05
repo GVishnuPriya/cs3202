@@ -14,6 +14,14 @@ namespace impl {
 
 using namespace simple;
 
+class ModifiesQuerySolver {
+  public:
+    virtual VariableSet solve_modified_vars(StatementAst *statement) = 0;
+    virtual StatementSet solve_modifying_stats(SimpleVariable *var) = 0;
+
+    virtual ~ModifiesQuerySolver() { }
+};
+
 class ModifiesSolver {
   public:
     ModifiesSolver(const SimpleRoot& ast);

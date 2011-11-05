@@ -119,11 +119,11 @@ TEST(ConditionTest, ConditionSetTest) {
     EXPECT_TRUE(set1.has_element(statement_condition2));
     EXPECT_FALSE(set1.has_element(statement_condition3));
     
-    EXPECT_EQ(set1.get_size(), 1);
+    EXPECT_EQ(set1.get_size(), (size_t) 1);
     set1.insert(statement_condition2);
-    EXPECT_EQ(set1.get_size(), 1);
+    EXPECT_EQ(set1.get_size(), (size_t) 1);
     set1.insert(statement_condition3);
-    EXPECT_EQ(set1.get_size(), 2);
+    EXPECT_EQ(set1.get_size(), (size_t) 2);
 
     set2.insert(statement_condition1);
     EXPECT_FALSE(set2.has_element(statement_condition3));
@@ -133,7 +133,7 @@ TEST(ConditionTest, ConditionSetTest) {
     
     EXPECT_TRUE(set2.has_element(statement_condition3));
     EXPECT_EQ(set2, set1);
-    EXPECT_EQ(set2.get_size(), 2);
+    EXPECT_EQ(set2.get_size(), (size_t) 2);
 
     set3.insert(statement_condition3);
     set3.insert(statement_condition4);
@@ -146,7 +146,7 @@ TEST(ConditionTest, ConditionSetTest) {
     EXPECT_FALSE(set3.has_element(statement_condition4));
     EXPECT_FALSE(set3.has_element(statement_condition1));
     EXPECT_NE(set3, set1);
-    EXPECT_EQ(set3.get_size(), 1);
+    EXPECT_EQ(set3.get_size(), (size_t) 1);
 }
 
 }

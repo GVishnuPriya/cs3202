@@ -16,7 +16,7 @@ class INextSolver {
   public:
     typedef std::map<StatementAst*, StatementSet>  INextTable;
 
-    INextSolver(SimpleRoot ast, NextSolver *solver) :
+    INextSolver(SimpleRoot ast, NextQuerySolver *solver) :
         _ast(ast), _next_solver(solver)
     { }
 
@@ -40,7 +40,7 @@ class INextSolver {
 
   private:
     SimpleRoot _ast;
-    NextSolver *_next_solver;
+    NextQuerySolver *_next_solver;
     INextTable _inext_cache;
     INextTable _iprev_cache;
     INextTable _inext_partial_cache;

@@ -61,7 +61,7 @@ void INextSolver::solve_inext(StatementAst *statement, StatementSet& results) {
         union_set(results, _inext_cache[statement]);
         return;
     } else {
-        StatementSet direct_next = _next_solver->solve_next(statement);
+        StatementSet direct_next = _next_solver->solve_next_statement(statement);
         if(direct_next.size() == 0) {
             return;
         }
@@ -81,7 +81,7 @@ void INextSolver::solve_iprev(StatementAst *statement, StatementSet& results) {
         union_set(results, _iprev_cache[statement]);
         return;
     } else {
-        StatementSet direct_prev = _next_solver->solve_previous(statement);
+        StatementSet direct_prev = _next_solver->solve_prev_statement(statement);
         if(direct_prev.size() == 0) {
             return;
         }
@@ -95,8 +95,6 @@ void INextSolver::solve_iprev(StatementAst *statement, StatementSet& results) {
         }
     }
 }
-
-
 
 template <>
 bool INextSolver::validate<StatementAst, StatementAst>(
