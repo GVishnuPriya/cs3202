@@ -70,6 +70,10 @@ void ConditionSet::intersect_with(const ConditionSet& other) {
     }
 }
 
+void ConditionSet::clear() {
+    _set.clear();
+}
+
 bool ConditionSet::is_empty() const {
     return _set.empty();
 }

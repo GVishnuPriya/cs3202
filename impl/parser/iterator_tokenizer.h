@@ -77,8 +77,11 @@ class IteratorTokenizer : public SimpleTokenizer {
                 next_char();
                 return &_comma_token;
 
-
             break;
+            case '.':
+                next_char();
+                return &_dot_token;
+
             case '=':
                 next_char();
                 return &_equal_token;
@@ -111,12 +114,19 @@ class IteratorTokenizer : public SimpleTokenizer {
 
         }
 
-        if(isalpha(current_char())) {
+        if(isalpha(current_char()) || current_char() == '_') {
             std::string value;
             value += current_char();
-            while(isalnum(next_char())) {
+            next_char();
+            while(isalnum(current_char()) || current_char() == '_') {
                 value += current_char();
+                next_char();
             }
+            
+            if(value == "_") {
+                return &_wild_card_token;
+            }
+
             return set_current_token(new IdentifierToken(std::move(value)));
         }
 
@@ -162,9 +172,11 @@ class IteratorTokenizer : public SimpleTokenizer {
     CloseBracketToken   _close_bracket_token;
     SemiColonToken      _semi_colon_token;
     CommaToken          _comma_token;
+    DotToken            _dot_token;
     EqualToken          _equal_token;
     EOFToken            _eof_token;
     NewLineToken        _new_line_token;
+    WildCardToken       _wild_card_token;
     OperatorToken       _plus_token;
     OperatorToken       _minus_token;
     OperatorToken       _multiply_token;

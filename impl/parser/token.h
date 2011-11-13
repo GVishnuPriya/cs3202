@@ -128,6 +128,14 @@ class CommaToken : public SimpleToken {
     static TokenType type;
 };
 
+class DotToken : public SimpleToken { 
+  public:
+    virtual TokenType& get_type() {
+        return DotToken::type;
+    }
+
+    static TokenType type;
+};
 
 
 class SemiColonToken : public SimpleToken { 
@@ -166,7 +174,14 @@ class NewLineToken : public SimpleToken {
     static TokenType type;
 };
 
+class WildCardToken : public SimpleToken {
+  public:
+    virtual TokenType& get_type() {
+        return WildCardToken::type;
+    }
 
+    static TokenType type;
+};
 
 
 class OperatorToken : public SimpleToken {

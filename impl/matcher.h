@@ -11,10 +11,44 @@ namespace impl {
 using namespace simple;
 using namespace simple::impl;
 
+class WildCardQueryVariable : public QueryVariable {
+  public:
+    WildCardQueryVariable(SimplePredicate *pred) : 
+        _pred(pred) 
+    { }
+
+    bool is_bounded() const {
+        return false;
+    }
+
+    ConditionSet& get_conditions() {
+        _conditions.clear();
+        return _conditions;
+    }
+
+    void set_conditions(const ConditionSet& conditions) {
+        // no-op
+    }
+
+    void set_conditions(ConditionSet&& conditions) {
+        // no-op
+    }
+
+    SimplePredicate* get_predicate() {
+        return _pred.get();
+    }
+
+    virtual ~WildCardQueryVariable() { }
+
+  private:
+    ConditionSet                        _conditions;
+    std::unique_ptr<SimplePredicate>    _pred;
+};
+
 class SimpleQueryVariable : public QueryVariable {
   public:
-    SimpleQueryVariable(const std::string& name) :
-        _name(name), _is_bounded(false), _set()
+    SimpleQueryVariable(const std::string& name, SimplePredicate *pred) :
+        _name(name), _is_bounded(false), _set(), _pred(pred)
     { }
 
     bool is_bounded() const {
@@ -36,12 +70,17 @@ class SimpleQueryVariable : public QueryVariable {
         _set = std::move(conditions);
     }
 
+    SimplePredicate* get_predicate() {
+        return _pred.get();
+    }
+
     virtual ~SimpleQueryVariable() { }
 
   private:
     std::string _name;
     bool _is_bounded;
     ConditionSet _set;
+    std::unique_ptr<SimplePredicate> _pred;
 };
 
 class SimpleQueryMatcher : public QueryMatcher {
@@ -81,7 +120,18 @@ class SimpleQueryMatcher : public QueryMatcher {
                 left->get_conditions().union_with(_solver->solve_left(it->get()));
             }
         } else {
-            throw std::exception(); // not implemented at the moment
+            ConditionSet global_left = left->get_predicate()->global_set();
+            for(ConditionSet::iterator it = global_left.begin();
+                    it != global_left.end(); ++it)
+            {
+                ConditionSet right_result = _solver->solve_right(it->get());
+                if(!right_result.is_empty()) {
+                    right->get_conditions().union_with(right_result);
+                } else {
+                    global_left.remove(*(it--));
+                }
+            }
+            
         }
     }
 
@@ -99,6 +149,10 @@ class SimpleQueryMatcher : public QueryMatcher {
         } else {
             left->set_conditions(_solver->solve_left(right));
         }
+    }
+
+    bool validate(SimpleCondition *left, SimpleCondition *right) {
+        return _solver->validate(left, right);
     }
 
     virtual ~SimpleQueryMatcher() { }

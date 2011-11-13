@@ -53,8 +53,8 @@ am_unit_tests_OBJECTS = test_ast.$(OBJEXT) test_solver.$(OBJEXT) \
 	test_modifies.$(OBJEXT) test_condition.$(OBJEXT) \
 	test_next.$(OBJEXT) test_inext.$(OBJEXT) \
 	test_matcher.$(OBJEXT) test_parser.$(OBJEXT) \
-	test_tokenizer.$(OBJEXT) ../simple/ast.$(OBJEXT) \
-	../simple/condition_set.$(OBJEXT) \
+	test_predicate.$(OBJEXT) test_tokenizer.$(OBJEXT) \
+	../simple/ast.$(OBJEXT) ../simple/condition_set.$(OBJEXT) \
 	../simple/util/condition_utils.$(OBJEXT) \
 	../simple/util/ast_utils.$(OBJEXT) \
 	../impl/solvers/modifies.$(OBJEXT) \
@@ -180,6 +180,7 @@ unit_tests_SOURCES = \
   test_inext.cpp \
   test_matcher.cpp \
   test_parser.cpp \
+  test_predicate.cpp \
   test_tokenizer.cpp \
   ../simple/ast.cpp \
   ../simple/condition_set.cpp \
@@ -365,6 +366,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_next.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_parent.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_parser.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_predicate.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_solver.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_tokenizer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gtest/$(DEPDIR)/gtest-all.Po@am__quote@

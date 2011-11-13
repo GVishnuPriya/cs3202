@@ -279,6 +279,10 @@ class SimpleVariableAst : public VariableAst {
         visitor->visit_variable(this);
     }
 
+    ExprAst* clone() {
+        return new SimpleVariableAst(_var);
+    }
+
     ~SimpleVariableAst() { }
 
   private:
@@ -298,6 +302,10 @@ class SimpleConstAst : public ConstAst {
     }
     void accept_expr_visitor(ExprVisitor *visitor) {
         visitor->visit_const(this);
+    }
+
+    ExprAst* clone() {
+        return new SimpleConstAst(_value);
     }
 
     ~SimpleConstAst() { }
@@ -338,6 +346,10 @@ class SimpleBinaryOpAst : public BinaryOpAst {
 
     char get_op() {
         return _op;
+    }
+
+    ExprAst* clone() {
+        return new SimpleBinaryOpAst(_op, _lhs->clone(), _rhs->clone());
     }
 
     void accept_expr_visitor(ExprVisitor *visitor) {

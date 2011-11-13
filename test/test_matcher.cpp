@@ -63,8 +63,8 @@ TEST(MatcherTest, ModifiesTest) {
      * modified by stat1.
      */
     SimpleQueryMatcher matcher(solver);
-    SimpleQueryVariable qvar_v("V");
-    SimpleQueryVariable qvar_s("S");
+    SimpleQueryVariable qvar_v("V", NULL);
+    SimpleQueryVariable qvar_s("S", NULL);
     SimpleStatementCondition stat1_condition(stat1);
 
     matcher.solve_right(&stat1_condition, &qvar_v);
@@ -159,8 +159,8 @@ TEST(MatcherTest, NextTest) {
      * Get the next next statement after condition.
      */
     SimpleQueryMatcher next_matcher(next_solver);
-    SimpleQueryVariable qvar_s1("S1");
-    SimpleQueryVariable qvar_s2("S2");
+    SimpleQueryVariable qvar_s1("S1", NULL);
+    SimpleQueryVariable qvar_s2("S2", NULL);
     SimpleStatementCondition condition_condition(condition);
 
     next_matcher.solve_right(&condition_condition, &qvar_s1);
@@ -179,8 +179,8 @@ TEST(MatcherTest, NextTest) {
      * next to condition.
      */
     SimpleQueryMatcher modifies_matcher(modifies_solver);
-    SimpleQueryVariable qvar_t1("T1");
-    SimpleQueryVariable qvar_t2("T2");
+    SimpleQueryVariable qvar_t1("T1", NULL);
+    SimpleQueryVariable qvar_t2("T2", NULL);
     SimpleVariableCondition y_condition(var_y);
 
     ConditionSet t1_expected(new SimpleStatementCondition(stat1));

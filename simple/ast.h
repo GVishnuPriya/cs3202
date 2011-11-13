@@ -292,6 +292,7 @@ class ExprAst {
      * accept an ExprVisitor to determine the type of the expression node.
      */
     virtual void accept_expr_visitor(ExprVisitor*) = 0;
+    virtual ExprAst* clone() = 0;
 
     virtual ~ExprAst() { }
 };

@@ -67,6 +67,7 @@ class ConditionSet {
     void union_with(const ConditionSet& other);
     void intersect_with(const ConditionSet& other);
     void remove(ConditionPtr condition);
+    void clear();
 
     bool is_empty() const;
     bool equals(const ConditionSet& other) const;
