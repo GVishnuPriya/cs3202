@@ -25,6 +25,9 @@ namespace impl {
 
 SimpleQueryMatcher::SimpleQueryMatcher(QuerySolver *solver) : _solver(solver) { } 
 
+/*
+ * Note: Need to be careful in case both left and right are the same query variable
+ */
 std::vector<ConditionPair> SimpleQueryMatcher::solve_both(QueryVariable *left, QueryVariable *right) {
     std::vector<ConditionPair> pairs;
 
@@ -48,9 +51,14 @@ std::vector<ConditionPair> SimpleQueryMatcher::solve_both(QueryVariable *left, Q
             }
           }
         }
-        
-        left->set_conditions(std::move(new_left));
-        right->set_conditions(std::move(new_right));
+                
+        if(left == right) {
+            new_left.union_with(new_right);
+            left->set_conditions(std::move(new_left));
+        } else {
+            left->set_conditions(std::move(new_left));
+            right->set_conditions(std::move(new_right));
+        }
 
     /*
      * Left bounded, right unbounded
@@ -92,13 +100,14 @@ std::vector<ConditionPair> SimpleQueryMatcher::solve_both(QueryVariable *left, Q
     } else {
         ConditionSet global_left = left->get_predicate()->global_set();
         ConditionSet new_left;
+        ConditionSet new_right;
 
         for(ConditionSet::iterator left_it = global_left.begin();
                 left_it != global_left.end(); ++left_it)
         {
             ConditionSet right_results = _solver->solve_right(left_it->get());
             if(!right_results.is_empty()) {
-                right->get_conditions().union_with(right_results);
+                new_right.union_with(right_results);
                 new_left.insert(*left_it);
 
                 for(ConditionSet::iterator right_it = right_results.begin();
@@ -108,7 +117,14 @@ std::vector<ConditionPair> SimpleQueryMatcher::solve_both(QueryVariable *left, Q
                 }
             }
         }
-        left->set_conditions(std::move(new_left));
+
+        if(left == right) {
+            new_left.union_with(new_right);
+            left->set_conditions(std::move(new_left));
+        } else {
+            left->set_conditions(std::move(new_left));
+            right->set_conditions(std::move(new_right));
+        }
     }
 
     return pairs;

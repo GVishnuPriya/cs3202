@@ -21,9 +21,11 @@
 #include "simple/matcher.h"
 #include <memory>
 #include <string>
-#include <list>
+#include <vector>
 
 namespace simple {
+
+class PqlQueryVisitor;
 
 class PqlQuery {
   public:
@@ -65,22 +67,64 @@ class PqlValidateQuery : public PqlQuery {
     virtual ~PqlValidateQuery() { }
 };
 
+class PqlQueryVisitor {
+  public:
+    virtual void visit_solve_left(PqlSolveLeftQuery *query) = 0;
+    virtual void visit_solve_right(PqlSolveRightQuery *query) = 0;
+    virtual void visit_solve_both(PqlSolveBothQuery *query) = 0;
+    virtual void visit_validate(PqlValidateQuery *query) = 0;
+
+    virtual ~PqlQueryVisitor() { }
+};
+
+class PqlSelectorVisitor;
+
+class PqlSelector {
+  public:
+    virtual accept_pql_selection_visitor() = 0;
+
+    virtual ~PqlSelection() { }
+};
+
+class PqlSingleVariableSelector : public PqlSelector {
+  public:
+    virtual std::string get_qvar_name() = 0;
+
+    virtual ~PqlSingleVariableSelector() { }
+};
+
+class PqlBooleanSelector : public PqlSelector {
+  public:
+    virtual ~PqlBooleanSelector() { }
+};
+
+class PqlTupleSelector : public PqlSelector {
+  public:
+    virtual std::vector<std::string> get_tuples() = 0;
+
+    virtual ~PqlTupleSelector() { }
+};
+
+class PqlSelectorVisitor {
+  public:
+    virtual void visit_single_variable(PqlSingleVariableSelector *selector) = 0;
+    virtual void visit_boolean(PqlBooleanSelector *selector) = 0;
+    virtual void visit_tuple(PqlTupleSelector *selector) = 0;
+
+    virtual ~PqlSelectorVisitor() { }
+};
+
 struct PqlQuerySet {
   public:
     PqlQuerySet() : boolean_mode(false) { }
 
-    std::list< std::unique_ptr<PqlQuery> >  
-    queries;
+    std::vector< std::shared_ptr<PqlQuery> >    queries;
     
-    std::shared_ptr<QVarTable> 
-    qvars;
+    std::map<std::string, QVarPtr>              qvars_table;
     
-    std::list< std::shared_ptr<QueryVariable> >
-    selected_qvars;
+    std::shared_ptr<PqlSelector>                selector;
 
     bool boolean_mode;
-  private:
-    PqlQuerySet(const PqlQuerySet& other); // non-copyable
 };
 
-}
+} // namespace simple

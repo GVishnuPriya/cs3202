@@ -62,5 +62,7 @@ class QVarTable {
     virtual ~QVarTable() { }
 };
 
+typedef std::shared_ptr<QueryVariable> QVarPtr;
 
-}
+
+} // namespace simple
