@@ -1,6 +1,8 @@
 
 #pragma once
 
+#include "simple/condition_set.h"
+
 namespace simple {
 
 class SimplePredicate {

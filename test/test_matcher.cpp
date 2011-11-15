@@ -1,5 +1,6 @@
 
 #include "gtest/gtest.h"
+#include "impl/qvar.h"
 #include "impl/matcher.h"
 #include "impl/ast.h"
 #include "impl/condition.h"

@@ -56,7 +56,7 @@ am_unit_tests_OBJECTS = test_ast.$(OBJEXT) test_solver.$(OBJEXT) \
 	test_predicate.$(OBJEXT) test_tokenizer.$(OBJEXT) \
 	../simple/ast.$(OBJEXT) ../simple/condition_set.$(OBJEXT) \
 	../simple/util/condition_utils.$(OBJEXT) \
-	../simple/util/ast_utils.$(OBJEXT) \
+	../simple/util/ast_utils.$(OBJEXT) ../impl/matcher.$(OBJEXT) \
 	../impl/solvers/modifies.$(OBJEXT) \
 	../impl/solvers/next.$(OBJEXT) ../impl/solvers/inext.$(OBJEXT) \
 	../impl/solvers/call.$(OBJEXT) ../impl/solvers/icall.$(OBJEXT) \
@@ -105,7 +105,7 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
-LIBS = @LIBS@
+LIBS = -pthread
 LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
 MKDIR_P = @MKDIR_P@
@@ -186,6 +186,7 @@ unit_tests_SOURCES = \
   ../simple/condition_set.cpp \
   ../simple/util/condition_utils.cpp \
   ../simple/util/ast_utils.cpp \
+  ../impl/matcher.cpp \
   ../impl/solvers/modifies.cpp \
   ../impl/solvers/next.cpp \
   ../impl/solvers/inext.cpp \
@@ -195,8 +196,7 @@ unit_tests_SOURCES = \
   gtest/gtest-all.cc \
   test_main.cpp
 
-AM_CPPFLAGS = -lpthread -std=c++0x -Wall
-AM_LDFLAGS = -lpthread
+AM_CPPFLAGS = -std=c++0x -Wall
 all: all-am
 
 .SUFFIXES:
@@ -289,6 +289,14 @@ clean-binPROGRAMS:
 	../simple/util/$(DEPDIR)/$(am__dirstamp)
 ../simple/util/ast_utils.$(OBJEXT): ../simple/util/$(am__dirstamp) \
 	../simple/util/$(DEPDIR)/$(am__dirstamp)
+../impl/$(am__dirstamp):
+	@$(MKDIR_P) ../impl
+	@: > ../impl/$(am__dirstamp)
+../impl/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../impl/$(DEPDIR)
+	@: > ../impl/$(DEPDIR)/$(am__dirstamp)
+../impl/matcher.$(OBJEXT): ../impl/$(am__dirstamp) \
+	../impl/$(DEPDIR)/$(am__dirstamp)
 ../impl/solvers/$(am__dirstamp):
 	@$(MKDIR_P) ../impl/solvers
 	@: > ../impl/solvers/$(am__dirstamp)
@@ -327,6 +335,7 @@ unit_tests$(EXEEXT): $(unit_tests_OBJECTS) $(unit_tests_DEPENDENCIES)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f ../impl/matcher.$(OBJEXT)
 	-rm -f ../impl/parser/token.$(OBJEXT)
 	-rm -f ../impl/solvers/call.$(OBJEXT)
 	-rm -f ../impl/solvers/icall.$(OBJEXT)
@@ -342,6 +351,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@../impl/$(DEPDIR)/matcher.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/parser/$(DEPDIR)/token.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/solvers/$(DEPDIR)/call.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/solvers/$(DEPDIR)/icall.Po@am__quote@
@@ -513,6 +523,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f ../impl/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../impl/$(am__dirstamp)
 	-rm -f ../impl/parser/$(DEPDIR)/$(am__dirstamp)
 	-rm -f ../impl/parser/$(am__dirstamp)
 	-rm -f ../impl/solvers/$(DEPDIR)/$(am__dirstamp)
@@ -532,7 +544,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ../impl/parser/$(DEPDIR) ../impl/solvers/$(DEPDIR) ../simple/$(DEPDIR) ../simple/util/$(DEPDIR) ./$(DEPDIR) gtest/$(DEPDIR)
+	-rm -rf ../impl/$(DEPDIR) ../impl/parser/$(DEPDIR) ../impl/solvers/$(DEPDIR) ../simple/$(DEPDIR) ../simple/util/$(DEPDIR) ./$(DEPDIR) gtest/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -578,7 +590,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ../impl/parser/$(DEPDIR) ../impl/solvers/$(DEPDIR) ../simple/$(DEPDIR) ../simple/util/$(DEPDIR) ./$(DEPDIR) gtest/$(DEPDIR)
+	-rm -rf ../impl/$(DEPDIR) ../impl/parser/$(DEPDIR) ../impl/solvers/$(DEPDIR) ../simple/$(DEPDIR) ../simple/util/$(DEPDIR) ./$(DEPDIR) gtest/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

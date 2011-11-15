@@ -21,6 +21,7 @@ unit_tests_SOURCES = \
   ../simple/condition_set.cpp \
   ../simple/util/condition_utils.cpp \
   ../simple/util/ast_utils.cpp \
+  ../impl/matcher.cpp \
   ../impl/solvers/modifies.cpp \
   ../impl/solvers/next.cpp \
   ../impl/solvers/inext.cpp \
@@ -30,5 +31,5 @@ unit_tests_SOURCES = \
   gtest/gtest-all.cc \
   test_main.cpp
 
-AM_CPPFLAGS = -lpthread -std=c++0x -Wall
-AM_LDFLAGS = -lpthread
+LIBS = -pthread
+AM_CPPFLAGS = -std=c++0x -Wall

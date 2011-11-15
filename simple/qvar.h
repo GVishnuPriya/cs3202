@@ -2,6 +2,8 @@
 #pragma once
 
 #include <memory>
+#include <string>
+#include "simple/predicate.h"
 
 namespace simple {
 
@@ -30,6 +32,8 @@ class QueryVariable {
 
     virtual SimplePredicate* get_predicate() = 0;
 
+    virtual std::string get_name() = 0;
+
     virtual ~QueryVariable() { }
 };
 
@@ -39,7 +43,7 @@ class QVarTable {
     virtual void insert(const std::string& name, QueryVariable *qvar) = 0;
 
     virtual ~QVarTable() { }
-}
+};
 
 
 }

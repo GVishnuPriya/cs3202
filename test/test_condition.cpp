@@ -38,12 +38,8 @@ TEST(ConditionTest, EqualityTest) {
     EXPECT_TRUE(statement_condition1 != statement_condition3);
     EXPECT_FALSE(statement_condition1 == statement_condition3);
 
-    // statement2 is after statement1 in the memory address on stack
-    // so because comparison between statement conditions is based on
-    // pointer address of the statements, condition1 > condition3
-    EXPECT_TRUE(&statement1 > &statement2);
-    EXPECT_TRUE(statement_condition1 > statement_condition3);
-    EXPECT_FALSE(statement_condition1 < statement_condition3);
+    EXPECT_EQ(statement_condition1 > statement_condition3, &statement1 > &statement2);
+    EXPECT_EQ(statement_condition1 < statement_condition3, &statement1 < &statement2);
 
 
     /*
@@ -89,9 +85,8 @@ TEST(ConditionTest, EqualityTest) {
     EXPECT_FALSE(is_same_condition(var_condition3.get(), proc_condition2.get()));
 
     EXPECT_TRUE(proc_condition1 != proc_condition3);
-    EXPECT_TRUE(&proc1 > &proc2);
-    EXPECT_TRUE(proc_condition3 < proc_condition1);
-    EXPECT_FALSE(proc_condition1 < proc_condition3);
+    EXPECT_EQ(proc_condition3 < proc_condition1, &proc1 > &proc2);
+    EXPECT_EQ(proc_condition1 < proc_condition3, &proc1 < &proc2);
 
     /*
      * Test on different condition types
