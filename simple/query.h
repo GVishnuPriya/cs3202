@@ -30,7 +30,7 @@ class PqlQueryVisitor;
 class PqlQuery {
   public:
     virtual QueryMatcher* get_matcher() = 0;
-    virtual accept_pql_query_visitor(PqlQueryVisitor *visitor) = 0;
+    virtual void accept_pql_query_visitor(PqlQueryVisitor *visitor) = 0;
 
     virtual ~PqlQuery() { }
 };
@@ -81,7 +81,7 @@ class PqlSelectorVisitor;
 
 class PqlSelector {
   public:
-    virtual accept_pql_selection_visitor() = 0;
+    virtual accept_pql_selector_visitor(PqlSelectorVisitor *visitor) = 0;
 
     virtual ~PqlSelection() { }
 };

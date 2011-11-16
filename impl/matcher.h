@@ -57,8 +57,6 @@ class SimpleQueryMatcher : public QueryMatcher {
     void solve_both_same_qvar(const ConditionSet& values, ConditionSet& new_values,
                         std::vector<ConditionPair>& result_pairs);
 
-    void assign_conditions(QueryVariable *qvar, ConditionSet& result);
-
     virtual ~SimpleQueryMatcher();
 
   private:

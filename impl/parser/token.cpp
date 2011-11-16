@@ -25,6 +25,8 @@ TokenType OpenBraceToken::type("OpenBraceToken");
 TokenType CloseBraceToken::type("OpenBraceToken");
 TokenType OpenBracketToken::type("OpenBracketToken");
 TokenType CloseBracketToken::type("CloseBracketToken");
+TokenType LessThanToken::type("LessThanToken");
+TokenType MoreThanToken::type("MoreThanToken");
 TokenType SemiColonToken::type("SemiColonToken");
 TokenType CommaToken::type("CommaToken");
 TokenType DotToken::type("DotToken");

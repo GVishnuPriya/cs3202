@@ -37,7 +37,7 @@ class PredicateGenerator :
 
     const ConditionSet& global_set();
 
-    void filter_set(ConditionSet& conditions);
+    void filter(ConditionSet& conditions);
 
     void visit_assignment(AssignmentAst *assign);
     void visit_conditional(ConditionalAst *condition);
@@ -47,6 +47,9 @@ class PredicateGenerator :
     void visit_variable(VariableAst *var);
     void visit_const(ConstAst *val);
     void visit_binary_op(BinaryOpAst *bin);
+
+    std::string get_predicate_name();
+    static std::string get_name();
   private:
     void create_global_set();
     void filter_statement_list(StatementAst *statement);
@@ -65,6 +68,8 @@ class WildCardPredicate {
 
     template <typename Condition>
     bool evaluate(Condition *condition);
+
+    static std::string get_name();
 };
 
 class ProcPredicate {
@@ -73,6 +78,8 @@ class ProcPredicate {
 
     template <typename Condition>
     bool evaluate(Condition *condition);
+
+    static std::string get_name();
 };
 
 template <>
@@ -80,13 +87,14 @@ bool ProcPredicate::evaluate<ProcAst>(ProcAst *proc);
 
 class ProcPredicateWithName {
   public:
-    ProcPredicateWithName(const std::string& name);
+    ProcPredicateWithName(const std::string& proc_name);
 
     template <typename Condition>
     bool evaluate(Condition *condition);
 
+    static std::string get_name();
   private:
-    std::string _name;
+    std::string _proc_name;
 };
 
 template <>
@@ -98,7 +106,69 @@ class StatementPredicate {
 
     template <typename Condition>
     bool evaluate(Condition *condition);
+
+    static std::string get_name();
 };
+
+class AssignPredicate {
+  public:
+    AssignPredicate();
+
+    template <typename Condition>
+    bool evaluate(Condition *condition);
+
+    static std::string get_name();
+};
+
+class ConditionalPredicate {
+  public:
+    ConditionalPredicate();
+
+    template <typename Condition>
+    bool evaluate(Condition *condition);
+
+    static std::string get_name();
+};
+
+class WhilePredicate {
+  public:
+    WhilePredicate();
+
+    template <typename Condition>
+    bool evaluate(Condition *condition);
+
+    static std::string get_name();
+};
+
+class CallPredicate {
+  public:
+    CallPredicate();
+
+    template <typename Condition>
+    bool evaluate(Condition *condition);
+
+    static std::string get_name();
+};
+
+class VariablePredicate {
+  public:
+    VariablePredicate();
+
+    template <typename Condition>
+    bool evaluate(Condition *condition);
+
+    static std::string get_name();
+};
+
+typedef PredicateGenerator<WildCardPredicate>       SimpleWildCardPredicate;
+typedef PredicateGenerator<ProcPredicate>           SimpleProcPredicate;
+typedef PredicateGenerator<StatementPredicate>      SimpleStatementPredicate;
+typedef PredicateGenerator<AssignPredicate>         SimpleAssignmentPredicate;
+typedef PredicateGenerator<WhilePredicate>          SimpleWhilePredicate;
+typedef PredicateGenerator<ConditionalPredicate>    SimpleConditionalPredicate;
+typedef PredicateGenerator<CallPredicate>           SimpleCallPredicate;
+typedef PredicateGenerator<VariablePredicate>       SimpleVariablePredicate;
+
 
 template <>
 bool StatementPredicate::evaluate<AssignmentAst>(AssignmentAst *assign);
@@ -112,58 +182,20 @@ bool StatementPredicate::evaluate<ConditionalAst>(ConditionalAst *condition);
 template <>
 bool StatementPredicate::evaluate<CallAst>(CallAst *call);
 
-class AssignPredicate {
-  public:
-    AssignPredicate();
-
-    template <typename Condition>
-    bool evaluate(Condition *condition);
-};
-
 template <>
 bool AssignPredicate::evaluate<AssignmentAst>(AssignmentAst *assign);
-
-class ConditionalPredicate {
-  public:
-    ConditionalPredicate();
-
-    template <typename Condition>
-    bool evaluate(Condition *condition);
-};
 
 template <>
 bool ConditionalPredicate::evaluate<ConditionalAst>(ConditionalAst *condition);
 
-class WhilePredicate {
-  public:
-    WhilePredicate();
-
-    template <typename Condition>
-    bool evaluate(Condition *condition);
-};
-
 template <>
 bool WhilePredicate::evaluate<WhileAst>(WhileAst *loop);
 
-class VariablePredicate {
-  public:
-    VariablePredicate();
-
-    template <typename Condition>
-    bool evaluate(Condition *condition);
-};
+template <>
+bool CallPredicate::evaluate<CallAst>(CallAst *call);
 
 template <>
 bool VariablePredicate::evaluate<SimpleVariable>(SimpleVariable *variable);
-
-typedef PredicateGenerator<WildCardPredicate>   SimpleWildCardPredicate;
-typedef PredicateGenerator<ProcPredicate>       SimpleProcPredicate;
-typedef PredicateGenerator<StatementPredicate>  SimpleStatementPredicate;
-typedef PredicateGenerator<AssignPredicate>     SimpleAssignmentPredicate;
-typedef PredicateGenerator<WhilePredicate>      SimpleWhilePredicate;
-typedef PredicateGenerator<ConditionalPredicate> SimpleConditionalPredicate;
-typedef PredicateGenerator<VariablePredicate>   SimpleVariablePredicate;
-
 
 
 }

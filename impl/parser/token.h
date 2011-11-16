@@ -136,6 +136,24 @@ class CloseBracketToken : public SimpleToken {
     static TokenType type;
 };
 
+class LessThanToken : public SimpleToken {
+  public:
+    virtual TokenType& get_type() {
+        return LessThanToken::type;
+    }
+
+    static TokenType type;
+};
+
+class MoreThanToken : public SimpleToken {
+  public:
+    virtual TokenType& get_type() {
+        return MoreThanToken::type;
+    }
+
+    static TokenType type;
+};
+
 class CommaToken : public SimpleToken { 
   public:
     virtual TokenType& get_type() {

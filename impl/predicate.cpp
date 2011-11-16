@@ -35,9 +35,20 @@ const ConditionSet& PredicateGenerator<Predicate>::global_set() {
 
 
 template <typename Predicate>
-void PredicateGenerator<Predicate>::filter_set(ConditionSet& conditions) {
+void PredicateGenerator<Predicate>::filter(ConditionSet& conditions) {
     conditions.intersect_with(_global_set);
 }
+
+template <typename Predicate>
+std::string PredicateGenerator<Predicate>::get_name() {
+    return Predicate::get_name();
+}
+
+template <typename Predicate>
+std::string PredicateGenerator<Predicate>::get_predicate_name() {
+    return get_name();
+}
+
 
 template <typename Predicate>
 void PredicateGenerator<Predicate>::visit_assignment(AssignmentAst *assign) {
@@ -137,6 +148,10 @@ bool WildCardPredicate::evaluate(Condition *condition) {
     return true;
 }
 
+std::string WildCardPredicate::get_name() {
+    return "wildcard";
+}
+
 ProcPredicate::ProcPredicate() { }
 
 template <typename Condition>
@@ -149,7 +164,11 @@ bool ProcPredicate::evaluate<ProcAst>(ProcAst *proc) {
     return true;
 }
 
-ProcPredicateWithName::ProcPredicateWithName(const std::string& name) : _name(name) { }
+std::string ProcPredicate::get_name() {
+    return "procedure";
+}
+
+ProcPredicateWithName::ProcPredicateWithName(const std::string& name) : _proc_name(name) { }
 
 template <typename Condition>
 bool ProcPredicateWithName::evaluate(Condition *condition) {
@@ -158,7 +177,11 @@ bool ProcPredicateWithName::evaluate(Condition *condition) {
 
 template <>
 bool ProcPredicateWithName::evaluate<ProcAst>(ProcAst *proc) {
-    return proc->get_name() == _name;
+    return proc->get_name() == _proc_name;
+}
+
+std::string ProcPredicateWithName::get_name() {
+    return "named_procedure";
 }
 
 StatementPredicate::StatementPredicate() { }
@@ -188,6 +211,10 @@ bool StatementPredicate::evaluate<CallAst>(CallAst *call) {
     return true;
 }
 
+std::string StatementPredicate::get_name() {
+    return "statement";
+}
+
 AssignPredicate::AssignPredicate() { }
 
 template <typename Condition>
@@ -198,6 +225,10 @@ bool AssignPredicate::evaluate(Condition *condition) {
 template <>
 bool AssignPredicate::evaluate<AssignmentAst>(AssignmentAst *assign) {
     return true;
+}
+
+std::string AssignPredicate::get_name() {
+    return "assign";
 }
 
 ConditionalPredicate::ConditionalPredicate() { }
@@ -212,6 +243,10 @@ bool ConditionalPredicate::evaluate<ConditionalAst>(ConditionalAst *condition) {
     return true;
 }
 
+std::string ConditionalPredicate::get_name() {
+    return "if";
+}
+
 WhilePredicate::WhilePredicate() { }
 
 template <typename Condition>
@@ -224,6 +259,26 @@ bool WhilePredicate::evaluate<WhileAst>(WhileAst *loop) {
     return true;
 }
 
+std::string WhilePredicate::get_name() {
+    return "while";
+}
+
+CallPredicate::CallPredicate() { }
+
+template <typename Condition>
+bool CallPredicate::evaluate(Condition *condition) {
+    return false;
+}
+
+template <>
+bool CallPredicate::evaluate<CallAst>(CallAst *call) {
+    return true;
+}
+
+std::string CallPredicate::get_name() {
+    return "call";
+}
+
 VariablePredicate::VariablePredicate() { }
 
 template <typename Condition>
@@ -234,6 +289,10 @@ bool VariablePredicate::evaluate(Condition *condition) {
 template <>
 bool VariablePredicate::evaluate<SimpleVariable>(SimpleVariable *variable) {
     return true;
+}
+
+std::string VariablePredicate::get_name() {
+    return "variable";
 }
 
 template class PredicateGenerator<WildCardPredicate>;

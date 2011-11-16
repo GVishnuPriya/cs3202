@@ -100,11 +100,6 @@ void SimpleQueryMatcher::solve_both_same_qvar(const ConditionSet& values,
     }
 }
 
-void SimpleQueryMatcher::assign_conditions(QueryVariable *qvar, ConditionSet& result) {
-    result.intersect_with(qvar->get_predicate()->global_set());
-    qvar->set_conditions(std::move(result));
-}
-
 /*
  * TODO: Filter end results with predicate
  */
@@ -119,7 +114,7 @@ std::vector<ConditionPair> SimpleQueryMatcher::solve_both(QueryVariable *left, Q
             ConditionSet new_values;
             solve_both_same_qvar(left->get_conditions(), new_values, pairs);
 
-            assign_conditions(left, new_values);
+            left->set_conditions(std::move(new_values));
         } else {
             ConditionSet new_left;
             ConditionSet new_right;
@@ -127,8 +122,8 @@ std::vector<ConditionPair> SimpleQueryMatcher::solve_both(QueryVariable *left, Q
             solve_both_diff_qvar(left->get_conditions(), right->get_conditions(),
                     new_left, new_right, pairs);
 
-            assign_conditions(left, new_left);
-            assign_conditions(right, new_right);
+            left->set_conditions(std::move(new_left));
+            right->set_conditions(std::move(new_right));
         }
 
     /*
@@ -140,8 +135,10 @@ std::vector<ConditionPair> SimpleQueryMatcher::solve_both(QueryVariable *left, Q
 
         solve_both_from_left(left->get_conditions(), new_left, new_right, pairs);
 
-        assign_conditions(left, new_left);
-        assign_conditions(right, new_right);
+        left->set_conditions(std::move(new_left));
+
+        right->get_predicate()->filter(new_right);
+        right->set_conditions(std::move(new_right));
 
     /*
      * Left unbounded, right bounded
@@ -152,8 +149,10 @@ std::vector<ConditionPair> SimpleQueryMatcher::solve_both(QueryVariable *left, Q
 
         solve_both_from_right(right->get_conditions(), new_left, new_right, pairs);
 
-        assign_conditions(left, new_left);
-        assign_conditions(right, new_right);
+        left->get_predicate()->filter(new_left);
+        left->set_conditions(std::move(new_left));
+
+        right->set_conditions(std::move(new_right));
 
     /*
      * Both unbounded
@@ -164,7 +163,9 @@ std::vector<ConditionPair> SimpleQueryMatcher::solve_both(QueryVariable *left, Q
         if(left == right) {
             ConditionSet new_values;
             solve_both_same_qvar(global_left, new_values, pairs);
-            assign_conditions(left, new_values);
+
+            left->get_predicate()->filter(new_values);
+            left->set_conditions(std::move(new_values));
         } else {
             ConditionSet global_right = right->get_predicate()->global_set();
 
@@ -173,8 +174,8 @@ std::vector<ConditionPair> SimpleQueryMatcher::solve_both(QueryVariable *left, Q
 
             solve_both_diff_qvar(global_left, global_right, new_left, new_right, pairs);
 
-            assign_conditions(left, new_left);
-            assign_conditions(right, new_right);
+            left->set_conditions(std::move(new_left));
+            right->set_conditions(std::move(new_right));
         }
     }
 

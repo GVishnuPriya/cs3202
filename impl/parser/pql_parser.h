@@ -23,6 +23,8 @@
 #include <exception>
 #include "simple/query.h"
 #include "impl/parser/tokenizer.h"
+#include "impl/query.h"
+#include "impl/qvar.h"
 
 namespace simple {
 namespace parser {
@@ -48,26 +50,8 @@ class SimplePqlParser {
                 parse_predicate();
             }
         }
-    }
-    
-   template <typename Token>
-    Token* current_token_as() {
-        return token_cast<Token>(current_token());
-    }
 
-  protected:
-    template <typename Token>
-    Token* next_token_as() {
-        return token_cast<Token>(next_token());
-    }
-
-    template <typename Token>
-    bool current_token_is() {
-        if(try_token<Token>(current_token()) != NULL) {
-            return true;
-        } else {
-            return false;
-        }
+        return _query_set;
     }
 
     void parse_predicate() {
@@ -76,26 +60,51 @@ class SimplePqlParser {
         SimplePredicate *pred;
 
         if(first_word == "PROCEDURE") {
-            pred = _pred_table->get_predicate("procedure");
+            pred = get_or_create_predicate<SimpleProcPredicate>();
         } else if(first_word == "PROG_LINE" || first_word == "STMT" || 
                 first_word == "STMTLST") {
-            pred = _pred_table->get_predicate("statement");
+            pred = get_or_create_predicate<SimpleStatementPredicate>();
         } else if(first_word == "ASSIGN") {
-            pred = _pred_table->get_predicate("assignment");
+            pred = get_or_create_predicate<SimpleAssignmentPredicate>();
         } else if(first_word == "WHILE") {
-            pred = _pred_table->get_predicate("while");
+            pred = get_or_create_predicate<SimpleWhilePredicate>();
         } else if(first_word == "IF") {
-            pred = _pred_table->get_predicate("conditional");
+            pred = get_or_create_predicate<SimpleConditionalPredicate>();
         } else if(first_word == "VAR" || first_word == "VARIABLE") {
-            pred = _pred_table->get_predicate("variable");
+            pred = get_or_create_predicate<SimpleVariablePredicate>();
         } else if(first_word == "CALL") {
-            pred = _pred_table->get_predicate("call");
+            pred = get_or_create_predicate<SimpleCallPredicate>();
         } else {
             throw PqlParserError();
         }
 
         next_token(); // eat predicate keyword
         parse_query_variables(pred);
+    }
+
+    void parse_query_variables(SimplePredicate *pred) {
+        while(true) {
+            std::string qvar_name = current_token_as<IdentifierToken>()->get_content();
+
+            // the query variable should not be defined twice
+            if(_query_set.qvars_table.count(qvar_name) > 0) {
+                throw PqlParserError();
+            }
+
+            QueryVariable *qvar = new SimpleQueryVariable(var_name, pred);
+            _query_set.qvars_table[var_name] = QVarPtr(qvar);
+
+            next_token(); // eat var name
+
+            if(current_token_is<SemiColonToken>()) {
+                next_token(); // eat ';'
+                return;
+            } else {
+                // if it's not ';', it must be a comma ','
+                current_token_as<CommaToken>();
+                next_token(); // eat ','
+            }
+        }
     }
 
     void parse_main_query() {
@@ -143,28 +152,57 @@ class SimplePqlParser {
         }
     }
 
-    void parse_query_variables(SimplePredicate *pred) {
-        while(true) {
-            std::string var_name = current_token_as_keyword();
-
-            // the query variable should not be defined twice
-            if(qvars()->get_qvar(var_name) != NULL) {
-                throw PqlParserError();
-            }
-
-            QueryVariable *qvar = new SimpleQueryVariable(var_name, pred);
-            qvars()->insert(var_name, qvar);
+    PqlSelector* parse_selector() {
+        if(current_token_is<LessThanToken>()) {
+            return parse_tuple_selector();
+        } else if(current_token_is<IdentifierToken>() 
+                && current_token_as_keyword() === "BOOLEAN") 
+        {
+            next_token(); // eat 'BOOLEAN'
+            return new SimplePqlBooleanSelector();
+        } else {
+            std::string selected_var = current_token_as<
+                    IdentifierToken>()->get_content();
 
             next_token(); // eat var name
+            return new SimplePqlSingleVariableSelector(selected_var);
+        }
+    }
 
-            if(current_token_is<SemiColonToken>()) {
-                next_token(); // eat ';'
-                return;
-            } else {
-                // if it's not ';', it must be a comma ','
-                current_token_as<CommaToken>();
-                next_token(); // eat ','
-            }
+    QueryMatcher* parse_criteria() {
+        std::string solver_name = current_token_as_keyword();
+        next_token();
+
+        if(current_token_is<OperatorToken>() &&
+                current_token_as<OperatorToken>()->get_op() == '*') 
+        {
+            solver_name = std::string("I") + solver_name;
+            next_token();
+        }
+
+        current_token_as<OpenBracketToken>();
+        next_token();
+
+        
+    }
+    
+   template <typename Token>
+    Token* current_token_as() {
+        return token_cast<Token>(current_token());
+    }
+
+  protected:
+    template <typename Token>
+    Token* next_token_as() {
+        return token_cast<Token>(next_token());
+    }
+
+    template <typename Token>
+    bool current_token_is() {
+        if(try_token<Token>(current_token()) != NULL) {
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -191,13 +229,30 @@ class SimplePqlParser {
         return _query_set->qvars.get();
     }
 
+    template <typename Predicate>
+    SimplePredicate* get_or_create_predicate() {
+        std::string pred_name = Predicate::get_name();
+
+        if(_predicate_table.count(pred_name) == 0) {
+            SimplePredicate *pred = new Predicate(_ast);
+            _predicate_table[pred_name] = PredicatePtr(pred);
+            return pred;
+        } else {
+            return _predicate_table[pred_name].get();
+        }
+    }
+
 
   private:
     std::unique_ptr<SimpleTokenizer> _tokenizer;
-    MatcherTable    *_matcher_table;
-    PredicateTable  *_predicate_table;
 
-    std::shared_ptr<PqlQuerySet> _query_set;
+    SimpleRoot      _ast;
+    MatcherTable    *_matcher_table;
+
+    std::map<std::string, PredicatePtr>
+    _predicate_table;
+
+    PqlQuerySet     _query_set;
 
     SimpleToken     *_current_token;
 };

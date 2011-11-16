@@ -29,7 +29,7 @@ using namespace simple;
 
 class WildCardQueryVariable : public QueryVariable {
   public:
-    WildCardQueryVariable(std::shared_ptr<SimplePredicate> pred) : 
+    WildCardQueryVariable(PredicatePtr pred) : 
         _pred(pred) 
     { }
 
@@ -61,14 +61,14 @@ class WildCardQueryVariable : public QueryVariable {
     virtual ~WildCardQueryVariable() { }
 
   private:
-    ConditionSet                        _conditions;
-    std::shared_ptr<SimplePredicate>    _pred;
+    ConditionSet    _conditions;
+    PredicatePtr    _pred;
 };
 
 class SimpleQueryVariable : public QueryVariable {
   public:
     SimpleQueryVariable(
-        const std::string& name, std::shared_ptr<SimplePredicate> pred) :
+        const std::string& name, PredicatePtr pred) :
         _name(name), _is_bounded(false), _set(), _pred(pred)
     { }
 
@@ -99,13 +99,17 @@ class SimpleQueryVariable : public QueryVariable {
         return _name;
     }
 
+    void set_predicate(PredicatePtr pred) {
+        _pred = pred;
+    }
+
     virtual ~SimpleQueryVariable() { }
 
   private:
     std::string     _name;
     bool            _is_bounded;
     ConditionSet    _set;
-    std::shared_ptr<SimplePredicate> _pred;
+    PredicatePtr    _pred;
 };
 
 }

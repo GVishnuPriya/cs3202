@@ -54,15 +54,16 @@ class QueryVariable {
     virtual ~QueryVariable() { }
 };
 
+typedef std::shared_ptr<QueryVariable> QVarPtr;
+
 class QVarTable {
   public:
-    virtual std::shared_ptr<QueryVariable> get_qvar(const std::string& name) const = 0;
-    virtual void insert(const std::string& name, QueryVariable *qvar) = 0;
+    virtual QVarPtr get_qvar(const std::string& name) const = 0;
+    virtual void insert(const std::string& name, QVarPtr qvar) = 0;
 
     virtual ~QVarTable() { }
 };
 
-typedef std::shared_ptr<QueryVariable> QVarPtr;
 
 
 } // namespace simple

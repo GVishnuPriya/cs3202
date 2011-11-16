@@ -19,6 +19,7 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 #include "simple/qvar.h"
 #include "simple/predicate.h"
 #include "simple/condition.h"
@@ -45,6 +46,8 @@ class QueryMatcher {
 
     virtual ~QueryMatcher() { }
 };
+
+typedef std::shared_ptr<QueryMatcher>   MatcherPtr;
 
 class MatcherTable {
   public:
