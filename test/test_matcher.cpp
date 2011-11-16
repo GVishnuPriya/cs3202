@@ -21,6 +21,7 @@
 #include "impl/matcher.h"
 #include "impl/ast.h"
 #include "impl/condition.h"
+#include "impl/predicate.h"
 #include "impl/solvers/modifies.h"
 #include "impl/solvers/next.h"
 #include "simple/util/solver_generator.h"
@@ -58,7 +59,7 @@ TEST(MatcherTest, ModifiesTest) {
     
     SimpleSolverGenerator<ModifiesSolver> *solver = 
         new SimpleSolverGenerator<ModifiesSolver>(
-        new ModifiesSolver(root));
+            new ModifiesSolver(root));
 
     ModifiesSolver *modifies = solver->get_solver();
 
@@ -80,9 +81,11 @@ TEST(MatcherTest, ModifiesTest) {
      * Select all conditions that modifies the same variable that is
      * modified by stat1.
      */
+    std::shared_ptr<SimplePredicate> pred(new SimpleWildCardPredicate(root));
+
     SimpleQueryMatcher matcher(solver);
-    SimpleQueryVariable qvar_v("V", NULL);
-    SimpleQueryVariable qvar_s("S", NULL);
+    SimpleQueryVariable qvar_v("V", pred);
+    SimpleQueryVariable qvar_s("S", pred);
     SimpleStatementCondition stat1_condition(stat1);
 
     matcher.solve_right(&stat1_condition, &qvar_v);
@@ -112,26 +115,31 @@ TEST(MatcherTest, NextTest) {
     SimpleVariable var_a("a");
 
     SimpleConditionalAst *condition = new SimpleConditionalAst();
+    condition->set_line(1);
     set_proc(condition, proc);
 
     SimpleAssignmentAst *stat1 = new SimpleAssignmentAst();
     stat1->set_variable(var_x);
     stat1->set_expr(new SimpleConstAst(1));
+    stat1->set_line(2);
     set_then_branch(stat1, condition);
 
     SimpleAssignmentAst *stat2 = new SimpleAssignmentAst();
     stat2->set_variable(var_y);
     stat2->set_expr(new SimpleConstAst(2));
+    stat2->set_line(3);
     set_next(stat1, stat2);
 
     SimpleAssignmentAst *stat3 = new SimpleAssignmentAst();
     stat3->set_variable(var_z);
     stat3->set_expr(new SimpleConstAst(3));
+    stat3->set_line(4);
     set_else_branch(stat3, condition);
 
     SimpleAssignmentAst *stat4 = new SimpleAssignmentAst();
     stat4->set_variable(var_a);
     stat4->set_expr(new SimpleConstAst(4));
+    stat4->set_line(5);
     set_next(condition, stat4);
 
     SimpleRoot root(proc);
@@ -176,9 +184,11 @@ TEST(MatcherTest, NextTest) {
      *
      * Get the next next statement after condition.
      */
+    std::shared_ptr<SimplePredicate> pred(new SimpleWildCardPredicate(root));
+
     SimpleQueryMatcher next_matcher(next_solver);
-    SimpleQueryVariable qvar_s1("S1", NULL);
-    SimpleQueryVariable qvar_s2("S2", NULL);
+    SimpleQueryVariable qvar_s1("S1", pred);
+    SimpleQueryVariable qvar_s2("S2", pred);
     SimpleStatementCondition condition_condition(condition);
 
     next_matcher.solve_right(&condition_condition, &qvar_s1);
@@ -197,8 +207,8 @@ TEST(MatcherTest, NextTest) {
      * next to condition.
      */
     SimpleQueryMatcher modifies_matcher(modifies_solver);
-    SimpleQueryVariable qvar_t1("T1", NULL);
-    SimpleQueryVariable qvar_t2("T2", NULL);
+    SimpleQueryVariable qvar_t1("T1", pred);
+    SimpleQueryVariable qvar_t2("T2", pred);
     SimpleVariableCondition y_condition(var_y);
 
     ConditionSet t1_expected(new SimpleStatementCondition(stat1));

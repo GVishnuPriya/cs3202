@@ -57,7 +57,7 @@ am_unit_tests_OBJECTS = test_ast.$(OBJEXT) test_solver.$(OBJEXT) \
 	../simple/ast.$(OBJEXT) ../simple/condition_set.$(OBJEXT) \
 	../simple/util/condition_utils.$(OBJEXT) \
 	../simple/util/ast_utils.$(OBJEXT) ../impl/matcher.$(OBJEXT) \
-	../impl/solvers/modifies.$(OBJEXT) \
+	../impl/predicate.$(OBJEXT) ../impl/solvers/modifies.$(OBJEXT) \
 	../impl/solvers/next.$(OBJEXT) ../impl/solvers/inext.$(OBJEXT) \
 	../impl/solvers/call.$(OBJEXT) ../impl/solvers/icall.$(OBJEXT) \
 	../impl/parser/token.$(OBJEXT) gtest/gtest-all.$(OBJEXT) \
@@ -187,6 +187,7 @@ unit_tests_SOURCES = \
   ../simple/util/condition_utils.cpp \
   ../simple/util/ast_utils.cpp \
   ../impl/matcher.cpp \
+  ../impl/predicate.cpp \
   ../impl/solvers/modifies.cpp \
   ../impl/solvers/next.cpp \
   ../impl/solvers/inext.cpp \
@@ -297,6 +298,8 @@ clean-binPROGRAMS:
 	@: > ../impl/$(DEPDIR)/$(am__dirstamp)
 ../impl/matcher.$(OBJEXT): ../impl/$(am__dirstamp) \
 	../impl/$(DEPDIR)/$(am__dirstamp)
+../impl/predicate.$(OBJEXT): ../impl/$(am__dirstamp) \
+	../impl/$(DEPDIR)/$(am__dirstamp)
 ../impl/solvers/$(am__dirstamp):
 	@$(MKDIR_P) ../impl/solvers
 	@: > ../impl/solvers/$(am__dirstamp)
@@ -337,6 +340,7 @@ mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f ../impl/matcher.$(OBJEXT)
 	-rm -f ../impl/parser/token.$(OBJEXT)
+	-rm -f ../impl/predicate.$(OBJEXT)
 	-rm -f ../impl/solvers/call.$(OBJEXT)
 	-rm -f ../impl/solvers/icall.$(OBJEXT)
 	-rm -f ../impl/solvers/inext.$(OBJEXT)
@@ -352,6 +356,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/$(DEPDIR)/matcher.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../impl/$(DEPDIR)/predicate.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/parser/$(DEPDIR)/token.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/solvers/$(DEPDIR)/call.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/solvers/$(DEPDIR)/icall.Po@am__quote@

@@ -25,8 +25,88 @@ namespace impl {
 
 SimpleQueryMatcher::SimpleQueryMatcher(QuerySolver *solver) : _solver(solver) { } 
 
+
+void SimpleQueryMatcher::solve_both_diff_qvar(
+                    const ConditionSet& left, const ConditionSet& right,
+    /* output */    ConditionSet& new_left, ConditionSet& new_right,
+                    std::vector<ConditionPair>& result_pairs) 
+{
+    for(ConditionSet::iterator left_it = left.begin(); 
+            left_it != left.end(); ++left_it)
+    {
+      for(ConditionSet::iterator right_it = right.begin();
+              right_it != right.end(); ++right_it)
+      {
+        if(_solver->validate(left_it->get(), right_it->get())) {
+          new_left.insert(*left_it);
+          new_right.insert(*right_it);
+          result_pairs.push_back(ConditionPair(*left_it, *right_it));
+        }
+      }
+    }
+}
+
+void SimpleQueryMatcher::solve_both_from_left(const ConditionSet& left, 
+    /* output */    ConditionSet& new_left, ConditionSet& new_right,
+                    std::vector<ConditionPair>& result_pairs)
+{
+    for(ConditionSet::iterator left_it = left.begin();
+            left_it != left.end(); ++left_it)
+    {
+        new_right.union_with(_solver->solve_right(left_it->get()));
+
+        if(!new_right.is_empty()) {
+            new_left.insert(*left_it);
+            for(ConditionSet::iterator right_it = new_right.begin();
+                    right_it != new_right.end(); ++right_it)
+            {
+                result_pairs.push_back(ConditionPair(*left_it, *right_it));
+            }
+        }
+    }
+}
+
+void SimpleQueryMatcher::solve_both_from_right(const ConditionSet& right,
+    /* output */    ConditionSet& new_left, ConditionSet& new_right,
+                    std::vector<ConditionPair>& result_pairs)
+{
+    for(ConditionSet::iterator right_it = right.begin();
+            right_it != right.end(); ++right_it)
+    {
+        new_left.union_with(_solver->solve_left(right_it->get()));
+
+        if(!new_left.is_empty()) {
+            new_right.insert(*right_it);
+            for(ConditionSet::iterator left_it = new_left.begin();
+                    left_it != new_left.end(); ++left_it)
+            {
+                result_pairs.push_back(ConditionPair(*left_it, *right_it));
+            }
+        }
+    }
+}
+
+void SimpleQueryMatcher::solve_both_same_qvar(const ConditionSet& values,
+     /* output */   ConditionSet& new_values,
+                    std::vector<ConditionPair>& result_pairs)
+{
+    for(ConditionSet::iterator it = values.begin();
+            it != values.end(); ++it)
+    {
+        if(_solver->validate(it->get(), it->get())) {
+            new_values.insert(*it);
+            result_pairs.push_back(ConditionPair(*it, *it));
+        }
+    }
+}
+
+void SimpleQueryMatcher::assign_conditions(QueryVariable *qvar, ConditionSet& result) {
+    result.intersect_with(qvar->get_predicate()->global_set());
+    qvar->set_conditions(std::move(result));
+}
+
 /*
- * Note: Need to be careful in case both left and right are the same query variable
+ * TODO: Filter end results with predicate
  */
 std::vector<ConditionPair> SimpleQueryMatcher::solve_both(QueryVariable *left, QueryVariable *right) {
     std::vector<ConditionPair> pairs;
@@ -35,95 +115,66 @@ std::vector<ConditionPair> SimpleQueryMatcher::solve_both(QueryVariable *left, Q
      * Both bounded
      */
     if(left->is_bounded() && right->is_bounded()) {
-        ConditionSet new_left;
-        ConditionSet new_right;
-
-        for(ConditionSet::iterator left_it = left->get_conditions().begin();
-                left_it != left->get_conditions().end(); ++left_it)
-        {
-          for(ConditionSet::iterator right_it = right->get_conditions().begin();
-                  right_it != right->get_conditions().end(); ++right_it)
-          {
-            if(_solver->validate(left_it->get(), right_it->get())) {
-              new_left.insert(*left_it);
-              new_right.insert(*right_it);
-              pairs.push_back(ConditionPair(*left_it, *right_it));
-            }
-          }
-        }
-                
         if(left == right) {
-            new_left.union_with(new_right);
-            left->set_conditions(std::move(new_left));
+            ConditionSet new_values;
+            solve_both_same_qvar(left->get_conditions(), new_values, pairs);
+
+            assign_conditions(left, new_values);
         } else {
-            left->set_conditions(std::move(new_left));
-            right->set_conditions(std::move(new_right));
+            ConditionSet new_left;
+            ConditionSet new_right;
+
+            solve_both_diff_qvar(left->get_conditions(), right->get_conditions(),
+                    new_left, new_right, pairs);
+
+            assign_conditions(left, new_left);
+            assign_conditions(right, new_right);
         }
 
     /*
      * Left bounded, right unbounded
      */
     } else if(left->is_bounded() && !right->is_bounded()) {
-        for(ConditionSet::iterator left_it = left->get_conditions().begin();
-                left_it != left->get_conditions().end(); ++left_it)
-        {
-            ConditionSet right_results = _solver->solve_right(left_it->get());
-            right->get_conditions().union_with(right_results);
+        ConditionSet new_left;
+        ConditionSet new_right;
 
-            for(ConditionSet::iterator right_it = right_results.begin();
-                    right_it != right_results.end(); ++right_it)
-            {
-                pairs.push_back(ConditionPair(*left_it, *right_it));
-            }
-        }
+        solve_both_from_left(left->get_conditions(), new_left, new_right, pairs);
+
+        assign_conditions(left, new_left);
+        assign_conditions(right, new_right);
 
     /*
      * Left unbounded, right bounded
      */
     } else if(!left->is_bounded() && right->is_bounded()) {
-        for(ConditionSet::iterator right_it = right->get_conditions().begin();
-                right_it != right->get_conditions().end(); ++right_it)
-        {
-            ConditionSet left_results = _solver->solve_left(right_it->get());
-            left->get_conditions().union_with(left_results);
+        ConditionSet new_left;
+        ConditionSet new_right;
 
-            for(ConditionSet::iterator left_it = left_results.begin();
-                    left_it != left_results.end(); ++left_it)
-            {
-                pairs.push_back(ConditionPair(*left_it, *right_it));
-            }
-        }
+        solve_both_from_right(right->get_conditions(), new_left, new_right, pairs);
+
+        assign_conditions(left, new_left);
+        assign_conditions(right, new_right);
 
     /*
      * Both unbounded
      */
     } else {
         ConditionSet global_left = left->get_predicate()->global_set();
-        ConditionSet new_left;
-        ConditionSet new_right;
-
-        for(ConditionSet::iterator left_it = global_left.begin();
-                left_it != global_left.end(); ++left_it)
-        {
-            ConditionSet right_results = _solver->solve_right(left_it->get());
-            if(!right_results.is_empty()) {
-                new_right.union_with(right_results);
-                new_left.insert(*left_it);
-
-                for(ConditionSet::iterator right_it = right_results.begin();
-                        right_it != right_results.end(); ++right_it)
-                {
-                    pairs.push_back(ConditionPair(*left_it, *right_it));
-                }
-            }
-        }
 
         if(left == right) {
-            new_left.union_with(new_right);
-            left->set_conditions(std::move(new_left));
+            ConditionSet new_values;
+            solve_both_same_qvar(global_left, new_values, pairs);
+            assign_conditions(left, new_values);
         } else {
-            left->set_conditions(std::move(new_left));
-            right->set_conditions(std::move(new_right));
+            ConditionSet global_right = right->get_predicate()->global_set();
+
+            ConditionSet new_left;
+            ConditionSet new_right;
+
+            solve_both_diff_qvar(global_left, global_right, new_left, new_right, pairs);
+
+            assign_conditions(left, new_left);
+            assign_conditions(right, new_right);
         }
     }
 

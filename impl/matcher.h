@@ -42,6 +42,23 @@ class SimpleQueryMatcher : public QueryMatcher {
 
     bool validate(SimpleCondition *left, SimpleCondition *right);
 
+    void solve_both_diff_qvar(const ConditionSet& left, const ConditionSet& right,
+        /* output */    ConditionSet& new_left, ConditionSet& new_right,
+                        std::vector<ConditionPair>& result_pairs);
+
+    void solve_both_from_left(const ConditionSet& left, 
+        /* output */    ConditionSet& new_left, ConditionSet& new_right,
+                        std::vector<ConditionPair>& result_pairs);
+
+    void solve_both_from_right(const ConditionSet& right,
+        /* output */    ConditionSet& new_left, ConditionSet& new_right,
+                        std::vector<ConditionPair>& result_pairs);
+
+    void solve_both_same_qvar(const ConditionSet& values, ConditionSet& new_values,
+                        std::vector<ConditionPair>& result_pairs);
+
+    void assign_conditions(QueryVariable *qvar, ConditionSet& result);
+
     virtual ~SimpleQueryMatcher();
 
   private:

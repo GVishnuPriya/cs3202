@@ -18,16 +18,32 @@
 
 #pragma once
 
+#include <map>
 #include "simple/condition_set.h"
 
 namespace simple {
 
 class SimplePredicate {
   public:
-    virtual ConditionSet global_set() = 0;
+    virtual const ConditionSet& global_set() = 0;
     virtual void filter_set(ConditionSet& conditions) = 0;
 
     virtual ~SimplePredicate() { }
 };
+
+class PredicateTable {
+  public:
+    virtual std::shared_ptr<SimplePredicate> get_predicate(const std::string& name) = 0;
+
+    virtual ~PredicateTable() { }
+};
+
+class PredicateFactory {
+  public:
+    virtual std::shared_ptr<PredicateTable> make_predicates(SimpleRoot ast) = 0;
+
+    virtual ~PredicateFactory() { }
+};
+
 
 }
