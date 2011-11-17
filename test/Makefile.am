@@ -28,6 +28,7 @@ unit_tests_SOURCES = \
   ../impl/solvers/inext.cpp \
   ../impl/solvers/call.cpp \
   ../impl/solvers/icall.cpp \
+  ../impl/solvers/same_name.cpp \
   ../impl/parser/token.cpp \
   gtest/gtest-all.cc \
   test_main.cpp

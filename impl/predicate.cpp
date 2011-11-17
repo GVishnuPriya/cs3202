@@ -40,6 +40,11 @@ void PredicateGenerator<Predicate>::filter(ConditionSet& conditions) {
 }
 
 template <typename Predicate>
+bool PredicateGenerator<Predicate>::validate(ConditionPtr condition) {
+    return _global_set.has_element(condition);
+}
+
+template <typename Predicate>
 std::string PredicateGenerator<Predicate>::get_name() {
     return Predicate::get_name();
 }
@@ -109,8 +114,10 @@ void PredicateGenerator<Predicate>::visit_variable(VariableAst *var) {
 }
 
 template <typename Predicate>
-void PredicateGenerator<Predicate>::visit_const(ConstAst *val) {
-    // no-op
+void PredicateGenerator<Predicate>::visit_const(ConstAst *constant) {
+    if(_pred->template evaluate<SimpleConstant>(constant->get_constant())) {
+        _global_set.insert(new SimpleConstantCondition(*constant->get_constant()));
+    }
 }
 
 template <typename Predicate>
@@ -166,22 +173,6 @@ bool ProcPredicate::evaluate<ProcAst>(ProcAst *proc) {
 
 std::string ProcPredicate::get_name() {
     return "procedure";
-}
-
-ProcPredicateWithName::ProcPredicateWithName(const std::string& name) : _proc_name(name) { }
-
-template <typename Condition>
-bool ProcPredicateWithName::evaluate(Condition *condition) {
-    return false;
-}
-
-template <>
-bool ProcPredicateWithName::evaluate<ProcAst>(ProcAst *proc) {
-    return proc->get_name() == _proc_name;
-}
-
-std::string ProcPredicateWithName::get_name() {
-    return "named_procedure";
 }
 
 StatementPredicate::StatementPredicate() { }
@@ -295,6 +286,22 @@ std::string VariablePredicate::get_name() {
     return "variable";
 }
 
+ConstantPredicate::ConstantPredicate() { }
+
+template <typename Condition>
+bool ConstantPredicate::evaluate(Condition *condition) {
+    return false;
+}
+
+template <>
+bool ConstantPredicate::evaluate<SimpleConstant>(SimpleConstant *constant) {
+    return true;
+}
+
+std::string ConstantPredicate::get_name() {
+    return "constant";
+}
+
 template class PredicateGenerator<WildCardPredicate>;
 template class PredicateGenerator<ProcPredicate>;
 template class PredicateGenerator<StatementPredicate>;
@@ -302,6 +309,8 @@ template class PredicateGenerator<AssignPredicate>;
 template class PredicateGenerator<WhilePredicate>;
 template class PredicateGenerator<ConditionalPredicate>;
 template class PredicateGenerator<VariablePredicate>;
+template class PredicateGenerator<ConstantPredicate>;
+
 
 
 

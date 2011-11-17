@@ -46,11 +46,11 @@ class SimpleQueryMatcher : public QueryMatcher {
         /* output */    ConditionSet& new_left, ConditionSet& new_right,
                         std::vector<ConditionPair>& result_pairs);
 
-    void solve_both_from_left(const ConditionSet& left, 
+    void solve_both_from_left(const ConditionSet& left, SimplePredicate *right_pred,
         /* output */    ConditionSet& new_left, ConditionSet& new_right,
                         std::vector<ConditionPair>& result_pairs);
 
-    void solve_both_from_right(const ConditionSet& right,
+    void solve_both_from_right(SimplePredicate *left_pred, const ConditionSet& right,
         /* output */    ConditionSet& new_left, ConditionSet& new_right,
                         std::vector<ConditionPair>& result_pairs);
 

@@ -210,7 +210,7 @@ bool is_same_expr<VariableAst, VariableAst>(VariableAst *ast1, VariableAst *ast2
 
 template <>
 bool is_same_expr<ConstAst, ConstAst>(ConstAst *ast1, ConstAst *ast2) {
-    return ast1->get_value() == ast2->get_value();
+    return ast1->get_constant()->get_int() == ast2->get_constant()->get_int();
 }
 
 template <>

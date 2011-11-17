@@ -16,26 +16,23 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
-
-#include <map>
-#include "simple/condition_set.h"
+#include "gtest/gtest.h"
+#include "impl/ast.h"
+#include "impl/condition.h"
+#include "impl/solvers/same_name.h"
 
 namespace simple {
+namespace test {
 
-class SimplePredicate {
-  public:
-    virtual const ConditionSet& global_set() = 0;
-    
-    virtual void filter(ConditionSet& conditions) = 0;
-    
-    virtual bool validate(ConditionPtr condition) = 0;
+using namespace simple;
+using namespace simple::impl;
 
-    virtual std::string get_predicate_name() = 0;
+TEST(SameNameTest, BasicTest) {
 
-    virtual ~SimplePredicate() { }
-};
+}
 
-typedef std::shared_ptr<SimplePredicate> PredicatePtr;
 
+
+
+}
 }

@@ -352,7 +352,7 @@ class ConstAst : public ExprAst {
      * only data type available is int, so there will be no other constants 
      * such as double or string.
      */
-    virtual int get_value() = 0;
+    virtual SimpleConstant* get_constant() = 0;
 
     virtual ~ConstAst() { }
 };

@@ -60,6 +60,7 @@ am_unit_tests_OBJECTS = test_ast.$(OBJEXT) test_solver.$(OBJEXT) \
 	../impl/predicate.$(OBJEXT) ../impl/solvers/modifies.$(OBJEXT) \
 	../impl/solvers/next.$(OBJEXT) ../impl/solvers/inext.$(OBJEXT) \
 	../impl/solvers/call.$(OBJEXT) ../impl/solvers/icall.$(OBJEXT) \
+	../impl/solvers/same_name.$(OBJEXT) \
 	../impl/parser/token.$(OBJEXT) gtest/gtest-all.$(OBJEXT) \
 	test_main.$(OBJEXT)
 unit_tests_OBJECTS = $(am_unit_tests_OBJECTS)
@@ -193,6 +194,7 @@ unit_tests_SOURCES = \
   ../impl/solvers/inext.cpp \
   ../impl/solvers/call.cpp \
   ../impl/solvers/icall.cpp \
+  ../impl/solvers/same_name.cpp \
   ../impl/parser/token.cpp \
   gtest/gtest-all.cc \
   test_main.cpp
@@ -316,6 +318,8 @@ clean-binPROGRAMS:
 	../impl/solvers/$(DEPDIR)/$(am__dirstamp)
 ../impl/solvers/icall.$(OBJEXT): ../impl/solvers/$(am__dirstamp) \
 	../impl/solvers/$(DEPDIR)/$(am__dirstamp)
+../impl/solvers/same_name.$(OBJEXT): ../impl/solvers/$(am__dirstamp) \
+	../impl/solvers/$(DEPDIR)/$(am__dirstamp)
 ../impl/parser/$(am__dirstamp):
 	@$(MKDIR_P) ../impl/parser
 	@: > ../impl/parser/$(am__dirstamp)
@@ -346,6 +350,7 @@ mostlyclean-compile:
 	-rm -f ../impl/solvers/inext.$(OBJEXT)
 	-rm -f ../impl/solvers/modifies.$(OBJEXT)
 	-rm -f ../impl/solvers/next.$(OBJEXT)
+	-rm -f ../impl/solvers/same_name.$(OBJEXT)
 	-rm -f ../simple/ast.$(OBJEXT)
 	-rm -f ../simple/condition_set.$(OBJEXT)
 	-rm -f ../simple/util/ast_utils.$(OBJEXT)
@@ -363,6 +368,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/solvers/$(DEPDIR)/inext.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/solvers/$(DEPDIR)/modifies.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/solvers/$(DEPDIR)/next.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../impl/solvers/$(DEPDIR)/same_name.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../simple/$(DEPDIR)/ast.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../simple/$(DEPDIR)/condition_set.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../simple/util/$(DEPDIR)/ast_utils.Po@am__quote@

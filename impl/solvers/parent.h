@@ -28,7 +28,6 @@ namespace simple {
 namespace impl {
 
 using namespace simple;
-using namespace simple::impl;
 
 class ParentSolver {
   public:

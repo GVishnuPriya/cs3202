@@ -38,6 +38,7 @@ class PredicateGenerator :
     const ConditionSet& global_set();
 
     void filter(ConditionSet& conditions);
+    bool validate(ConditionPtr condition);
 
     void visit_assignment(AssignmentAst *assign);
     void visit_conditional(ConditionalAst *condition);
@@ -81,24 +82,6 @@ class ProcPredicate {
 
     static std::string get_name();
 };
-
-template <>
-bool ProcPredicate::evaluate<ProcAst>(ProcAst *proc);
-
-class ProcPredicateWithName {
-  public:
-    ProcPredicateWithName(const std::string& proc_name);
-
-    template <typename Condition>
-    bool evaluate(Condition *condition);
-
-    static std::string get_name();
-  private:
-    std::string _proc_name;
-};
-
-template <>
-bool ProcPredicateWithName::evaluate<ProcAst>(ProcAst *proc);
 
 class StatementPredicate {
   public:
@@ -160,6 +143,16 @@ class VariablePredicate {
     static std::string get_name();
 };
 
+class ConstantPredicate {
+  public:
+    ConstantPredicate();
+
+    template <typename Condition>
+    bool evaluate(Condition *condition);
+
+    static std::string get_name();
+};
+
 typedef PredicateGenerator<WildCardPredicate>       SimpleWildCardPredicate;
 typedef PredicateGenerator<ProcPredicate>           SimpleProcPredicate;
 typedef PredicateGenerator<StatementPredicate>      SimpleStatementPredicate;
@@ -168,7 +161,10 @@ typedef PredicateGenerator<WhilePredicate>          SimpleWhilePredicate;
 typedef PredicateGenerator<ConditionalPredicate>    SimpleConditionalPredicate;
 typedef PredicateGenerator<CallPredicate>           SimpleCallPredicate;
 typedef PredicateGenerator<VariablePredicate>       SimpleVariablePredicate;
+typedef PredicateGenerator<ConstantPredicate>       SimpleConstantPredicate;
 
+template <>
+bool ProcPredicate::evaluate<ProcAst>(ProcAst *proc);
 
 template <>
 bool StatementPredicate::evaluate<AssignmentAst>(AssignmentAst *assign);
@@ -196,6 +192,9 @@ bool CallPredicate::evaluate<CallAst>(CallAst *call);
 
 template <>
 bool VariablePredicate::evaluate<SimpleVariable>(SimpleVariable *variable);
+
+template <>
+bool ConstantPredicate::evaluate<SimpleConstant>(SimpleConstant *constant);
 
 
 }

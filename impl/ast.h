@@ -314,21 +314,23 @@ class SimpleConstAst : public ConstAst {
     void set_value(int value) {
         _value = value;
     }
-    int get_value() {
-        return _value;
+
+    SimpleConstant* get_constant() {
+        return &_value;
     }
+    
     void accept_expr_visitor(ExprVisitor *visitor) {
         visitor->visit_const(this);
     }
 
     ExprAst* clone() {
-        return new SimpleConstAst(_value);
+        return new SimpleConstAst(_value.get_int());
     }
 
     ~SimpleConstAst() { }
 
   private:
-    int          _value;
+    SimpleConstant  _value;
 };
 
 class SimpleBinaryOpAst : public BinaryOpAst {

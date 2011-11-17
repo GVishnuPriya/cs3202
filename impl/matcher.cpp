@@ -34,19 +34,20 @@ void SimpleQueryMatcher::solve_both_diff_qvar(
     for(ConditionSet::iterator left_it = left.begin(); 
             left_it != left.end(); ++left_it)
     {
-      for(ConditionSet::iterator right_it = right.begin();
+        for(ConditionSet::iterator right_it = right.begin();
               right_it != right.end(); ++right_it)
-      {
-        if(_solver->validate(left_it->get(), right_it->get())) {
-          new_left.insert(*left_it);
-          new_right.insert(*right_it);
-          result_pairs.push_back(ConditionPair(*left_it, *right_it));
+        {
+            if(_solver->validate(left_it->get(), right_it->get())) {
+                new_left.insert(*left_it);
+                new_right.insert(*right_it);
+                result_pairs.push_back(ConditionPair(*left_it, *right_it));
+            }
         }
-      }
     }
 }
 
-void SimpleQueryMatcher::solve_both_from_left(const ConditionSet& left, 
+void SimpleQueryMatcher::solve_both_from_left(
+                    const ConditionSet& left, SimplePredicate *right_pred,
     /* output */    ConditionSet& new_left, ConditionSet& new_right,
                     std::vector<ConditionPair>& result_pairs)
 {
@@ -55,18 +56,21 @@ void SimpleQueryMatcher::solve_both_from_left(const ConditionSet& left,
     {
         new_right.union_with(_solver->solve_right(left_it->get()));
 
-        if(!new_right.is_empty()) {
-            new_left.insert(*left_it);
-            for(ConditionSet::iterator right_it = new_right.begin();
-                    right_it != new_right.end(); ++right_it)
-            {
+        for(ConditionSet::iterator right_it = new_right.begin();
+                right_it != new_right.end(); ++right_it)
+        {
+            // The match is only valid if the right result matches the 
+            // predicate requirement
+            if(right_pred->validate(*right_it)) {
+                new_left.insert(*left_it);
                 result_pairs.push_back(ConditionPair(*left_it, *right_it));
             }
         }
     }
 }
 
-void SimpleQueryMatcher::solve_both_from_right(const ConditionSet& right,
+void SimpleQueryMatcher::solve_both_from_right(
+                    SimplePredicate *left_pred, const ConditionSet& right,
     /* output */    ConditionSet& new_left, ConditionSet& new_right,
                     std::vector<ConditionPair>& result_pairs)
 {
@@ -75,11 +79,11 @@ void SimpleQueryMatcher::solve_both_from_right(const ConditionSet& right,
     {
         new_left.union_with(_solver->solve_left(right_it->get()));
 
-        if(!new_left.is_empty()) {
-            new_right.insert(*right_it);
-            for(ConditionSet::iterator left_it = new_left.begin();
-                    left_it != new_left.end(); ++left_it)
-            {
+        for(ConditionSet::iterator left_it = new_left.begin();
+                left_it != new_left.end(); ++left_it)
+        {
+            if(left_pred->validate(*left_it)) {
+                new_right.insert(*right_it);
                 result_pairs.push_back(ConditionPair(*left_it, *right_it));
             }
         }
@@ -133,7 +137,8 @@ std::vector<ConditionPair> SimpleQueryMatcher::solve_both(QueryVariable *left, Q
         ConditionSet new_left;
         ConditionSet new_right;
 
-        solve_both_from_left(left->get_conditions(), new_left, new_right, pairs);
+        solve_both_from_left(left->get_conditions(), right->get_predicate(), 
+                new_left, new_right, pairs);
 
         left->set_conditions(std::move(new_left));
 
@@ -147,7 +152,8 @@ std::vector<ConditionPair> SimpleQueryMatcher::solve_both(QueryVariable *left, Q
         ConditionSet new_left;
         ConditionSet new_right;
 
-        solve_both_from_right(right->get_conditions(), new_left, new_right, pairs);
+        solve_both_from_right(left->get_predicate(), right->get_conditions(), 
+                new_left, new_right, pairs);
 
         left->get_predicate()->filter(new_left);
         left->set_conditions(std::move(new_left));

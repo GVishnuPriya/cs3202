@@ -23,6 +23,40 @@ namespace util {
 
 using namespace simple;
 
+template <typename Visitor, typename VisitorTraits>
+class ConditionVisitorGenerator : public ConditionVisitor {
+  public:
+    ConditionVisitorGenerator(Visitor *visitor) : _visitor(visitor) { }
+
+    void visit_statement_condition(StatementCondition *condition) {
+        _result = VisitorTraits::template visit<StatementCondition>(_visitor, condition);
+    }
+
+    void visit_proc_condition(ProcCondition *condition) {
+        _result = VisitorTraits::template visit<ProcCondition>(_visitor, condition);
+    }
+
+    void visit_variable_condition(VariableCondition *condition) {
+        _result = VisitorTraits::template visit<VariableCondition>(_visitor, condition);
+    }
+
+    void visit_constant_condition(ConstantCondition *condition) {
+        _result = VisitorTraits::template visit<ConstantCondition>(_visitor, condition);
+    }
+
+    void visit_pattern_condition(PatternCondition *condition) {
+        _result = VisitorTraits::template visit<PatternCondition>(_visitor, condition);
+    }
+
+    typename VisitorTraits::ResultType return_result() {
+        return std::move(_result);
+    }
+
+  private:
+    Visitor *_visitor;
+    typename VisitorTraits::ResultType _result;
+};
+
 template <typename FirstCondition, typename VisitorTraits>
 class SecondConditionVisitorGenerator : public ConditionVisitor {
   public:
