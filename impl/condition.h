@@ -45,10 +45,10 @@ class SimpleStatementCondition : public StatementCondition {
 
 class SimpleProcCondition : public ProcCondition {
   public:
-    SimpleProcCondition(ProcAst *ast) : _ast(ast) { }
+    SimpleProcCondition(ProcAst *proc) : _proc(proc) { }
 
     ProcAst* get_proc_ast() {
-        return _ast;
+        return _proc;
     }
 
     void accept_condition_visitor(ConditionVisitor *visitor) {
@@ -58,7 +58,7 @@ class SimpleProcCondition : public ProcCondition {
     ~SimpleProcCondition() { }
 
   private:
-    ProcAst *_ast;
+    ProcAst *_proc;
 };
 
 class SimpleVariableCondition : public VariableCondition {
@@ -78,6 +78,23 @@ class SimpleVariableCondition : public VariableCondition {
     virtual ~SimpleVariableCondition() { }
   private:
     SimpleVariable _var;
+};
+
+class SimpleConstantCondition : public ConstantCondition {
+  public:
+    SimpleConstantCondition(SimpleConstant value) : _value(value) { }
+
+    virtual SimpleConstant* get_constant() {
+        return &_value;
+    }
+
+    virtual void accept_condition_visitor(ConditionVisitor *visitor) {
+        visitor->visit_constant_condition(this);
+    }
+
+    virtual ~SimpleConstantCondition() { }
+  private:
+    SimpleConstant _value;
 };
 
 class SimplePatternCondition : public PatternCondition {

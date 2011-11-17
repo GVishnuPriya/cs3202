@@ -56,11 +56,6 @@ class SimpleVariable {
         return _name;
     }
 
-    SimpleVariable& operator =(const SimpleVariable& other) {
-        _name = other._name;
-        return *this;
-    }
-
     bool equals(const SimpleVariable& other) const {
         return _name == other._name;
     }
@@ -81,6 +76,24 @@ class SimpleVariable {
 
   private:
     std::string _name;
+};
+
+class SimpleConstant {
+  public:
+    SimpleConstant(int value) : _value(value) { }
+    
+    SimpleConstant(const SimpleConstant& other) :
+        _value(other._value) 
+    { }
+
+    int get_int() {
+        return _value;
+    }
+
+    ~SimpleConstant() { }
+
+  private:
+    int _value;
 };
 
 /**

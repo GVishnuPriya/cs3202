@@ -46,6 +46,10 @@ class SimpleSolverGenerator : public QuerySolver  {
             _result = _solver->template solve_left<SimpleVariable>(condition->get_variable());
         }
 
+        void visit_constant_condition(ConstantCondition *condition) {
+            _result = _solver->template solve_left<SimpleConstant>(condition->get_constant());
+        }
+
         void visit_pattern_condition(PatternCondition *condition) {
             _result = _solver->template solve_left<ExprAst>(condition->get_expr_ast());
         }
@@ -73,6 +77,10 @@ class SimpleSolverGenerator : public QuerySolver  {
 
         void visit_variable_condition(VariableCondition *condition) {
             _result = _solver->template solve_right<SimpleVariable>(condition->get_variable());
+        }
+
+        void visit_constant_condition(ConstantCondition *condition) {
+            _result = _solver->template solve_right<SimpleConstant>(condition->get_constant());
         }
 
         void visit_pattern_condition(PatternCondition *condition) {
@@ -110,6 +118,11 @@ class SimpleSolverGenerator : public QuerySolver  {
         void visit_variable_condition(VariableCondition *right_condition) {
             _result = _solver->template validate<Condition, SimpleVariable>(
                     _left_condition, right_condition->get_variable());
+        }
+
+        void visit_constant_condition(ConstantCondition *right_condition) {
+            _result = _solver->template validate<Condition, SimpleConstant>(
+                    _left_condition, right_condition->get_constant());
         }
 
         void visit_pattern_condition(PatternCondition *right_condition) {
@@ -153,6 +166,12 @@ class SimpleSolverGenerator : public QuerySolver  {
             _result = visitor.return_result();
         }
 
+        void visit_constant_condition(ConstantCondition *condition) {
+            SecondSolverVisitor<SimpleConstant> visitor(_solver, condition->get_constant());
+            _right_condition->accept_condition_visitor(&visitor);
+            _result = visitor.return_result();
+        }
+
         void visit_pattern_condition(PatternCondition *condition) {
             SecondSolverVisitor<ExprAst> visitor(_solver, condition->get_expr_ast());
             _right_condition->accept_condition_visitor(&visitor);
@@ -165,7 +184,7 @@ class SimpleSolverGenerator : public QuerySolver  {
 
       private:
         bool _result;
-        ConcreteSolver *_solver;
+        ConcreteSolver  *_solver;
         SimpleCondition *_right_condition;
     };
 

@@ -51,6 +51,13 @@ class VariableCondition : public SimpleCondition {
     virtual ~VariableCondition() { }
 };
 
+class ConstantCondition : public SimpleCondition {
+  public:
+    virtual SimpleConstant* get_constant() = 0;
+
+    virtual ~ConstantCondition() { }
+};
+
 class PatternCondition : public SimpleCondition {
   public:
     virtual ExprAst* get_expr_ast() = 0;
@@ -63,6 +70,7 @@ class ConditionVisitor {
     virtual void visit_statement_condition(StatementCondition*) = 0;
     virtual void visit_proc_condition(ProcCondition*) = 0;
     virtual void visit_variable_condition(VariableCondition*) = 0;
+    virtual void visit_constant_condition(ConstantCondition*) = 0;
     virtual void visit_pattern_condition(PatternCondition*) = 0;
 
     virtual ~ConditionVisitor() { }

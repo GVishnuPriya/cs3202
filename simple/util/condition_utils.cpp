@@ -72,6 +72,12 @@ class ConditionPrinter : public ConditionVisitor {
         _result += ")";
     }
 
+    void visit_constant_condition(ConstantCondition *condition) {
+        _result = "(ConstantCondition ";
+        _result += condition->get_constant()->get_int();
+        _result += ")";
+    }
+
     void visit_pattern_condition(PatternCondition *condition) {
         _result = "(PatternCondition ";
         _result += (long) condition->get_expr_ast();

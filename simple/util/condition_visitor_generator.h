@@ -45,6 +45,11 @@ class SecondConditionVisitorGenerator : public ConditionVisitor {
             FirstCondition, VariableCondition>(_condition1, condition2);
     }
 
+    void visit_constant_condition(ConstantCondition *condition2) {
+        _result = VisitorTraits::template visit_condition<
+            FirstCondition, ConstantCondition>(_condition1, condition2);
+    }
+
     void visit_pattern_condition(PatternCondition *condition2) {
         _result = VisitorTraits::template visit_condition<
             FirstCondition, PatternCondition>(_condition1, condition2);
@@ -88,6 +93,15 @@ class FirstConditionVisitorGenerator : public ConditionVisitor {
         _condition2->accept_condition_visitor(&visitor);
         _result = visitor.return_result();
     }
+
+    void visit_constant_condition(ConstantCondition *condition1) {
+       SecondConditionVisitorGenerator<ConstantCondition, VisitorTraits> 
+        visitor(condition1);
+
+        _condition2->accept_condition_visitor(&visitor);
+        _result = visitor.return_result(); 
+    }
+
     void visit_pattern_condition(PatternCondition *condition1) {
         SecondConditionVisitorGenerator<PatternCondition, VisitorTraits> 
         visitor(condition1);
