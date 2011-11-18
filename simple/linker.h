@@ -18,10 +18,24 @@
 
 #pragma once
 
-#include "simple/conditions_set.h"
+#include <memory>
+#include <vector>
+#include "simple/condition_set.h"
 #include "simple/qvar.h"
 
 namespace simple {
+
+class QueryTuple {
+  public:
+    virtual ConditionPtr get_condition() = 0;
+
+    virtual std::shared_ptr<QueryTuple> next() = 0;
+
+    virtual ~QueryTuple() { }
+};
+
+typedef std::shared_ptr<QueryTuple> QueryTuplePtr;
+typedef std::vector<QueryTuplePtr> TupleList;
 
 /**
  * Since PQL is almost the same as logic programming in Prolog, there is 
@@ -85,6 +99,11 @@ class QueryLinker {
      * Add binary links between two query variables into the database.
      * The binary links make sure that the removal of a condition in
      * one variable will affect linked conditions on the other side.
+     *
+     * The query variable must have already been defined when the link
+     * is added, and the linking will perform an intersection on both 
+     * query variables to remove conditions that do not have a link, 
+     * or links with one side of conditions not in the query variable.
      */
     virtual void add_link(
             const std::string& qvar1, 
@@ -112,12 +131,9 @@ class QueryLinker {
      * The return result is a list of variable-size tuple, with size of
      * the same as the size of list of variables supplied in the parameter.
      */
-    virtual std::vector< std::vector<ConditionPtr> > make_tuple(
+    virtual TupleList make_tuple(
             const std::vector<std::string>& variables) = 0;
 };
-
-
-
 
 
 }

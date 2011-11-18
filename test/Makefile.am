@@ -22,6 +22,7 @@ unit_tests_SOURCES = \
   ../simple/util/condition_utils.cpp \
   ../simple/util/ast_utils.cpp \
   ../impl/matcher.cpp \
+  ../impl/linker.cpp \
   ../impl/predicate.cpp \
   ../impl/solvers/modifies.cpp \
   ../impl/solvers/next.cpp \

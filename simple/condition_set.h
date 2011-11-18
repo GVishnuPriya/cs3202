@@ -22,25 +22,11 @@
 #include <memory>
 #include <iostream>
 #include "simple/condition.h"
+#include "simple/util/set_utils.h"
 
 namespace simple {
 
-typedef std::set<StatementAst*>     StatementSet;
-typedef std::set<SimpleVariable>    VariableSet;
-
-
-template <typename T>
-void union_set(std::set<T>& set1, const std::set<T>& set2) {
-    if(set2.size() == 0) {
-        return;
-    }
-    
-    for(typename std::set<T>::iterator it = set2.begin();
-            it != set2.end(); ++it)
-    {
-        set1.insert(*it);
-    }
-}
+using namespace simple::util;
 
 class ConditionPtr {
   public:
@@ -76,13 +62,16 @@ class ConditionSet {
 
     ConditionSet();
     ConditionSet(const ConditionSet& other);
+    ConditionSet(ConditionSet& other);
     ConditionSet(ConditionSet&& other);
     ConditionSet(ConditionPtr condition);
+    ConditionSet(std::set<ConditionPtr>&& set);
 
     void insert(ConditionPtr condition);
     void insert(SimpleCondition *condition);
     void union_with(const ConditionSet& other);
     void intersect_with(const ConditionSet& other);
+    ConditionSet difference_with(const ConditionSet& other);
     void remove(ConditionPtr condition);
     void clear();
 

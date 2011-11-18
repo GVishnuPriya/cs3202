@@ -42,6 +42,11 @@ ConditionSet::ConditionSet() :
 ConditionSet::ConditionSet(const ConditionSet& other) : 
     _set(other._set) 
 { }
+
+ConditionSet::ConditionSet(ConditionSet& other) :
+    _set(other._set)
+{ }
+
 ConditionSet::ConditionSet(ConditionSet&& other) : 
     _set(std::move(other._set)) 
 { }
@@ -51,6 +56,10 @@ ConditionSet::ConditionSet(ConditionPtr condition) :
 {
     insert(condition);
 }
+
+ConditionSet::ConditionSet(std::set<ConditionPtr>&& set) :
+    _set(std::forward< std::set<ConditionPtr> >(set))
+{ }
 
 void ConditionSet::insert(ConditionPtr condition) {
     _set.insert(condition);
@@ -85,6 +94,10 @@ void ConditionSet::intersect_with(const ConditionSet& other) {
             ++it;
         }
     }
+}
+
+ConditionSet ConditionSet::difference_with(const ConditionSet& other) {
+    return ConditionSet(difference_set(_set, other._set));
 }
 
 void ConditionSet::clear() {
