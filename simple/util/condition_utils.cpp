@@ -61,7 +61,11 @@ class ConditionPrinter : public ConditionVisitor {
     void visit_statement_condition(StatementCondition *condition) {
         std::stringstream out;
         out << "(StatementCondition ";
-        out << condition->get_statement_ast()->get_line();
+        if(condition->get_statement_ast()->get_line() == 0) {
+            out << condition->get_statement_ast();
+        } else {
+            out << condition->get_statement_ast()->get_line();
+        }
         out << ")";
         _result = out.str();
     }

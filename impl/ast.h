@@ -73,6 +73,11 @@ class SimpleStatementBase : public ParentType, public SimpleStatementAst {
         _prev(0), _next()
     { }
 
+    SimpleStatementBase(int line) :
+        _line(line), _proc(0), _container(0),
+        _prev(0), _next()
+    { }
+
     void set_line(unsigned int line) {
         _line = line;
     }
@@ -250,6 +255,12 @@ class SimpleAssignmentAst : public SimpleStatementBase<AssignmentAst> {
         SimpleStatementBase<AssignmentAst>(),
         _var(), _expr() 
     { }
+
+    SimpleAssignmentAst(int line) :
+        SimpleStatementBase<AssignmentAst>(line),
+        _var(), _expr()
+    { }
+
 
     void set_variable(const SimpleVariable& var) {
         _var = var;

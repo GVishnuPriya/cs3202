@@ -23,7 +23,7 @@ namespace impl {
 
 using namespace simple;
 
-void SimpleQueryLinker::add_links(
+void SimpleQueryLinker::update_links(
         const std::string& qvar1, const std::string& qvar2, 
         const std::vector<ConditionPair>& links)
 {
@@ -37,7 +37,7 @@ void SimpleQueryLinker::add_links(
     for(std::vector<ConditionPair>::const_iterator it = links.begin();
         it != links.end(); ++it) 
     {
-        if(add_link(qvar1, qvar2, *it)) {
+        if(add_link(qvar1, qvar2, it->first, it->second)) {
             new_set1.insert(it->first);
             new_set2.insert(it->second);
         }
@@ -55,12 +55,13 @@ void SimpleQueryLinker::add_links(
  * The adding is only successful if both of the query variables
  * already has the respective conditions in their result set.
  */
-bool SimpleQueryLinker::add_link(const std::string& qvar1,
-          const std::string& qvar2, const ConditionPair& pair)
+bool SimpleQueryLinker::add_link(
+        const std::string& qvar1, const std::string& qvar2, 
+        const ConditionPtr& condition1, const ConditionPtr& condition2)
 {
-    if(has_condition(qvar1, pair.first) && has_condition(qvar2, pair.second)) {
-        _condition_link_table[QVarPair(qvar1, qvar2)][pair.first].insert(pair.second);
-        _condition_link_table[QVarPair(qvar2, qvar1)][pair.second].insert(pair.first);
+    if(has_condition(qvar1, condition1) && has_condition(qvar2, condition2)) {
+        _condition_link_table[QVarPair(qvar1, qvar2)][condition1].insert(condition2);
+        _condition_link_table[QVarPair(qvar2, qvar1)][condition2].insert(condition1);
         return true;
     } else {
         return false;
@@ -70,12 +71,16 @@ bool SimpleQueryLinker::add_link(const std::string& qvar1,
 void SimpleQueryLinker::update_results(const std::string& qvar, 
         const ConditionSet& new_set)
 {
-    ConditionSet difference = _qvar_table[qvar].difference_with(new_set);
-    if(!difference.is_empty()) {
-        for(ConditionSet::iterator it = difference.begin(); 
-                it != difference.end(); ++it )
-        {
-            remove_condition(qvar, *it);
+    if(!is_initialized(qvar)) {
+        _qvar_table[qvar] = new_set;
+    } else {
+        ConditionSet difference = _qvar_table[qvar].difference_with(new_set);
+        if(!difference.is_empty()) {
+            for(ConditionSet::iterator it = difference.begin(); 
+                    it != difference.end(); ++it )
+            {
+                remove_condition(qvar, *it);
+            }
         }
     }
 }
@@ -97,7 +102,11 @@ TupleList SimpleQueryLinker::make_tuples(
         TupleList tuples = make_tuples(first_qvar, *cit, 
                 ++variables.begin(), variables.end());
 
-        merge_tuples(*cit, tuples, result);
+        for(TupleList::iterator tit = tuples.begin();
+            tit != tuples.end(); ++tit)
+        {
+            result.insert(*tit);
+        }
     }
 
     return result;
@@ -109,19 +118,17 @@ TupleList SimpleQueryLinker::make_tuples(
         std::vector<std::string>::const_iterator next_qit,
         std::vector<std::string>::const_iterator end)
 {
+    if(!is_initialized(current_qvar)) {
+        throw QueryLinkerError();
+    }
+
     TupleList result;
 
     if(next_qit == end) {
-        for(ConditionSet::iterator cit = _qvar_table[current_qvar].begin();
-            cit != _qvar_table[current_qvar].end(); ++cit)
-        {
-            result.push_back(QueryTuplePtr(new SimpleQueryTuple(*cit)));
-        }
+        result.insert(ConditionTuplePtr(
+                    new SimpleConditionTuple(current_condition)));
     } else {
         std::string next_qvar = *next_qit++;
-        if(!is_initialized(next_qvar)) {
-            throw QueryLinkerError();
-        }
 
         if(has_link(current_qvar, next_qvar)) {
             ConditionSet linked_conditions = get_linked_conditions(
@@ -130,20 +137,18 @@ TupleList SimpleQueryLinker::make_tuples(
             for(ConditionSet::iterator cit = linked_conditions.begin();
                     cit != linked_conditions.end(); ++cit)
             {
-                std::vector<QueryTuplePtr> tuples = make_tuples(
-                        next_qvar, *cit, next_qit, end);
-
-                merge_tuples(current_condition, tuples, result);
+                merge_tuples(current_condition, 
+                        make_tuples(next_qvar, *cit, next_qit, end), 
+                        result);
             }
 
         } else {
             for(ConditionSet::iterator cit = _qvar_table[next_qvar].begin();
                 cit != _qvar_table[next_qvar].end(); ++cit)
             {
-                std::vector<QueryTuplePtr> tuples = make_tuples(
-                        next_qvar, *cit, next_qit, end);
-
-                merge_tuples(current_condition, tuples, result);
+                merge_tuples(current_condition, 
+                        make_tuples(next_qvar, *cit, next_qit, end), 
+                        result);
             }
         }
     }
@@ -157,8 +162,8 @@ void SimpleQueryLinker::merge_tuples(const ConditionPtr& target_condition,
     for(TupleList::const_iterator tit = tuples.begin();
         tit != tuples.end(); ++tit)
     {
-        result.push_back(QueryTuplePtr(
-                    new SimpleQueryTuple(target_condition, *tit)));
+        result.insert(ConditionTuplePtr(
+                    new SimpleConditionTuple(target_condition, *tit)));
     }
 }
 

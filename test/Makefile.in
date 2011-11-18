@@ -52,9 +52,10 @@ am_unit_tests_OBJECTS = test_ast.$(OBJEXT) test_solver.$(OBJEXT) \
 	test_parent.$(OBJEXT) test_iparent.$(OBJEXT) \
 	test_modifies.$(OBJEXT) test_condition.$(OBJEXT) \
 	test_next.$(OBJEXT) test_inext.$(OBJEXT) \
-	test_matcher.$(OBJEXT) test_parser.$(OBJEXT) \
-	test_predicate.$(OBJEXT) test_tokenizer.$(OBJEXT) \
-	../simple/ast.$(OBJEXT) ../simple/condition_set.$(OBJEXT) \
+	test_matcher.$(OBJEXT) test_linker.$(OBJEXT) \
+	test_parser.$(OBJEXT) test_predicate.$(OBJEXT) \
+	test_tokenizer.$(OBJEXT) ../simple/ast.$(OBJEXT) \
+	../simple/condition_set.$(OBJEXT) ../simple/tuple.$(OBJEXT) \
 	../simple/util/condition_utils.$(OBJEXT) \
 	../simple/util/ast_utils.$(OBJEXT) ../impl/matcher.$(OBJEXT) \
 	../impl/linker.$(OBJEXT) ../impl/predicate.$(OBJEXT) \
@@ -181,11 +182,13 @@ unit_tests_SOURCES = \
   test_next.cpp \
   test_inext.cpp \
   test_matcher.cpp \
+  test_linker.cpp \
   test_parser.cpp \
   test_predicate.cpp \
   test_tokenizer.cpp \
   ../simple/ast.cpp \
   ../simple/condition_set.cpp \
+  ../simple/tuple.cpp \
   ../simple/util/condition_utils.cpp \
   ../simple/util/ast_utils.cpp \
   ../impl/matcher.cpp \
@@ -283,6 +286,8 @@ clean-binPROGRAMS:
 	../simple/$(DEPDIR)/$(am__dirstamp)
 ../simple/condition_set.$(OBJEXT): ../simple/$(am__dirstamp) \
 	../simple/$(DEPDIR)/$(am__dirstamp)
+../simple/tuple.$(OBJEXT): ../simple/$(am__dirstamp) \
+	../simple/$(DEPDIR)/$(am__dirstamp)
 ../simple/util/$(am__dirstamp):
 	@$(MKDIR_P) ../simple/util
 	@: > ../simple/util/$(am__dirstamp)
@@ -358,6 +363,7 @@ mostlyclean-compile:
 	-rm -f ../impl/solvers/same_name.$(OBJEXT)
 	-rm -f ../simple/ast.$(OBJEXT)
 	-rm -f ../simple/condition_set.$(OBJEXT)
+	-rm -f ../simple/tuple.$(OBJEXT)
 	-rm -f ../simple/util/ast_utils.$(OBJEXT)
 	-rm -f ../simple/util/condition_utils.$(OBJEXT)
 	-rm -f gtest/gtest-all.$(OBJEXT)
@@ -377,6 +383,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/solvers/$(DEPDIR)/same_name.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../simple/$(DEPDIR)/ast.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../simple/$(DEPDIR)/condition_set.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../simple/$(DEPDIR)/tuple.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../simple/util/$(DEPDIR)/ast_utils.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../simple/util/$(DEPDIR)/condition_utils.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_ast.Po@am__quote@
@@ -387,6 +394,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_ifollows.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_inext.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_iparent.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_linker.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_matcher.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_modifies.Po@am__quote@

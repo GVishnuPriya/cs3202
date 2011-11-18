@@ -35,7 +35,7 @@ class QueryLinkerError : public std::exception { };
 
 class SimpleQueryLinker : public QueryLinker {
   public:
-    void add_links(const std::string& qvar1, 
+    void update_links(const std::string& qvar1, 
                    const std::string& qvar2, 
                    const std::vector<ConditionPair>& links);
 
@@ -50,9 +50,8 @@ class SimpleQueryLinker : public QueryLinker {
             std::vector<std::string>::const_iterator next_qit,
             std::vector<std::string>::const_iterator end);
 
-    bool add_link(const std::string& qvar1,
-                  const std::string& qvar2,
-                  const ConditionPair& pair);
+    bool add_link(const std::string& qvar1, const std::string& qvar2, 
+                  const ConditionPtr& condition1, const ConditionPtr& condition2);
 
     void remove_condition(const std::string& qvar, 
                           const ConditionPtr& condition);
@@ -98,14 +97,14 @@ class SimpleQueryLinker : public QueryLinker {
     _qvar_table;
 };
 
-class SimpleQueryTuple : public QueryTuple {
+class SimpleConditionTuple : public ConditionTuple {
   public:
-    SimpleQueryTuple(ConditionPtr condition, 
-        std::shared_ptr<QueryTuple> next) :
+    SimpleConditionTuple(ConditionPtr condition, 
+        ConditionTuplePtr next) :
         _condition(condition), _next(next)
     { }
 
-    SimpleQueryTuple(ConditionPtr condition) : 
+    SimpleConditionTuple(ConditionPtr condition) : 
         _condition(condition), _next()
     { }
 
@@ -113,13 +112,13 @@ class SimpleQueryTuple : public QueryTuple {
         return _condition;
     }
 
-    std::shared_ptr<QueryTuple> next() {
+    ConditionTuplePtr next() {
         return _next;
     }
 
   private:
-    ConditionPtr                _condition;
-    std::shared_ptr<QueryTuple> _next;
+    ConditionPtr    _condition;
+    ConditionTuplePtr   _next;
 };
 
 }

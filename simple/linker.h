@@ -18,24 +18,11 @@
 
 #pragma once
 
-#include <memory>
 #include <vector>
+#include "simple/tuple.h"
 #include "simple/condition_set.h"
-#include "simple/qvar.h"
 
 namespace simple {
-
-class QueryTuple {
-  public:
-    virtual ConditionPtr get_condition() = 0;
-
-    virtual std::shared_ptr<QueryTuple> next() = 0;
-
-    virtual ~QueryTuple() { }
-};
-
-typedef std::shared_ptr<QueryTuple> QueryTuplePtr;
-typedef std::vector<QueryTuplePtr> TupleList;
 
 /**
  * Since PQL is almost the same as logic programming in Prolog, there is 
@@ -96,16 +83,17 @@ typedef std::vector<QueryTuplePtr> TupleList;
 class QueryLinker {
   public:
     /**
-     * Add binary links between two query variables into the database.
-     * The binary links make sure that the removal of a condition in
-     * one variable will affect linked conditions on the other side.
+     * Add or update binary links between two query variables into the 
+     * database. The binary links make sure that the removal of a 
+     * condition in one variable will affect linked conditions on 
+     * the other side.
      *
      * The query variable must have already been defined when the link
      * is added, and the linking will perform an intersection on both 
      * query variables to remove conditions that do not have a link, 
      * or links with one side of conditions not in the query variable.
      */
-    virtual void add_link(
+    virtual void update_links(
             const std::string& qvar1, 
             const std::string& qvar2, 
             const std::vector<ConditionPair>& links) = 0;
@@ -118,7 +106,7 @@ class QueryLinker {
      * first. The first call of update_result() on a variable should be
      * the global set defined by the variable's predicate.
      */
-    virtual void update_result(
+    virtual void update_results(
             const std::string& qvar,
             const ConditionSet& conditions) = 0;
 
@@ -131,8 +119,10 @@ class QueryLinker {
      * The return result is a list of variable-size tuple, with size of
      * the same as the size of list of variables supplied in the parameter.
      */
-    virtual TupleList make_tuple(
+    virtual TupleList make_tuples(
             const std::vector<std::string>& variables) = 0;
+
+    virtual ConditionSet get_conditions(const std::string& qvar) = 0;
 };
 
 

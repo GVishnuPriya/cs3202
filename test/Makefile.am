@@ -14,11 +14,13 @@ unit_tests_SOURCES = \
   test_next.cpp \
   test_inext.cpp \
   test_matcher.cpp \
+  test_linker.cpp \
   test_parser.cpp \
   test_predicate.cpp \
   test_tokenizer.cpp \
   ../simple/ast.cpp \
   ../simple/condition_set.cpp \
+  ../simple/tuple.cpp \
   ../simple/util/condition_utils.cpp \
   ../simple/util/ast_utils.cpp \
   ../impl/matcher.cpp \
