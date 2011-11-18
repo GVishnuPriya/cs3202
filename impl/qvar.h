@@ -37,9 +37,8 @@ class WildCardQueryVariable : public QueryVariable {
         return false;
     }
 
-    ConditionSet& get_conditions() {
-        _conditions.clear();
-        return _conditions;
+    const ConditionSet& get_conditions() {
+        return _pred->global_set();
     }
 
     void set_conditions(const ConditionSet& conditions) {
@@ -58,10 +57,13 @@ class WildCardQueryVariable : public QueryVariable {
         return "_";
     }
 
+    bool is_wildcard() {
+        return true;
+    }
+
     virtual ~WildCardQueryVariable() { }
 
   private:
-    ConditionSet    _conditions;
     PredicatePtr    _pred;
 };
 
@@ -77,7 +79,10 @@ class SimpleQueryVariable : public QueryVariable {
     }
 
     ConditionSet& get_conditions() {
-        _is_bounded = true;
+        if(!_is_bounded) {
+            _set = _pred->global_set();
+            _is_bounded = true;
+        }
         return _set;
     }
 
@@ -101,6 +106,10 @@ class SimpleQueryVariable : public QueryVariable {
 
     void set_predicate(PredicatePtr pred) {
         _pred = pred;
+    }
+
+    bool is_wildcard() {
+        return false;
     }
 
     virtual ~SimpleQueryVariable() { }

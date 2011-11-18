@@ -27,16 +27,6 @@
 
 namespace simple {
 
-struct ConditionPair {
-  public:
-    ConditionPair(ConditionPtr first_, ConditionPtr second_) :
-        first(first_), second(second_)
-    { }
-
-    ConditionPtr first;
-    ConditionPtr second;
-};
-
 class QueryMatcher {
   public:
     virtual std::vector<ConditionPair> solve_both(QueryVariable *left, QueryVariable *right) = 0;

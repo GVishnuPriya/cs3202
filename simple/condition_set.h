@@ -104,6 +104,16 @@ class ConditionSet {
     std::set<ConditionPtr> _set;
 };
 
+struct ConditionPair {
+  public:
+    ConditionPair(ConditionPtr first_, ConditionPtr second_) :
+        first(first_), second(second_)
+    { }
+
+    ConditionPtr first;
+    ConditionPtr second;
+};
+
 ::std::ostream& operator<<(::std::ostream& os, const ConditionSet& set);
 
 

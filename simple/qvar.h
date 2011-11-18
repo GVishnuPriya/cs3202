@@ -36,13 +36,19 @@ class QueryVariable {
     /*
      * Get the conditions set that are bounded to this variable.
      * Calling this on an unbounded variable will make it bounded and
-     * returns an empty set.
+     * returns the global set defined by the variable's predicate.
      */
-    virtual ConditionSet& get_conditions() = 0;
+    virtual const ConditionSet& get_conditions() = 0;
 
     /*
      * Bound the variable to a new sets of conditions. If the variable
      * is unbounded, it becomes bounded now.
+     *
+     * The new ConditionSet must be a subset of the currently bounded 
+     * ConditionSet, if bounded, or a subset of the global set defined 
+     * by the predicate if is unbounded. Violation of this will cause 
+     * an exception to be thrown, as the logic of this program does not 
+     * allow this to happen and thus it is an indication of bug.
      */
     virtual void set_conditions(const ConditionSet& conditions) = 0;
     virtual void set_conditions(ConditionSet&& conditions) = 0;
@@ -50,6 +56,8 @@ class QueryVariable {
     virtual SimplePredicate* get_predicate() = 0;
 
     virtual std::string get_name() = 0;
+
+    virtual bool is_wildcard() = 0;
 
     virtual ~QueryVariable() { }
 };
