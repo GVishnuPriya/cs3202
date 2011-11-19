@@ -25,6 +25,18 @@ bool is_same_term(PqlTerm *term1, PqlTerm *term2);
 
 bool is_same_clause(PqlClause *clause1, PqlClause *clause2);
 
+template <typename Selector>
+bool is_selector(PqlSelector *selector);
+
+template <typename Selector>
+Selector* selector_cast(PqlSelector *selector) {
+    if(is_selector<Selector>(selector)) {
+        return static_cast<Selector*>(selector);
+    } else {
+        return NULL;
+    }
+}
+
 template <typename Visitor, typename VisitorTraits>
 class PqlTermDoubleDispatcher;
 
@@ -117,6 +129,61 @@ class SecondPqlTermDoubleDispatcher : public PqlTermVisitor {
     FirstTerm   *_term1;
     typename VisitorTraits::ResultType _result;
 };
+
+template <typename Selector1, typename Selector2>
+inline bool same_selector_type() {
+    return false;
+}
+
+template <>
+inline bool same_selector_type<PqlSingleVarSelector, PqlSingleVarSelector>() {
+    return true;
+}
+
+template <>
+inline bool same_selector_type<PqlBooleanSelector, PqlBooleanSelector>() {
+    return true;
+}
+
+template <>
+inline bool same_selector_type<PqlTupleSelector, PqlTupleSelector>() {
+    return true;
+}
+
+template <typename Selector>
+class IsSelectorVisitor : public PqlSelectorVisitor {
+  public:
+    IsSelectorVisitor() : _result(false) { }
+
+    void visit_single_var(PqlSingleVarSelector*) {
+        _result = same_selector_type<Selector, 
+                PqlSingleVarSelector>();
+    }
+
+    void visit_boolean(PqlBooleanSelector*) {
+        _result = same_selector_type<Selector,
+                PqlBooleanSelector>();
+    }
+
+    void visit_tuple(PqlTupleSelector*) {
+        _result = same_selector_type<Selector,
+                PqlTupleSelector>();
+    }
+
+    bool return_result() {
+        return _result;
+    }
+
+  private:
+    bool _result;
+};
+
+template <typename Selector>
+bool is_selector(PqlSelector *selector) {
+    IsSelectorVisitor<Selector> visitor;
+    selector->accept_pql_selector_visitor(&visitor);
+    return visitor.return_result();
+}
 
 
 }

@@ -93,9 +93,5 @@ bool SameTermComparator::is_same_term<PqlWildcardTerm, PqlWildcardTerm>(
 
 
 
-
-
-
-
 }
 }

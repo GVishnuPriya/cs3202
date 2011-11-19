@@ -47,9 +47,11 @@ class SimplePqlParser {
         _tokenizer(tokenizer), _ast(ast),
         _line_table(line_table), _solver_table(solver_table), 
         _pred_table(pred_table)
-    { }
+    { 
+        next_token();
+    }
 
-    const PqlQuerySet& get_query_set() const {
+    PqlQuerySet& get_query_set() {
         return _query_set;
     }
 
@@ -77,7 +79,8 @@ class SimplePqlParser {
         if(keyword == "procedure") {
             pred = get_predicate("procedure");
         } else if(keyword == "prog_line" || keyword == "stmt" || 
-                keyword == "stmtlist") {
+                keyword == "stmtlist" || keyword == "statement") 
+        {
             pred = get_predicate("statement");
         } else if(keyword == "assign") {
             pred = get_predicate("assignment");
@@ -97,22 +100,25 @@ class SimplePqlParser {
             std::string qvar = current_token_as<
                         IdentifierToken>()->get_content();
 
+            _query_set.predicates[qvar] = pred;
             next_token(); // eat var name
 
-            if(!current_token_is<CommaToken>()) {
+            if(current_token_is<SemiColonToken>()) {
+                next_token(); // eat ';'
                 return;
-            } else {
-                next_token(); // eat comma
             }
 
-            _query_set.predicates[qvar] = pred;
+            current_token_as<CommaToken>();
+            next_token(); // eat comma
         }
     }
 
     void parse_main_query() {
         _query_set.selector = parse_selector();
 
-        while(!current_token_is<EOFToken>()) {
+        while(!(current_token_is<EOFToken>() || 
+                    current_token_is<SemiColonToken>())) 
+        {
             std::string keyword = current_token_as_keyword();
             next_token(); // eat keyword
 
@@ -124,6 +130,8 @@ class SimplePqlParser {
 
                     _query_set.clauses.push_back(parse_clause());
                 }
+            } else if(keyword == "and") {
+                    _query_set.clauses.push_back(parse_clause());
             } else if(keyword == "with") {
                 parse_with();
             } else if(keyword == "pattern") {
@@ -156,7 +164,7 @@ class SimplePqlParser {
 
             next_token(); // eat var name
             return std::shared_ptr<PqlSelector>(
-                new SimplePqlSingleVariableSelector(selected_var));
+                new SimplePqlSingleVarSelector(selected_var));
         }
     }
 
@@ -202,9 +210,10 @@ class SimplePqlParser {
             return new SimplePqlConditionTerm(condition);
 
         } else if(current_token_is<IntegerToken>()) {
+            int line = current_token_as<IntegerToken>()->get_value();
+            next_token();
             return new SimplePqlConditionTerm(
-                   new SimpleStatementCondition(get_statement(
-                   current_token_as<IntegerToken>()->get_value())));
+                   new SimpleStatementCondition(get_statement(line)));
             
         } else if(current_token_is<IdentifierToken>()) {
             std::string var_name = current_token_as<

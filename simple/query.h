@@ -84,11 +84,11 @@ class PqlSelector {
     virtual ~PqlSelector() { }
 };
 
-class PqlSingleVariableSelector : public PqlSelector {
+class PqlSingleVarSelector : public PqlSelector {
   public:
     virtual std::string get_qvar_name() = 0;
 
-    virtual ~PqlSingleVariableSelector() { }
+    virtual ~PqlSingleVarSelector() { }
 };
 
 class PqlBooleanSelector : public PqlSelector {
@@ -105,7 +105,7 @@ class PqlTupleSelector : public PqlSelector {
 
 class PqlSelectorVisitor {
   public:
-    virtual void visit_single_variable(PqlSingleVariableSelector *selector) = 0;
+    virtual void visit_single_var(PqlSingleVarSelector *selector) = 0;
     virtual void visit_boolean(PqlBooleanSelector *selector) = 0;
     virtual void visit_tuple(PqlTupleSelector *selector) = 0;
 

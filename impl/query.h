@@ -103,9 +103,9 @@ class SimplePqlClause : public PqlClause {
     std::shared_ptr<PqlTerm>        _right_term;
 };
 
-class SimplePqlSingleVariableSelector : public PqlSingleVariableSelector {
+class SimplePqlSingleVarSelector : public PqlSingleVarSelector {
   public:
-    SimplePqlSingleVariableSelector(const std::string& qvar_name) :
+    SimplePqlSingleVarSelector(const std::string& qvar_name) :
         _qvar_name(qvar_name)
     { }
 
@@ -114,7 +114,7 @@ class SimplePqlSingleVariableSelector : public PqlSingleVariableSelector {
     }
 
     void accept_pql_selector_visitor(PqlSelectorVisitor *visitor) {
-        visitor->visit_single_variable(this);
+        visitor->visit_single_var(this);
     }
 
   private:
