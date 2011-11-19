@@ -23,6 +23,7 @@
 #include "impl/parser/tokenizer.h"
 #include "impl/parser/parser.h"
 #include "impl/parser/iterator_tokenizer.h"
+#include "test/mock.h"
 
 namespace simple {
 namespace test {
@@ -31,39 +32,6 @@ using namespace simple;
 using namespace simple::parser;
 using namespace simple::util;
 
-class MockTokenizer : public SimpleTokenizer {
-  public:
-    MockTokenizer() : 
-        _tokens(), _first_token(true)
-    { }
-    
-    void insert(SimpleToken *token) {
-        _tokens.push_back(std::unique_ptr<SimpleToken>(token));
-
-        if(_first_token) {
-            _first_token = false;
-            _token_it = _tokens.begin();
-        }
-    }
-
-    SimpleToken* next_token() {
-        if(_token_it == _tokens.end()) {
-            throw ParserError();
-        } else {
-            return (_token_it++)->get();
-        }
-    }
-
-    virtual ~MockTokenizer() { }
-
-  private:
-    std::list< std::unique_ptr<SimpleToken> > _tokens;
-
-    std::list< std::unique_ptr<SimpleToken> >::iterator
-    _token_it;
-
-    bool _first_token;
-};
 
 TEST(ParserTest, TestCallParser) {
     /*
@@ -632,7 +600,7 @@ TEST(ParserTest, FullItegrationTest) {
     EXPECT_TRUE((is_same_statement_list(statement, assign1)));
     EXPECT_TRUE((is_same_statement_list(statement2, assign5)));
 
-    std::map<int, StatementAst*> line_table = *parser.get_line_table().get();
+    LineTable line_table = parser.get_line_table();
 
     EXPECT_EQ(statement->get_line(), 1);
     EXPECT_TRUE(line_table[1] == statement);

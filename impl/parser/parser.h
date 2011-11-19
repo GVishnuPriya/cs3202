@@ -38,7 +38,7 @@ class SimpleParser {
   public:
     SimpleParser(SimpleTokenizer *tokenizer) :
         _line(1),
-        _line_table(new std::map<int, StatementAst*>()),
+        _line_table(),
         _tokenizer(tokenizer)
     { 
         next_token();
@@ -244,7 +244,7 @@ class SimpleParser {
         return token_cast<Token>(current_token());
     }
 
-    std::shared_ptr<std::map<int, StatementAst*> > get_line_table() {
+    const LineTable& get_line_table() {
         return _line_table;
     }
   protected:
@@ -385,12 +385,12 @@ class SimpleParser {
 
     void set_line(SimpleStatementAst *statement, int line) {
         statement->set_line(line);
-        (*_line_table.get())[line] = statement->as_ast();
+        _line_table[line] = statement->as_ast();
     }
   private:
     int _line;
     std::map<std::string, SimpleProcAst*> _procs_table;
-    std::shared_ptr<std::map<int, StatementAst*> > _line_table;
+    LineTable _line_table;
 
     /*
      * The tokenizer takes ownership of the produced token pointers

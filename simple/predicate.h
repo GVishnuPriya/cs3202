@@ -38,4 +38,6 @@ class SimplePredicate {
 
 typedef std::shared_ptr<SimplePredicate> PredicatePtr;
 
+typedef std::map<std::string, PredicatePtr> PredicateTable;
+
 }

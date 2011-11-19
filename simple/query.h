@@ -16,74 +16,72 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#pragma once
+
 #include "simple/condition.h"
-#include "simple/qvar.h"
-#include "simple/matcher.h"
+#include "simple/condition_set.h"
+#include "simple/predicate.h"
+#include "simple/solver.h"
 #include <memory>
 #include <string>
 #include <vector>
 
 namespace simple {
 
-class PqlQueryVisitor;
+class PqlTermVisitor;
 
-class PqlQuery {
+class PqlTerm {
   public:
-    virtual QueryMatcher* get_matcher() = 0;
-    virtual void accept_pql_query_visitor(PqlQueryVisitor *visitor) = 0;
+    virtual void accept_pql_term_visitor(PqlTermVisitor *visitor) = 0;
 
-    virtual ~PqlQuery() { }
+    virtual ~PqlTerm() { }
 };
 
-class PqlSolveLeftQuery : public PqlQuery {
+class PqlConditionTerm : public PqlTerm {
   public:
-    virtual QueryVariable* get_left_query_variable() = 0;
-    virtual SimpleCondition* get_right_criteria() = 0;
+    virtual ConditionPtr get_condition() = 0;
 
-    virtual ~PqlSolverLeftQuery() { }
+    virtual ~PqlConditionTerm() { }
 };
 
-class PqlSolveRightQuery : public PqlQuery {
+class PqlVariableTerm : public PqlTerm {
   public:
-    virtual SimpleCondition* get_left_criteria() = 0;
-    virtual QueryVariable* get_right_query_variable() = 0
+    virtual std::string get_query_variable() = 0;
 
-    virtual ~PqlSolveRightQuery() { }
+    virtual ~PqlVariableTerm() { }
 };
 
-class PqlSolveBothQuery : public PqlQuery {
+class PqlWildcardTerm : public PqlTerm {
   public:
-    virtual QueryVariable* get_left_query_variable() = 0;
-    virtual QueryVariable* get_right_query_variable() = 0
-
-    virtual ~PqlSolveBothQuery() { }
+    virtual ~PqlWildcardTerm() { }
 };
 
-class PqlValidateQuery : public PqlQuery {
+class PqlTermVisitor {
   public:
-    virtual SimpleCondition* get_left_criteria() = 0;
-    virtual SimpleCondition* get_right_criteria() = 0;
+    virtual void visit_condition_term(PqlConditionTerm *term) = 0;
+    virtual void visit_variable_term(PqlVariableTerm *term) = 0;
+    virtual void visit_wildcard_term(PqlWildcardTerm *term) = 0;
 
-    virtual ~PqlValidateQuery() { }
+    virtual ~PqlTermVisitor() { }
 };
 
-class PqlQueryVisitor {
+class PqlClause {
   public:
-    virtual void visit_solve_left(PqlSolveLeftQuery *query) = 0;
-    virtual void visit_solve_right(PqlSolveRightQuery *query) = 0;
-    virtual void visit_solve_both(PqlSolveBothQuery *query) = 0;
-    virtual void visit_validate(PqlValidateQuery *query) = 0;
+    virtual QuerySolver* get_solver() = 0;
 
-    virtual ~PqlQueryVisitor() { }
+    virtual PqlTerm* get_left_term() = 0;
+    virtual PqlTerm* get_right_term() = 0;
+
+    virtual ~PqlClause() { }
 };
 
 class PqlSelectorVisitor;
 
 class PqlSelector {
   public:
-    virtual accept_pql_selector_visitor(PqlSelectorVisitor *visitor) = 0;
+    virtual void accept_pql_selector_visitor(PqlSelectorVisitor *visitor) = 0;
 
-    virtual ~PqlSelection() { }
+    virtual ~PqlSelector() { }
 };
 
 class PqlSingleVariableSelector : public PqlSelector {
@@ -116,15 +114,11 @@ class PqlSelectorVisitor {
 
 struct PqlQuerySet {
   public:
-    PqlQuerySet() : boolean_mode(false) { }
+    std::map< std::string, 
+        std::shared_ptr<SimplePredicate> >      predicates;
 
-    std::vector< std::shared_ptr<PqlQuery> >    queries;
-    
-    std::map<std::string, QVarPtr>              qvars_table;
-    
     std::shared_ptr<PqlSelector>                selector;
-
-    bool boolean_mode;
+    std::vector< std::shared_ptr<PqlClause> >   clauses;
 };
 
 } // namespace simple

@@ -16,6 +16,7 @@ unit_tests_SOURCES = \
   test_matcher.cpp \
   test_linker.cpp \
   test_parser.cpp \
+  test_pql_parser.cpp \
   test_predicate.cpp \
   test_tokenizer.cpp \
   ../simple/ast.cpp \
@@ -23,6 +24,7 @@ unit_tests_SOURCES = \
   ../simple/tuple.cpp \
   ../simple/util/condition_utils.cpp \
   ../simple/util/ast_utils.cpp \
+  ../simple/util/query_utils.cpp \
   ../impl/matcher.cpp \
   ../impl/linker.cpp \
   ../impl/predicate.cpp \

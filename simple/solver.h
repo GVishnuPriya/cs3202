@@ -18,17 +18,12 @@
 
 #pragma once
 
-#include <list>
-#include <exception>
+#include <map>
 #include "simple/ast.h"
 #include "simple/condition.h"
 #include "simple/condition_set.h"
 
 namespace simple {
-
-using namespace simple;
-
-class SolverDependencyException : public std::exception { };
 
 class QueryValidator {
   public:
@@ -45,5 +40,7 @@ class QuerySolver : public QueryValidator {
 
    virtual ~QuerySolver() { }
 };
+
+typedef std::map<std::string, std::shared_ptr<QuerySolver> > SolverTable;
 
 } // namespace matcher

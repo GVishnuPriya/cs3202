@@ -39,6 +39,8 @@ class ContainerVisitor;
 class StatementVisitor;
 class ExprVisitor;
 
+typedef std::map<int, StatementAst*> LineTable;
+
 class InconsistentAstError : public std::exception { };
 
 /*

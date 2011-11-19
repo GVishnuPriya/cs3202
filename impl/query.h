@@ -19,133 +19,88 @@
 #pragma once
 
 #include "simple/query.h"
-#include "simple/matcher.h"
+#include "simple/solver.h"
 
 namespace simple {
 namespace impl {
 
 using namespace simple;
 
-class SimplePqlSolveLeftQuery : public PqlSolveLeftQuery {
+class SimplePqlConditionTerm : public PqlConditionTerm {
   public:
-    SimplePqlSolveLeftQuery(
-        MatcherPtr matcher, QvarPtr left_var, ConditionPtr right_criteria) :
-        _matcher(matcher), _left_qvar(left_qvar), _right_criteria(right_criteria)
+    SimplePqlConditionTerm(ConditionPtr condition) : 
+        _condition(condition)
     { }
 
-    QueryVariable* get_left_query_variable() {
-        return _left_qvar.get();
+    ConditionPtr get_condition() {
+        return _condition;
     }
 
-    SimpleCondition* get_right_criteria() {
-        return _right_criteria.get();
+    void accept_pql_term_visitor(PqlTermVisitor *visitor) {
+        visitor->visit_condition_term(this);
     }
 
-    QueryMatcher* get_matcher() {
-        return _matcher.get();
-    }
-
-    void accept_pql_query_visitor(PqlQueryVisitor *visitor) {
-        visitor->visit_solve_left(this);
-    }
-
-    ~SimplePqlSolveLeftQuery() { }
+    ~SimplePqlConditionTerm() { }
 
   private:
-    MatcherPtr      _matcher;
-    QVarPtr         _left_qvar;
-    ConditionPtr    _right_criteria;
+    ConditionPtr _condition;
 };
 
-class SimplePqlSolveRightQuery : public PqlSolveRightQuery {
+class SimplePqlVariableTerm : public PqlVariableTerm {
   public:
-    SimplePqlSolveRightQuery(
-        MatcherPtr matcher, ConditionPtr left_criteria, QVarPtr right_qvar) :
-        _matcher(matcher), _left_criteria(left_criteria), _right_qvar(right_qvar)
+    SimplePqlVariableTerm(const std::string& qvar) :
+        _qvar(qvar)
     { }
 
-    SimpleCondition* get_left_criteria() {
-        return _left_criteria.get();
+    std::string get_query_variable() {
+        return _qvar;
     }
 
-    QueryVariable* get_right_query_variable() {
-        return _right_qvar.get();
+    void accept_pql_term_visitor(PqlTermVisitor *visitor) {
+        visitor->visit_variable_term(this);
     }
 
-    QueryMatcher* get_matcher() {
-        return _matcher.get();
-    }
-
-    void accept_pql_query_visitor(PqlQueryVisitor *visitor) {
-        visitor->visit_solve_right(this);
-    }
-
-    ~SimplePqlSolveRightQuery() { }
+    ~SimplePqlVariableTerm() { }
 
   private:
-    MatcherPtr      _matcher;
-    ConditionPtr    _left_criteria;
-    QVarPtr         _right_qvar;
+    std::string _qvar;
 };
 
-class SimplePqlSolveBothQuery : public PqlSolveBothQuery {
+class SimplePqlWildcardTerm : public PqlWildcardTerm {
   public:
-    SimplePqlSolveBothQuery(
-        MatcherPtr matcher, QVarPtr left_qvar, QVarPtr right_qvar) :
-        _matcher(matcher), _left_qvar(left_qvar), _right_qvar(right_qvar)
-    { }
+    SimplePqlWildcardTerm() { }
 
-    QueryVariable* get_left_query_variable() {
-        return _left_qvar.get();
+    void accept_pql_term_visitor(PqlTermVisitor *visitor) {
+        visitor->visit_wildcard_term(this);
     }
 
-    QueryVariable* get_right_query_variable() {
-        return _right_qvar.get();
-    }
-
-    QueryMatcher* get_matcher() {
-        return _matcher.get();
-    }
-
-    void accept_pql_query_visitor(PqlQueryVisitor *visitor) {
-        visitor->visit_solve_both(this);
-    }
-
-    ~SimplePqlSolveBothQuery() { }
-
-  private:
-    MatcherPtr  _matcher;
-    QVarPtr     _left_qvar;
-    QVarPtr     _right_qvar;
+    ~SimplePqlWildcardTerm() { }
 };
 
-class SimplePqlValidateQuery : public PqlValidateQuery {
+class SimplePqlClause : public PqlClause {
   public:
-    SimplePqlValidateQuery(
-        MatcherPtr matcher, ConditionPtr left_criteria, ConditionPtr right_criteria) :
-        _matcher(matcher), _left_criteria(left_criteria), _right_criteria(right_criteria)
+    SimplePqlClause(std::shared_ptr<QuerySolver> solver,
+            PqlTerm *left_term, PqlTerm *right_term) :
+        _solver(solver), _left_term(left_term), 
+        _right_term(right_term)
     { }
 
-    SimpleCondition* get_left_criteria() {
-        return _left_criteria.get();
+    QuerySolver* get_solver() {
+        return _solver.get();
     }
 
-    SimpleCondition* get_right_criteria() {
-        return _right_criteria.get();
+    PqlTerm* get_left_term() {
+        return _left_term.get();
     }
 
-    QueryMatcher* get_matcher() {
-        return _matcher.get();
-    }
-
-    void accept_pql_query_visitor(PqlQueryVisitor *visitor) {
-        visitor->visit_validate(this);
+    PqlTerm* get_right_term() {
+        return _right_term.get();
     }
 
   private:
-    MatcherPtr      _matcher;
-    ConditionPtr    _left_criteria;
-    ConditionPtr    _right_criteria;
+    std::shared_ptr<QuerySolver>    _solver;
+    std::shared_ptr<PqlTerm>        _left_term;
+    std::shared_ptr<PqlTerm>        _right_term;
 };
 
 class SimplePqlSingleVariableSelector : public PqlSingleVariableSelector {
@@ -180,7 +135,7 @@ class SimplePqlTupleSelector : public PqlTupleSelector {
     SimplePqlTupleSelector() : _tuples() { }
 
     SimplePqlTupleSelector(std::vector<std::string> tuples) :
-        _tupples(tuples)
+        _tuples(tuples)
     { }
 
     std::vector<std::string> get_tuples() {
