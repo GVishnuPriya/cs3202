@@ -20,6 +20,7 @@
 
 #include <vector>
 #include "simple/tuple.h"
+#include "simple/predicate.h"
 #include "simple/condition_set.h"
 
 namespace simple {
@@ -122,7 +123,28 @@ class QueryLinker {
     virtual TupleList make_tuples(
             const std::vector<std::string>& variables) = 0;
 
-    virtual ConditionSet get_conditions(const std::string& qvar) = 0;
+    /*
+     * Indicates whether the qvar links are in a valid state.
+     * If one of the query variables yield empty set result,
+     * the linker state becomes invalid, and the query processor
+     * should return empty result. If the Select BOOLEAN clause 
+     * is used in the PQL, this will cause the result to be false.
+     *
+     * The linker state can be invalidated manually as for the case
+     * of solving clauses that don't involve query variables.
+     */
+    virtual bool is_valid_state() = 0;
+    virtual void invalidate_state() = 0;
+
+    virtual bool is_initialized(const std::string& qvar) = 0;
+
+    /*
+     * Get the ConditionSet that the qvar is holding. If the qvar is
+     * not yet initialized, use pred to initialize the qvar and return
+     * the result.
+     */
+    virtual ConditionSet get_conditions(const std::string& qvar,
+            SimplePredicate *pred) = 0;
 };
 
 

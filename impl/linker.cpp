@@ -185,6 +185,14 @@ void SimpleQueryLinker::remove_condition(
         _qvar_table[qvar].remove(condition);
 
         /*
+         * If it is a removal of the last condition in a qvar and
+         * makes it empty, the whole PQL is then fall into an invalid state.
+         */
+        if(_qvar_table[qvar].is_empty()) {
+            invalidate_state();
+        }
+
+        /*
          * Iterate through the query variables that have linkage with this query variable
          */
         for(std::set<std::string>::iterator qit = _qvar_link_table[qvar].begin();
@@ -325,6 +333,15 @@ bool SimpleQueryLinker::validate(
      }
 }
 
+ConditionSet SimpleQueryLinker::get_conditions(
+        const std::string& qvar, SimplePredicate *pred) 
+{
+    if(!is_initialized(qvar)) {
+        _qvar_table[qvar] = pred->global_set();
+    }
+    return _qvar_table[qvar];
+}
+
 ConditionSet SimpleQueryLinker::get_conditions(const std::string& qvar) {
     return _qvar_table[qvar];
 }
@@ -334,6 +351,16 @@ std::map<ConditionPtr, ConditionSet> SimpleQueryLinker::get_links(
 {
     return _condition_link_table[QVarPair(qvar1, qvar2)];
 }
+
+bool SimpleQueryLinker::is_valid_state() {
+    return _valid_state;
+}
+
+void SimpleQueryLinker::invalidate_state() {
+    _valid_state = false;
+}
+
+
 
 }
 }

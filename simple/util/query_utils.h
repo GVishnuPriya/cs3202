@@ -45,10 +45,11 @@ class SecondPqlTermDoubleDispatcher;
 
 template <typename Visitor, typename VisitorTraits>
 typename VisitorTraits::ResultType
-double_dispatch_pql_terms(Visitor *visitor, PqlTerm *term1, PqlTerm *term2)
+double_dispatch_pql_terms(Visitor *visitor, PqlTerm *term1, PqlTerm *term2,
+        typename VisitorTraits::ContextType context)
 {
     PqlTermDoubleDispatcher<Visitor, VisitorTraits> 
-    dispatcher(visitor, term2);
+    dispatcher(visitor, term2, context);
 
     term1->accept_pql_term_visitor(&dispatcher);
     return dispatcher.return_result();
@@ -57,8 +58,9 @@ double_dispatch_pql_terms(Visitor *visitor, PqlTerm *term1, PqlTerm *term2)
 template <typename Visitor, typename VisitorTraits>
 class PqlTermDoubleDispatcher : public PqlTermVisitor {
   public:
-    PqlTermDoubleDispatcher(Visitor *visitor, PqlTerm *term2) :
-        _visitor(visitor), _term2(term2)
+    PqlTermDoubleDispatcher(Visitor *visitor, PqlTerm *term2,
+            typename VisitorTraits::ContextType context) :
+        _visitor(visitor), _term2(term2), _context(context)
     { }
 
     void visit_condition_term(PqlConditionTerm *term1) {
@@ -82,7 +84,7 @@ class PqlTermDoubleDispatcher : public PqlTermVisitor {
     void dispatch_first_term(Term *term1) {
         SecondPqlTermDoubleDispatcher<
                 Visitor, VisitorTraits, Term>
-        visitor(_visitor, term1);
+        visitor(_visitor, term1, _context);
 
         _term2->accept_pql_term_visitor(&visitor);
         _result = visitor.return_result();
@@ -92,13 +94,15 @@ class PqlTermDoubleDispatcher : public PqlTermVisitor {
     Visitor *_visitor;
     PqlTerm *_term2;
     typename VisitorTraits::ResultType _result;
+    typename VisitorTraits::ContextType _context;
 };
 
 template <typename Visitor, typename VisitorTraits, typename FirstTerm>
 class SecondPqlTermDoubleDispatcher : public PqlTermVisitor {
   public:
-    SecondPqlTermDoubleDispatcher(Visitor *visitor, FirstTerm *term1) :
-        _visitor(visitor), _term1(term1)
+    SecondPqlTermDoubleDispatcher(Visitor *visitor, FirstTerm *term1,
+            typename VisitorTraits::ContextType context) :
+        _visitor(visitor), _term1(term1), _context(context)
     { }
 
     void visit_condition_term(PqlConditionTerm *term2) {
@@ -121,13 +125,14 @@ class SecondPqlTermDoubleDispatcher : public PqlTermVisitor {
     template <typename SecondTerm>
     void dispatch_second_term(SecondTerm *term2) {
         _result = VisitorTraits::template visit<FirstTerm, SecondTerm>(
-                _visitor, _term1, term2);
+                _visitor, _term1, term2, _context);
     }
 
   private:
     Visitor     *_visitor;
     FirstTerm   *_term1;
     typename VisitorTraits::ResultType _result;
+    typename VisitorTraits::ContextType _context;
 };
 
 template <typename Selector1, typename Selector2>

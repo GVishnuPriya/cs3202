@@ -30,9 +30,10 @@ class SameTermComparator {
 class SameTermVisitorTraits {
   public:
     typedef bool ResultType;
+    typedef void* ContextType;
 
     template <typename Term1, typename Term2>
-    static bool visit(SameTermComparator *comparator, Term1 *term1, Term2 *term2) {
+    static bool visit(SameTermComparator *comparator, Term1 *term1, Term2 *term2, void* context) {
         return comparator->is_same_term<Term1, Term2>(term1, term2);
     }
 };
@@ -60,7 +61,7 @@ bool is_same_term(PqlTerm *term1, PqlTerm *term2) {
     SameTermComparator comparator;
     return double_dispatch_pql_terms<
         SameTermComparator, SameTermVisitorTraits>(
-        &comparator, term1, term2);
+            &comparator, term1, term2, NULL);
 }
 
 bool is_same_clause(PqlClause *clause1, PqlClause *clause2) {

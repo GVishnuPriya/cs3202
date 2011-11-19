@@ -35,6 +35,8 @@ class QueryLinkerError : public std::exception { };
 
 class SimpleQueryLinker : public QueryLinker {
   public:
+    SimpleQueryLinker() : _valid_state(true) { }
+
     void update_links(const std::string& qvar1, 
                    const std::string& qvar2, 
                    const std::vector<ConditionPair>& links);
@@ -80,6 +82,9 @@ class SimpleQueryLinker : public QueryLinker {
     void merge_tuples(const ConditionPtr& target_condition,
             const TupleList& tuples, TupleList& result);
 
+    ConditionSet get_conditions(const std::string& qvar,
+            SimplePredicate *pred);
+
     ConditionSet get_conditions(const std::string& qvar);
 
     std::map<ConditionPtr, ConditionSet> get_links(
@@ -97,6 +102,10 @@ class SimpleQueryLinker : public QueryLinker {
 
     bool validate(const std::string& qvar1, const std::string& qvar2, 
             const ConditionPtr& condition1, const ConditionPtr& condition2);
+
+
+    bool is_valid_state();
+    void invalidate_state();
   private:
     std::map< QVarPair, 
         std::map<ConditionPtr, ConditionSet> >
@@ -107,6 +116,8 @@ class SimpleQueryLinker : public QueryLinker {
     
     std::map< std::string, ConditionSet > 
     _qvar_table;
+
+    bool _valid_state;
 };
 
 class SimpleConditionTuple : public ConditionTuple {

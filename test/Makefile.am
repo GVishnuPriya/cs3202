@@ -28,6 +28,7 @@ unit_tests_SOURCES = \
   ../impl/matcher.cpp \
   ../impl/linker.cpp \
   ../impl/predicate.cpp \
+  ../impl/processor.cpp \
   ../impl/solvers/modifies.cpp \
   ../impl/solvers/next.cpp \
   ../impl/solvers/inext.cpp \
