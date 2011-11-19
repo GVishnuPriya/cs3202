@@ -141,7 +141,17 @@ TupleList SimpleQueryLinker::make_tuples(
                         make_tuples(next_qvar, *cit, next_qit, end), 
                         result);
             }
+        } else if(has_indirect_links(current_qvar, next_qvar)) {
+            ConditionSet linked_conditions = get_indirect_links(
+                    current_qvar, next_qvar, current_condition);
 
+            for(ConditionSet::iterator cit = linked_conditions.begin();
+                    cit != linked_conditions.end(); ++cit)
+            {
+                merge_tuples(current_condition, 
+                        make_tuples(next_qvar, *cit, next_qit, end), 
+                        result);
+            }
         } else {
             for(ConditionSet::iterator cit = _qvar_table[next_qvar].begin();
                 cit != _qvar_table[next_qvar].end(); ++cit)
@@ -240,7 +250,79 @@ ConditionSet SimpleQueryLinker::get_linked_conditions(
         const std::string& qvar1, const std::string& qvar2,
         const ConditionPtr& condition1) 
 {
-    return _condition_link_table[QVarPair(qvar1, qvar2)][condition1];
+    if(_condition_link_table[QVarPair(qvar1, qvar2)].count(condition1) > 0) {
+        return _condition_link_table[QVarPair(qvar1, qvar2)][condition1];
+    } else {
+        return ConditionSet();
+    }
+}
+
+bool SimpleQueryLinker::has_indirect_links(
+        const std::string& qvar1, const std::string& qvar2,
+        std::set<std::string> visited_qvars)
+{
+    if(has_link(qvar1, qvar2)) {
+        return true;
+    } else {
+        for(std::set<std::string>::iterator qit = _qvar_link_table[qvar1].begin();
+            qit != _qvar_link_table[qvar1].end(); ++qit)
+        {
+
+            std::string mid_qvar = *qit;
+
+            if(visited_qvars.count(mid_qvar) == 0) {
+                visited_qvars.insert(mid_qvar);
+                if(has_indirect_links(mid_qvar, qvar2, visited_qvars)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+}
+
+ConditionSet SimpleQueryLinker::get_indirect_links(
+        const std::string& qvar1, const std::string& qvar2,
+        const ConditionPtr& condition1, 
+        std::set<std::string> visited_qvars)
+{
+    if(has_link(qvar1, qvar2)) {
+        return get_linked_conditions(qvar1, qvar2, condition1);
+    } else {
+        ConditionSet result;
+
+        for(std::set<std::string>::iterator qit = _qvar_link_table[qvar1].begin();
+            qit != _qvar_link_table[qvar1].end(); ++qit)
+        {
+            std::string mid_qvar = *qit;
+
+            if(visited_qvars.count(mid_qvar) == 0) {
+                visited_qvars.insert(mid_qvar);
+
+                ConditionSet direct_links = get_linked_conditions(
+                        qvar1, mid_qvar, condition1);
+                for(ConditionSet::iterator cit = direct_links.begin();
+                    cit != direct_links.end(); ++cit)
+                {
+                    result.union_with(get_indirect_links(mid_qvar, qvar2,
+                                *cit, visited_qvars));
+                }
+            }
+        }
+        return result;
+    }
+}
+
+bool SimpleQueryLinker::validate(
+        const std::string& qvar1, const std::string& qvar2, 
+        const ConditionPtr& condition1, const ConditionPtr& condition2)
+{
+    if(has_link(qvar1, qvar2)) {
+        return get_linked_conditions(qvar1, qvar2, condition1)
+            .has_element(condition2);
+     } else {
+         return false;
+     }
 }
 
 ConditionSet SimpleQueryLinker::get_conditions(const std::string& qvar) {

@@ -56,8 +56,8 @@ TEST(INextTest, BasicTest) {
 
     SimpleRoot root(proc);
 
-    NextSolver next_solver(root);
-    INextSolver solver(root, &next_solver);
+    std::shared_ptr<NextSolver> next_solver(new NextSolver(root));
+    INextSolver solver(root, next_solver);
 
     ConditionSet stat1_next;
     stat1_next.insert(new SimpleStatementCondition(stat2));
@@ -116,8 +116,9 @@ TEST(INextTest, ConditionalTest) {
     set_next(condition, after);
 
     SimpleRoot root(proc);
-    NextSolver next_solver(root);
-    INextSolver solver(root, &next_solver);
+
+    std::shared_ptr<NextSolver> next_solver(new NextSolver(root));
+    INextSolver solver(root, next_solver);
 
     EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(before, condition)));
     EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(before, then_branch)));
@@ -242,8 +243,9 @@ TEST(INextTest, WhileTest) {
     set_next(loop, after);
 
     SimpleRoot root(proc);
-    NextSolver next_solver(root);
-    INextSolver solver(root, &next_solver);
+
+    std::shared_ptr<NextSolver> next_solver(new NextSolver(root));
+    INextSolver solver(root, next_solver);
 
     EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(before, loop)));
     EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(before, stat1)));
@@ -400,8 +402,9 @@ TEST(INextTest, QuirksTest) {
     set_next(g1, g2);
 
     SimpleRoot root(proc);
-    NextSolver next_solver(root);
-    INextSolver solver(root, &next_solver);
+
+    std::shared_ptr<NextSolver> next_solver(new NextSolver(root));
+    INextSolver solver(root, next_solver);
 
     StatementSet loop_statements;
     loop_statements.insert(loop1);

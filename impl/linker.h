@@ -85,6 +85,18 @@ class SimpleQueryLinker : public QueryLinker {
     std::map<ConditionPtr, ConditionSet> get_links(
             const std::string& qvar1,
             const std::string& qvar2);
+
+    bool has_indirect_links(
+            const std::string& qvar1, const std::string& qvar2,
+            std::set<std::string> visited_qvars = std::set<std::string>());
+
+    ConditionSet get_indirect_links(
+            const std::string& qvar1, const std::string& qvar2,
+            const ConditionPtr& condition1, 
+            std::set<std::string> visited_qvars = std::set<std::string>());
+
+    bool validate(const std::string& qvar1, const std::string& qvar2, 
+            const ConditionPtr& condition1, const ConditionPtr& condition2);
   private:
     std::map< QVarPair, 
         std::map<ConditionPtr, ConditionSet> >
