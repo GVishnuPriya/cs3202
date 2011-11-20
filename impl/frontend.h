@@ -35,6 +35,7 @@
 
 #include "simple/util/solver_generator.h"
 #include "simple/util/query_utils.h"
+#include "simple/util/condition_utils.h"
 
 #include "impl/parser/parser.h"
 #include "impl/parser/pql_parser.h"
@@ -51,27 +52,24 @@ using namespace simple;
 using namespace simple::util;
 using namespace simple::parser;
 
-template <
-    typename SourceIterator,
-    typename PqlIterator,
-    typename OutputIterator>
 class SimplePqlFrontEnd {
   public:
-    SimplePqlFrontEnd(SourceIterator begin, SourceIterator end)
+    template <typename Iterator>
+    SimplePqlFrontEnd(Iterator begin, Iterator end)
     {
         parse_source(begin, end);
         populate_solvers();
         populate_predicates();
     }
 
-    void process_query(PqlIterator begin, PqlIterator end, 
-            OutputIterator out)
+    template <typename Iterator, typename OutputIterator>
+    void process_query(Iterator begin, Iterator end, OutputIterator out)
     {
         try {
             std::shared_ptr<QueryLinker> linker(new SimpleQueryLinker());
 
             SimplePqlParser parser(std::shared_ptr<SimpleTokenizer>(
-                    new IteratorTokenizer<PqlIterator>(begin, end)),
+                    new IteratorTokenizer<Iterator>(begin, end)),
                     _ast, _line_table, _solver_table, _pred_table);
 
             PqlQuerySet query = parser.parse_query();
@@ -81,24 +79,23 @@ class SimplePqlFrontEnd {
             for(ClauseSet::iterator it = query.clauses.begin();
                 it != query.clauses.end(); ++it)
             {
-                processor.solve_clause((*it)->get_solver(),
-                        (*it)->get_left_term(), (*it)->get_right_term());
+                processor.solve_clause(it->get());
             }
 
-            std::string result = format_selected(linker.get(), query);
-            print(result, out);
+            format_selected(linker.get(), query, out);
         } catch(std::exception e) {
             print("Internal error.", out);
         }
     }
   
   protected:
+    template <typename OutputIterator>
     void print(const std::string& message, OutputIterator& out) {
         std::copy(message.begin(), message.end(), out);
     }
 
-    void parse_source(SourceIterator begin, 
-            SourceIterator end) 
+    template <typename SourceIterator>
+    void parse_source(SourceIterator begin, SourceIterator end) 
     {
         SimpleParser parser(
             new IteratorTokenizer<SourceIterator>(begin, end));
@@ -156,14 +153,17 @@ class SimplePqlFrontEnd {
         _pred_table["const"] = PredicatePtr(new SimpleConstantPredicate(_ast));
     }
 
-    std::string format_selected(QueryLinker *linker, PqlQuerySet& query) {
+    template <typename OutputIterator>
+    void format_selected(QueryLinker *linker, PqlQuerySet& query, 
+                OutputIterator& out) 
+    {
         PqlSelector *selector = query.selector.get();
 
         if(is_selector<PqlBooleanSelector>(selector)) {
             if(linker->is_valid_state()) {
-                return "true";
+                print("true", out);
             } else {
-                return "false";
+                print("false", out);
             }
         } else if(is_selector<PqlSingleVarSelector>(selector)) {
             PqlSingleVarSelector *var_selector = selector_cast<
@@ -179,18 +179,19 @@ class SimplePqlFrontEnd {
             }
 
             ConditionSet conditions = linker->get_conditions(qvar, pred);
+            print(qvar, out);
+            print(" = ", out);
 
             for(ConditionSet::iterator it = conditions.begin(); 
-                    it != conditions.end(); ++it)
+                    it != conditions.end();)
             {
-
+                print(condition_to_string(*it), out);
+                if(++it != conditions.end()) {
+                    print(", ", out);
+                }
             }
-
-            std::string output;
-            
-            return output;
         } else {
-            return "Not implemented";
+            print("Not implemented", out);
         }
     }
 
@@ -201,10 +202,6 @@ class SimplePqlFrontEnd {
     LineTable       _line_table;
     PredicatePtr    _wildcard_pred;
 };
-
-typedef std::string::iterator StringIter;
-template class SimplePqlFrontEnd<StringIter, StringIter, StringIter>;
-
 
 }
 }

@@ -86,7 +86,8 @@ void QueryProcessor::solve_clause<PqlVariableTerm, PqlVariableTerm>(
  * Solver(_, _)
  *
  * The way to solve this both wildcard term clause is not clear at 
- * the moment, so it is not implemented and an exception is thrown.
+ * the moment. For now the query is validated if there is at least 
+ * one possible condition pair that match the solver.
  */
 template <>
 void QueryProcessor::solve_clause<PqlWildcardTerm, PqlWildcardTerm>(

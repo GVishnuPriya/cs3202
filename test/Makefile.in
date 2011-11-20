@@ -50,14 +50,15 @@ am_unit_tests_OBJECTS = test_ast.$(OBJEXT) test_solver.$(OBJEXT) \
 	test_call.$(OBJEXT) test_icall.$(OBJEXT) \
 	test_follows.$(OBJEXT) test_ifollows.$(OBJEXT) \
 	test_parent.$(OBJEXT) test_iparent.$(OBJEXT) \
-	test_modifies.$(OBJEXT) test_condition.$(OBJEXT) \
-	test_next.$(OBJEXT) test_inext.$(OBJEXT) \
-	test_frontend.$(OBJEXT) test_linker.$(OBJEXT) \
-	test_parser.$(OBJEXT) test_pql_parser.$(OBJEXT) \
-	test_predicate.$(OBJEXT) test_processor.$(OBJEXT) \
-	test_query.$(OBJEXT) test_tokenizer.$(OBJEXT) \
-	../simple/ast.$(OBJEXT) ../simple/condition_set.$(OBJEXT) \
-	../simple/tuple.$(OBJEXT) ../simple/query.$(OBJEXT) \
+	test_modifies.$(OBJEXT) test_uses.$(OBJEXT) \
+	test_condition.$(OBJEXT) test_next.$(OBJEXT) \
+	test_inext.$(OBJEXT) test_frontend.$(OBJEXT) \
+	test_linker.$(OBJEXT) test_parser.$(OBJEXT) \
+	test_pql_parser.$(OBJEXT) test_predicate.$(OBJEXT) \
+	test_processor.$(OBJEXT) test_query.$(OBJEXT) \
+	test_tokenizer.$(OBJEXT) ../simple/ast.$(OBJEXT) \
+	../simple/condition_set.$(OBJEXT) ../simple/tuple.$(OBJEXT) \
+	../simple/query.$(OBJEXT) \
 	../simple/util/condition_utils.$(OBJEXT) \
 	../simple/util/ast_utils.$(OBJEXT) \
 	../simple/util/query_utils.$(OBJEXT) ../impl/linker.$(OBJEXT) \
@@ -187,6 +188,7 @@ unit_tests_SOURCES = \
   test_parent.cpp \
   test_iparent.cpp \
   test_modifies.cpp \
+  test_uses.cpp \
   test_condition.cpp \
   test_next.cpp \
   test_inext.cpp \
@@ -464,6 +466,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_query.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_solver.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_tokenizer.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_uses.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gtest/$(DEPDIR)/gtest-all.Po@am__quote@
 
 .cc.o:

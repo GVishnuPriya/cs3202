@@ -53,33 +53,27 @@ class ConditionPrinter : public ConditionVisitor {
     }
 
     void visit_proc_condition(ProcCondition *condition) {
-        _result = "(ProcCondition ";
-        _result += condition->get_proc_ast()->get_name();
-        _result += ")";
+        _result = condition->get_proc_ast()->get_name();
     }
 
     void visit_statement_condition(StatementCondition *condition) {
         std::stringstream out;
-        out << "(StatementCondition ";
-        if(condition->get_statement_ast()->get_line() == 0) {
-            out << condition->get_statement_ast();
-        } else {
-            out << condition->get_statement_ast()->get_line();
-        }
-        out << ")";
+        out << condition->get_statement_ast()->get_line();
         _result = out.str();
     }
 
     void visit_variable_condition(VariableCondition *condition) {
-        _result = "(VariableCondition ";
+        _result = "\"";
         _result += condition->get_variable()->get_name();
-        _result += ")";
+        _result += "\"";
     }
 
     void visit_constant_condition(ConstantCondition *condition) {
-        _result = "(ConstantCondition ";
-        _result += condition->get_constant()->get_int();
-        _result += ")";
+        std::stringstream out;
+        out << '"';
+        out << condition->get_constant()->get_int();
+        out << '"';
+        _result = out.str();
     }
 
     void visit_pattern_condition(PatternCondition *condition) {

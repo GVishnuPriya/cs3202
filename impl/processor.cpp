@@ -112,7 +112,16 @@ void QueryProcessor::solve_clause<PqlWildcardTerm, PqlWildcardTerm>(
         QuerySolver *solver,
         PqlWildcardTerm *term1, PqlWildcardTerm *term2)
 {
+    ConditionSet left = _wildcard_pred->global_set();
+    for(ConditionSet::iterator it = left.begin();
+            it != left.end(); ++it)
+    {
+        if(!solver->solve_left(*it).is_empty()) {
+            return;
+        }
+    }
 
+    _linker->invalidate_state();
 }
 
 /*

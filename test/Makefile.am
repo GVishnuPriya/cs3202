@@ -10,6 +10,7 @@ unit_tests_SOURCES = \
   test_parent.cpp \
   test_iparent.cpp \
   test_modifies.cpp \
+  test_uses.cpp \
   test_condition.cpp \
   test_next.cpp \
   test_inext.cpp \
