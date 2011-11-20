@@ -1,6 +1,9 @@
 /*
  * CS3201 Simple Static Analyzer
  * Copyright (C) 2011 Soares Chen Ruo Fei
+ *  Contributor(s):
+ *    Soares Chen Rou Fei (original author)
+ *    Daniel Le <GreenRecycleBin@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -139,6 +142,37 @@ class StatementVisitorGenerator : public StatementVisitor {
     ContextType *_context;
 };
 
+template <typename Visitor, typename VisitorTraits>
+class ExprVisitorGenerator : public ExprVisitor {
+  public:
+    typedef typename VisitorTraits::ResultType  ResultType;
+    typedef typename VisitorTraits::ContextType ContextType;
+
+    ExprVisitorGenerator(Visitor *visitor, ContextType *context = NULL) : 
+        _visitor(visitor), _context(context) 
+    { }
+
+    virtual void visit_const(ConstAst *ast) {
+        _result = VisitorTraits::template visit<ConstAst>(_visitor, ast, _context);
+    }
+
+    virtual void visit_variable(VariableAst *ast) {
+        _result = VisitorTraits::template visit<VariableAst>(_visitor, ast, _context);
+    }
+
+    virtual void visit_binaryop(BinaryOpAst *ast) {
+        _result = VisitorTraits::template visit<BinaryOpAst>(_visitor, ast, _context);
+    }
+
+    typename VisitorTraits::ResultType return_result() {
+        return std::move(_result);
+    }
+
+  private:
+    Visitor *_visitor;
+    ResultType _result;
+    ContextType *_context;
+};
 
 }
 }
