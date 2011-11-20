@@ -52,18 +52,17 @@ am_unit_tests_OBJECTS = test_ast.$(OBJEXT) test_solver.$(OBJEXT) \
 	test_parent.$(OBJEXT) test_iparent.$(OBJEXT) \
 	test_modifies.$(OBJEXT) test_condition.$(OBJEXT) \
 	test_next.$(OBJEXT) test_inext.$(OBJEXT) \
-	test_matcher.$(OBJEXT) test_frontend.$(OBJEXT) \
-	test_linker.$(OBJEXT) test_parser.$(OBJEXT) \
-	test_pql_parser.$(OBJEXT) test_predicate.$(OBJEXT) \
-	test_processor.$(OBJEXT) test_query.$(OBJEXT) \
-	test_tokenizer.$(OBJEXT) ../simple/ast.$(OBJEXT) \
-	../simple/condition_set.$(OBJEXT) ../simple/tuple.$(OBJEXT) \
-	../simple/query.$(OBJEXT) \
+	test_frontend.$(OBJEXT) test_linker.$(OBJEXT) \
+	test_parser.$(OBJEXT) test_pql_parser.$(OBJEXT) \
+	test_predicate.$(OBJEXT) test_processor.$(OBJEXT) \
+	test_query.$(OBJEXT) test_tokenizer.$(OBJEXT) \
+	../simple/ast.$(OBJEXT) ../simple/condition_set.$(OBJEXT) \
+	../simple/tuple.$(OBJEXT) ../simple/query.$(OBJEXT) \
 	../simple/util/condition_utils.$(OBJEXT) \
 	../simple/util/ast_utils.$(OBJEXT) \
-	../simple/util/query_utils.$(OBJEXT) ../impl/matcher.$(OBJEXT) \
-	../impl/linker.$(OBJEXT) ../impl/predicate.$(OBJEXT) \
-	../impl/processor.$(OBJEXT) ../impl/solvers/follows.$(OBJEXT) \
+	../simple/util/query_utils.$(OBJEXT) ../impl/linker.$(OBJEXT) \
+	../impl/predicate.$(OBJEXT) ../impl/processor.$(OBJEXT) \
+	../impl/solvers/follows.$(OBJEXT) \
 	../impl/solvers/ifollows.$(OBJEXT) \
 	../impl/solvers/parent.$(OBJEXT) \
 	../impl/solvers/iparent.$(OBJEXT) \
@@ -191,7 +190,6 @@ unit_tests_SOURCES = \
   test_condition.cpp \
   test_next.cpp \
   test_inext.cpp \
-  test_matcher.cpp \
   test_frontend.cpp \
   test_linker.cpp \
   test_parser.cpp \
@@ -207,7 +205,6 @@ unit_tests_SOURCES = \
   ../simple/util/condition_utils.cpp \
   ../simple/util/ast_utils.cpp \
   ../simple/util/query_utils.cpp \
-  ../impl/matcher.cpp \
   ../impl/linker.cpp \
   ../impl/predicate.cpp \
   ../impl/processor.cpp \
@@ -333,8 +330,6 @@ clean-binPROGRAMS:
 ../impl/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) ../impl/$(DEPDIR)
 	@: > ../impl/$(DEPDIR)/$(am__dirstamp)
-../impl/matcher.$(OBJEXT): ../impl/$(am__dirstamp) \
-	../impl/$(DEPDIR)/$(am__dirstamp)
 ../impl/linker.$(OBJEXT): ../impl/$(am__dirstamp) \
 	../impl/$(DEPDIR)/$(am__dirstamp)
 ../impl/predicate.$(OBJEXT): ../impl/$(am__dirstamp) \
@@ -396,7 +391,6 @@ unit_tests$(EXEEXT): $(unit_tests_OBJECTS) $(unit_tests_DEPENDENCIES)
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f ../impl/linker.$(OBJEXT)
-	-rm -f ../impl/matcher.$(OBJEXT)
 	-rm -f ../impl/parser/parser.$(OBJEXT)
 	-rm -f ../impl/parser/pql_parser.$(OBJEXT)
 	-rm -f ../impl/parser/token.$(OBJEXT)
@@ -426,7 +420,6 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/$(DEPDIR)/linker.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../impl/$(DEPDIR)/matcher.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/$(DEPDIR)/predicate.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/$(DEPDIR)/processor.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/parser/$(DEPDIR)/parser.Po@am__quote@
@@ -461,7 +454,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_iparent.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_linker.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_main.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_matcher.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_modifies.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_next.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_parent.Po@am__quote@

@@ -13,7 +13,6 @@ unit_tests_SOURCES = \
   test_condition.cpp \
   test_next.cpp \
   test_inext.cpp \
-  test_matcher.cpp \
   test_frontend.cpp \
   test_linker.cpp \
   test_parser.cpp \
@@ -29,7 +28,6 @@ unit_tests_SOURCES = \
   ../simple/util/condition_utils.cpp \
   ../simple/util/ast_utils.cpp \
   ../simple/util/query_utils.cpp \
-  ../impl/matcher.cpp \
   ../impl/linker.cpp \
   ../impl/predicate.cpp \
   ../impl/processor.cpp \
