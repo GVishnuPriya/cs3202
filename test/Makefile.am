@@ -18,6 +18,7 @@ unit_tests_SOURCES = \
   test_parser.cpp \
   test_pql_parser.cpp \
   test_predicate.cpp \
+  test_processor.cpp \
   test_query.cpp \
   test_tokenizer.cpp \
   ../simple/ast.cpp \
@@ -31,6 +32,7 @@ unit_tests_SOURCES = \
   ../impl/linker.cpp \
   ../impl/predicate.cpp \
   ../impl/processor.cpp \
+  ../impl/solvers/follows.cpp \
   ../impl/solvers/modifies.cpp \
   ../impl/solvers/next.cpp \
   ../impl/solvers/inext.cpp \

@@ -114,10 +114,10 @@ TEST(QueryTest, ClausePtrOrdering) {
 
     set.insert(clause9);
     set.insert(clause8);
-    set.insert(clause7);
+    set.insert(clause4);
     set.insert(clause6);
     set.insert(clause5);
-    set.insert(clause4);
+    set.insert(clause7);
     set.insert(clause3);
     set.insert(clause2);
     set.insert(clause1);

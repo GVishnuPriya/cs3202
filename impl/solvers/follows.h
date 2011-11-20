@@ -55,31 +55,15 @@ class FollowSolver {
 };
 
 template <>
-ConditionSet FollowSolver::solve_right<StatementAst>(StatementAst *ast) {
-    ConditionSet result;
-
-    if(ast->next()) {
-        result.insert(new SimpleStatementCondition(ast->next()));
-    }
-    return result;
-}
+ConditionSet FollowSolver::solve_right<StatementAst>(StatementAst *ast);
     
 template <>
-ConditionSet FollowSolver::solve_left<StatementAst>(StatementAst *ast) {
-    ConditionSet result;
-
-    if(ast->prev()) {
-        result.insert(new SimpleStatementCondition(ast->prev()));
-    }
-    return result;
-}
+ConditionSet FollowSolver::solve_left<StatementAst>(StatementAst *ast);
 
 template <>
 bool FollowSolver::validate<StatementAst, StatementAst>(
-        StatementAst *left, StatementAst *right)
-{
-    return left->next() == right;
-}
+        StatementAst *left, StatementAst *right);
+
 
 } // namespace impl
 } // namespace simple
