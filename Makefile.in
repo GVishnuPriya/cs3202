@@ -14,6 +14,7 @@
 # PARTICULAR PURPOSE.
 
 @SET_MAKE@
+
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
@@ -31,6 +32,7 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
+bin_PROGRAMS = main$(EXEEXT)
 subdir = .
 DIST_COMMON = $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
@@ -45,8 +47,36 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-SOURCES =
-DIST_SOURCES =
+am__installdirs = "$(DESTDIR)$(bindir)"
+PROGRAMS = $(bin_PROGRAMS)
+am__dirstamp = $(am__leading_dot)dirstamp
+am_main_OBJECTS = simple/ast.$(OBJEXT) simple/condition_set.$(OBJEXT) \
+	simple/tuple.$(OBJEXT) simple/query.$(OBJEXT) \
+	simple/util/condition_utils.$(OBJEXT) \
+	simple/util/ast_utils.$(OBJEXT) \
+	simple/util/query_utils.$(OBJEXT) impl/linker.$(OBJEXT) \
+	impl/predicate.$(OBJEXT) impl/processor.$(OBJEXT) \
+	impl/solvers/follows.$(OBJEXT) impl/solvers/ifollows.$(OBJEXT) \
+	impl/solvers/parent.$(OBJEXT) impl/solvers/iparent.$(OBJEXT) \
+	impl/solvers/modifies.$(OBJEXT) impl/solvers/next.$(OBJEXT) \
+	impl/solvers/inext.$(OBJEXT) impl/solvers/call.$(OBJEXT) \
+	impl/solvers/icall.$(OBJEXT) impl/solvers/uses.$(OBJEXT) \
+	impl/solvers/same_name.$(OBJEXT) impl/parser/token.$(OBJEXT) \
+	impl/parser/parser.$(OBJEXT) impl/parser/pql_parser.$(OBJEXT) \
+	impl/command_line.$(OBJEXT)
+main_OBJECTS = $(am_main_OBJECTS)
+main_LDADD = $(LDADD)
+DEFAULT_INCLUDES = -I.@am__isrc@
+depcomp = $(SHELL) $(top_srcdir)/depcomp
+am__depfiles_maybe = depfiles
+am__mv = mv -f
+CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
+CXXLD = $(CXX)
+CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
+	-o $@
+SOURCES = $(main_SOURCES)
+DIST_SOURCES = $(main_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
 	install-dvi-recursive install-exec-recursive \
@@ -125,7 +155,7 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
-LIBS = @LIBS@
+LIBS = -pthread
 LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
 MKDIR_P = @MKDIR_P@
@@ -186,10 +216,39 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = test
+main_SOURCES = \
+  simple/ast.cpp \
+  simple/condition_set.cpp \
+  simple/tuple.cpp \
+  simple/query.cpp \
+  simple/util/condition_utils.cpp \
+  simple/util/ast_utils.cpp \
+  simple/util/query_utils.cpp \
+  impl/linker.cpp \
+  impl/predicate.cpp \
+  impl/processor.cpp \
+  impl/solvers/follows.cpp \
+  impl/solvers/ifollows.cpp \
+  impl/solvers/parent.cpp \
+  impl/solvers/iparent.cpp \
+  impl/solvers/modifies.cpp \
+  impl/solvers/next.cpp \
+  impl/solvers/inext.cpp \
+  impl/solvers/call.cpp \
+  impl/solvers/icall.cpp \
+  impl/solvers/uses.cpp \
+  impl/solvers/same_name.cpp \
+  impl/parser/token.cpp \
+  impl/parser/parser.cpp \
+  impl/parser/pql_parser.cpp \
+  impl/command_line.cpp
+
+AM_CPPFLAGS = -std=c++0x -Wall
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
 .SUFFIXES:
+.SUFFIXES: .cpp .o .obj
 am--refresh:
 	@:
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
@@ -241,6 +300,199 @@ $(srcdir)/config.h.in:  $(am__configure_deps)
 
 distclean-hdr:
 	-rm -f config.h stamp-h1
+install-binPROGRAMS: $(bin_PROGRAMS)
+	@$(NORMAL_INSTALL)
+	test -z "$(bindir)" || $(MKDIR_P) "$(DESTDIR)$(bindir)"
+	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
+	for p in $$list; do echo "$$p $$p"; done | \
+	sed 's/$(EXEEXT)$$//' | \
+	while read p p1; do if test -f $$p; \
+	  then echo "$$p"; echo "$$p"; else :; fi; \
+	done | \
+	sed -e 'p;s,.*/,,;n;h' -e 's|.*|.|' \
+	    -e 'p;x;s,.*/,,;s/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/' | \
+	sed 'N;N;N;s,\n, ,g' | \
+	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1 } \
+	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
+	    if ($$2 == $$4) files[d] = files[d] " " $$1; \
+	    else { print "f", $$3 "/" $$4, $$1; } } \
+	  END { for (d in files) print "f", d, files[d] }' | \
+	while read type dir files; do \
+	    if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
+	    test -z "$$files" || { \
+	      echo " $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(bindir)$$dir'"; \
+	      $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
+	    } \
+	; done
+
+uninstall-binPROGRAMS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
+	files=`for p in $$list; do echo "$$p"; done | \
+	  sed -e 'h;s,^.*/,,;s/$(EXEEXT)$$//;$(transform)' \
+	      -e 's/$$/$(EXEEXT)/' `; \
+	test -n "$$list" || exit 0; \
+	echo " ( cd '$(DESTDIR)$(bindir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(bindir)" && rm -f $$files
+
+clean-binPROGRAMS:
+	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+simple/$(am__dirstamp):
+	@$(MKDIR_P) simple
+	@: > simple/$(am__dirstamp)
+simple/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) simple/$(DEPDIR)
+	@: > simple/$(DEPDIR)/$(am__dirstamp)
+simple/ast.$(OBJEXT): simple/$(am__dirstamp) \
+	simple/$(DEPDIR)/$(am__dirstamp)
+simple/condition_set.$(OBJEXT): simple/$(am__dirstamp) \
+	simple/$(DEPDIR)/$(am__dirstamp)
+simple/tuple.$(OBJEXT): simple/$(am__dirstamp) \
+	simple/$(DEPDIR)/$(am__dirstamp)
+simple/query.$(OBJEXT): simple/$(am__dirstamp) \
+	simple/$(DEPDIR)/$(am__dirstamp)
+simple/util/$(am__dirstamp):
+	@$(MKDIR_P) simple/util
+	@: > simple/util/$(am__dirstamp)
+simple/util/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) simple/util/$(DEPDIR)
+	@: > simple/util/$(DEPDIR)/$(am__dirstamp)
+simple/util/condition_utils.$(OBJEXT): simple/util/$(am__dirstamp) \
+	simple/util/$(DEPDIR)/$(am__dirstamp)
+simple/util/ast_utils.$(OBJEXT): simple/util/$(am__dirstamp) \
+	simple/util/$(DEPDIR)/$(am__dirstamp)
+simple/util/query_utils.$(OBJEXT): simple/util/$(am__dirstamp) \
+	simple/util/$(DEPDIR)/$(am__dirstamp)
+impl/$(am__dirstamp):
+	@$(MKDIR_P) impl
+	@: > impl/$(am__dirstamp)
+impl/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) impl/$(DEPDIR)
+	@: > impl/$(DEPDIR)/$(am__dirstamp)
+impl/linker.$(OBJEXT): impl/$(am__dirstamp) \
+	impl/$(DEPDIR)/$(am__dirstamp)
+impl/predicate.$(OBJEXT): impl/$(am__dirstamp) \
+	impl/$(DEPDIR)/$(am__dirstamp)
+impl/processor.$(OBJEXT): impl/$(am__dirstamp) \
+	impl/$(DEPDIR)/$(am__dirstamp)
+impl/solvers/$(am__dirstamp):
+	@$(MKDIR_P) impl/solvers
+	@: > impl/solvers/$(am__dirstamp)
+impl/solvers/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) impl/solvers/$(DEPDIR)
+	@: > impl/solvers/$(DEPDIR)/$(am__dirstamp)
+impl/solvers/follows.$(OBJEXT): impl/solvers/$(am__dirstamp) \
+	impl/solvers/$(DEPDIR)/$(am__dirstamp)
+impl/solvers/ifollows.$(OBJEXT): impl/solvers/$(am__dirstamp) \
+	impl/solvers/$(DEPDIR)/$(am__dirstamp)
+impl/solvers/parent.$(OBJEXT): impl/solvers/$(am__dirstamp) \
+	impl/solvers/$(DEPDIR)/$(am__dirstamp)
+impl/solvers/iparent.$(OBJEXT): impl/solvers/$(am__dirstamp) \
+	impl/solvers/$(DEPDIR)/$(am__dirstamp)
+impl/solvers/modifies.$(OBJEXT): impl/solvers/$(am__dirstamp) \
+	impl/solvers/$(DEPDIR)/$(am__dirstamp)
+impl/solvers/next.$(OBJEXT): impl/solvers/$(am__dirstamp) \
+	impl/solvers/$(DEPDIR)/$(am__dirstamp)
+impl/solvers/inext.$(OBJEXT): impl/solvers/$(am__dirstamp) \
+	impl/solvers/$(DEPDIR)/$(am__dirstamp)
+impl/solvers/call.$(OBJEXT): impl/solvers/$(am__dirstamp) \
+	impl/solvers/$(DEPDIR)/$(am__dirstamp)
+impl/solvers/icall.$(OBJEXT): impl/solvers/$(am__dirstamp) \
+	impl/solvers/$(DEPDIR)/$(am__dirstamp)
+impl/solvers/uses.$(OBJEXT): impl/solvers/$(am__dirstamp) \
+	impl/solvers/$(DEPDIR)/$(am__dirstamp)
+impl/solvers/same_name.$(OBJEXT): impl/solvers/$(am__dirstamp) \
+	impl/solvers/$(DEPDIR)/$(am__dirstamp)
+impl/parser/$(am__dirstamp):
+	@$(MKDIR_P) impl/parser
+	@: > impl/parser/$(am__dirstamp)
+impl/parser/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) impl/parser/$(DEPDIR)
+	@: > impl/parser/$(DEPDIR)/$(am__dirstamp)
+impl/parser/token.$(OBJEXT): impl/parser/$(am__dirstamp) \
+	impl/parser/$(DEPDIR)/$(am__dirstamp)
+impl/parser/parser.$(OBJEXT): impl/parser/$(am__dirstamp) \
+	impl/parser/$(DEPDIR)/$(am__dirstamp)
+impl/parser/pql_parser.$(OBJEXT): impl/parser/$(am__dirstamp) \
+	impl/parser/$(DEPDIR)/$(am__dirstamp)
+impl/command_line.$(OBJEXT): impl/$(am__dirstamp) \
+	impl/$(DEPDIR)/$(am__dirstamp)
+main$(EXEEXT): $(main_OBJECTS) $(main_DEPENDENCIES) 
+	@rm -f main$(EXEEXT)
+	$(CXXLINK) $(main_OBJECTS) $(main_LDADD) $(LIBS)
+
+mostlyclean-compile:
+	-rm -f *.$(OBJEXT)
+	-rm -f impl/command_line.$(OBJEXT)
+	-rm -f impl/linker.$(OBJEXT)
+	-rm -f impl/parser/parser.$(OBJEXT)
+	-rm -f impl/parser/pql_parser.$(OBJEXT)
+	-rm -f impl/parser/token.$(OBJEXT)
+	-rm -f impl/predicate.$(OBJEXT)
+	-rm -f impl/processor.$(OBJEXT)
+	-rm -f impl/solvers/call.$(OBJEXT)
+	-rm -f impl/solvers/follows.$(OBJEXT)
+	-rm -f impl/solvers/icall.$(OBJEXT)
+	-rm -f impl/solvers/ifollows.$(OBJEXT)
+	-rm -f impl/solvers/inext.$(OBJEXT)
+	-rm -f impl/solvers/iparent.$(OBJEXT)
+	-rm -f impl/solvers/modifies.$(OBJEXT)
+	-rm -f impl/solvers/next.$(OBJEXT)
+	-rm -f impl/solvers/parent.$(OBJEXT)
+	-rm -f impl/solvers/same_name.$(OBJEXT)
+	-rm -f impl/solvers/uses.$(OBJEXT)
+	-rm -f simple/ast.$(OBJEXT)
+	-rm -f simple/condition_set.$(OBJEXT)
+	-rm -f simple/query.$(OBJEXT)
+	-rm -f simple/tuple.$(OBJEXT)
+	-rm -f simple/util/ast_utils.$(OBJEXT)
+	-rm -f simple/util/condition_utils.$(OBJEXT)
+	-rm -f simple/util/query_utils.$(OBJEXT)
+
+distclean-compile:
+	-rm -f *.tab.c
+
+@AMDEP_TRUE@@am__include@ @am__quote@impl/$(DEPDIR)/command_line.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@impl/$(DEPDIR)/linker.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@impl/$(DEPDIR)/predicate.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@impl/$(DEPDIR)/processor.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@impl/parser/$(DEPDIR)/parser.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@impl/parser/$(DEPDIR)/pql_parser.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@impl/parser/$(DEPDIR)/token.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@impl/solvers/$(DEPDIR)/call.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@impl/solvers/$(DEPDIR)/follows.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@impl/solvers/$(DEPDIR)/icall.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@impl/solvers/$(DEPDIR)/ifollows.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@impl/solvers/$(DEPDIR)/inext.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@impl/solvers/$(DEPDIR)/iparent.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@impl/solvers/$(DEPDIR)/modifies.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@impl/solvers/$(DEPDIR)/next.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@impl/solvers/$(DEPDIR)/parent.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@impl/solvers/$(DEPDIR)/same_name.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@impl/solvers/$(DEPDIR)/uses.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@simple/$(DEPDIR)/ast.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@simple/$(DEPDIR)/condition_set.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@simple/$(DEPDIR)/query.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@simple/$(DEPDIR)/tuple.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@simple/util/$(DEPDIR)/ast_utils.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@simple/util/$(DEPDIR)/condition_utils.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@simple/util/$(DEPDIR)/query_utils.Po@am__quote@
+
+.cpp.o:
+@am__fastdepCXX_TRUE@	depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ $<
+
+.cpp.obj:
+@am__fastdepCXX_TRUE@	depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run `make' without going through this Makefile.
@@ -554,9 +806,12 @@ distcleancheck: distclean
 	       exit 1; } >&2
 check-am: all-am
 check: check-recursive
-all-am: Makefile config.h
+all-am: Makefile $(PROGRAMS) config.h
 installdirs: installdirs-recursive
 installdirs-am:
+	for dir in "$(DESTDIR)$(bindir)"; do \
+	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
+	done
 install: install-recursive
 install-exec: install-exec-recursive
 install-data: install-data-recursive
@@ -578,18 +833,30 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f impl/$(DEPDIR)/$(am__dirstamp)
+	-rm -f impl/$(am__dirstamp)
+	-rm -f impl/parser/$(DEPDIR)/$(am__dirstamp)
+	-rm -f impl/parser/$(am__dirstamp)
+	-rm -f impl/solvers/$(DEPDIR)/$(am__dirstamp)
+	-rm -f impl/solvers/$(am__dirstamp)
+	-rm -f simple/$(DEPDIR)/$(am__dirstamp)
+	-rm -f simple/$(am__dirstamp)
+	-rm -f simple/util/$(DEPDIR)/$(am__dirstamp)
+	-rm -f simple/util/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-recursive
 
-clean-am: clean-generic mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
+	-rm -rf impl/$(DEPDIR) impl/parser/$(DEPDIR) impl/solvers/$(DEPDIR) simple/$(DEPDIR) simple/util/$(DEPDIR)
 	-rm -f Makefile
-distclean-am: clean-am distclean-generic distclean-hdr distclean-tags
+distclean-am: clean-am distclean-compile distclean-generic \
+	distclean-hdr distclean-tags
 
 dvi: dvi-recursive
 
@@ -609,7 +876,7 @@ install-dvi: install-dvi-recursive
 
 install-dvi-am:
 
-install-exec-am:
+install-exec-am: install-binPROGRAMS
 
 install-html: install-html-recursive
 
@@ -634,12 +901,13 @@ installcheck-am:
 maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
+	-rm -rf impl/$(DEPDIR) impl/parser/$(DEPDIR) impl/solvers/$(DEPDIR) simple/$(DEPDIR) simple/util/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
 mostlyclean: mostlyclean-recursive
 
-mostlyclean-am: mostlyclean-generic
+mostlyclean-am: mostlyclean-compile mostlyclean-generic
 
 pdf: pdf-recursive
 
@@ -649,25 +917,27 @@ ps: ps-recursive
 
 ps-am:
 
-uninstall-am:
+uninstall-am: uninstall-binPROGRAMS
 
 .MAKE: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) all \
 	ctags-recursive install-am install-strip tags-recursive
 
 .PHONY: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) CTAGS GTAGS \
-	all all-am am--refresh check check-am clean clean-generic \
-	ctags ctags-recursive dist dist-all dist-bzip2 dist-gzip \
-	dist-lzma dist-shar dist-tarZ dist-xz dist-zip distcheck \
-	distclean distclean-generic distclean-hdr distclean-tags \
-	distcleancheck distdir distuninstallcheck dvi dvi-am html \
-	html-am info info-am install install-am install-data \
+	all all-am am--refresh check check-am clean clean-binPROGRAMS \
+	clean-generic ctags ctags-recursive dist dist-all dist-bzip2 \
+	dist-gzip dist-lzma dist-shar dist-tarZ dist-xz dist-zip \
+	distcheck distclean distclean-compile distclean-generic \
+	distclean-hdr distclean-tags distcleancheck distdir \
+	distuninstallcheck dvi dvi-am html html-am info info-am \
+	install install-am install-binPROGRAMS install-data \
 	install-data-am install-dvi install-dvi-am install-exec \
 	install-exec-am install-html install-html-am install-info \
 	install-info-am install-man install-pdf install-pdf-am \
 	install-ps install-ps-am install-strip installcheck \
 	installcheck-am installdirs installdirs-am maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
-	pdf-am ps ps-am tags tags-recursive uninstall uninstall-am
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic pdf pdf-am ps ps-am tags tags-recursive \
+	uninstall uninstall-am uninstall-binPROGRAMS
 
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

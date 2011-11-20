@@ -83,8 +83,9 @@ class SimplePqlFrontEnd {
             }
 
             format_selected(linker.get(), query, out);
-        } catch(std::exception e) {
-            print("Internal error.", out);
+        } catch(std::exception& e) {
+            print("Internal error: ", out);
+            print(e.what(), out);
         }
     }
   

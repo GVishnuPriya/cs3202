@@ -3,6 +3,7 @@ build/*
 dist/*
 Makefile
 unit_tests
+main
 config.log
 *.o
 *.Po
