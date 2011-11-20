@@ -301,12 +301,14 @@ TEST(PqlParserTest, FullQueryTest) {
     EXPECT_EQ(result1.predicates["s"], statement_pred);
 
     EXPECT_EQ(result1.clauses.size(), (size_t) 1);
-    SimplePqlClause expected_clause1(follows_solver,
-            new SimplePqlConditionTerm(
-                new SimpleStatementCondition(assign)),
-            new SimplePqlVariableTerm("s"));
 
-    EXPECT_TRUE(is_same_clause(result1.clauses[0].get(), &expected_clause1));
+    ClauseSet expected_clauses1;
+    expected_clauses1.insert(new SimplePqlClause(follows_solver,
+                new SimplePqlConditionTerm(
+                    new SimpleStatementCondition(assign)),
+                new SimplePqlVariableTerm("s")));
+
+    EXPECT_EQ(result1.clauses, expected_clauses1);
 
     /*
      * prog_line s, p; var v;
@@ -353,17 +355,17 @@ TEST(PqlParserTest, FullQueryTest) {
     EXPECT_TRUE(is_selector<PqlBooleanSelector>(result2.selector.get()));
 
     EXPECT_EQ(result2.clauses.size(), (size_t) 2);
-    SimplePqlClause expected_clause21(follows_solver,
-            new SimplePqlVariableTerm("s"),
-            new SimplePqlWildcardTerm());
 
-    EXPECT_TRUE(is_same_clause(result2.clauses[0].get(), &expected_clause21));
+    ClauseSet expected_clauses2;
+    expected_clauses2.insert(new SimplePqlClause(follows_solver,
+                new SimplePqlVariableTerm("s"),
+                new SimplePqlWildcardTerm()));
 
-    SimplePqlClause expected_clause22(modifies_solver,
-            new SimplePqlVariableTerm("s"),
-            new SimplePqlVariableTerm("v"));
+    expected_clauses2.insert(new SimplePqlClause(modifies_solver,
+                new SimplePqlVariableTerm("s"),
+                new SimplePqlVariableTerm("v")));
 
-    EXPECT_TRUE(is_same_clause(result2.clauses[1].get(), &expected_clause22));
+    EXPECT_EQ(result2.clauses, expected_clauses2);
 }
 
 

@@ -21,11 +21,32 @@
 namespace simple {
 namespace util {
 
-class SameTermComparator {
-  public:
-    template <typename Term1, typename Term2>
-    bool is_same_term(Term1 *term1, Term2 *term2);
-};
+template <typename Term1, typename Term2>
+bool is_same_term(Term1 *term1, Term2 *term2) {
+    return false;
+}
+
+template <>
+bool is_same_term<PqlConditionTerm, PqlConditionTerm>(
+        PqlConditionTerm *term1, PqlConditionTerm *term2) 
+{
+    return term1->get_condition() == term2->get_condition();
+}
+
+template <>
+bool is_same_term<PqlVariableTerm, PqlVariableTerm>(
+        PqlVariableTerm *term1, PqlVariableTerm *term2)
+{
+    return term1->get_query_variable() == term2->get_query_variable();
+}
+
+template <>
+bool is_same_term<PqlWildcardTerm, PqlWildcardTerm>(
+        PqlWildcardTerm *term1, PqlWildcardTerm *term2)
+{
+    return true;
+}
+
 
 class SameTermVisitorTraits {
   public:
@@ -33,35 +54,14 @@ class SameTermVisitorTraits {
     typedef void* ContextType;
 
     template <typename Term1, typename Term2>
-    static bool visit(SameTermComparator *comparator, Term1 *term1, Term2 *term2, void* context) {
-        return comparator->is_same_term<Term1, Term2>(term1, term2);
+    static bool visit(int *comparator, Term1 *term1, Term2 *term2, void* context) {
+        return is_same_term<Term1, Term2>(term1, term2);
     }
 };
 
-template <typename Term1, typename Term2>
-bool SameTermComparator::is_same_term(Term1 *term1, Term2 *term2) {
-    return false;
-}
-
-template <>
-bool SameTermComparator::is_same_term<PqlConditionTerm, PqlConditionTerm>(
-        PqlConditionTerm *term1, PqlConditionTerm *term2);
-
-template <>
-bool SameTermComparator::is_same_term<PqlVariableTerm, PqlVariableTerm>(
-        PqlVariableTerm *term1, PqlVariableTerm *term2);
-
-template <>
-bool SameTermComparator::is_same_term<PqlWildcardTerm, PqlWildcardTerm>(
-        PqlWildcardTerm *term1, PqlWildcardTerm *term2);
-
-
-
 bool is_same_term(PqlTerm *term1, PqlTerm *term2) {
-    SameTermComparator comparator;
     return double_dispatch_pql_terms<
-        SameTermComparator, SameTermVisitorTraits>(
-            &comparator, term1, term2, NULL);
+        int, SameTermVisitorTraits>(NULL, term1, term2, NULL);
 }
 
 bool is_same_clause(PqlClause *clause1, PqlClause *clause2) {
@@ -70,29 +70,63 @@ bool is_same_clause(PqlClause *clause1, PqlClause *clause2) {
         is_same_term(clause1->get_right_term(), clause2->get_right_term());
 }
 
-
-template <>
-bool SameTermComparator::is_same_term<PqlConditionTerm, PqlConditionTerm>(
-        PqlConditionTerm *term1, PqlConditionTerm *term2) 
-{
-    return term1->get_condition() == term2->get_condition();
+template <typename Term1, typename Term2>
+bool is_less_than_term(Term1 *term1, Term2 *term2) {
+    return false;
 }
 
 template <>
-bool SameTermComparator::is_same_term<PqlVariableTerm, PqlVariableTerm>(
-        PqlVariableTerm *term1, PqlVariableTerm *term2)
-{
-    return term1->get_query_variable() == term2->get_query_variable();
-}
-
-template <>
-bool SameTermComparator::is_same_term<PqlWildcardTerm, PqlWildcardTerm>(
-        PqlWildcardTerm *term1, PqlWildcardTerm *term2)
+bool is_less_than_term<PqlConditionTerm, PqlWildcardTerm>(
+        PqlConditionTerm *term1, PqlWildcardTerm *term2)
 {
     return true;
 }
 
+template <>
+bool is_less_than_term<PqlConditionTerm, PqlVariableTerm>(
+        PqlConditionTerm *term1, PqlVariableTerm *term2)
+{
+    return true;
+}
+
+template <>
+bool is_less_than_term<PqlWildcardTerm, PqlVariableTerm>(
+        PqlWildcardTerm *term1, PqlVariableTerm *term2)
+{
+    return true;
+}
+
+template <>
+bool is_less_than_term<PqlConditionTerm, PqlConditionTerm>(
+        PqlConditionTerm *term1, PqlConditionTerm *term2)
+{
+    return term1->get_condition() < term2->get_condition();
+}
+
+template <>
+bool is_less_than_term<PqlVariableTerm, PqlVariableTerm>(
+        PqlVariableTerm *term1, PqlVariableTerm *term2)
+{
+    return term1->get_query_variable() < term2->get_query_variable();
+}
+
+class LessThanTermVisitorTraits {
+  public:
+    typedef bool    ResultType;
+    typedef void*   ContextType;
+
+    template <typename Term1, typename Term2>
+    static bool visit(int *visitor, Term1 *term1, Term2 *term2, void *context) {
+        return is_less_than_term<Term1, Term2>(term1, term2);
+    }
+};
+
+bool is_less_than_term(PqlTerm *term1, PqlTerm *term2) {
+    return double_dispatch_pql_terms<int, LessThanTermVisitorTraits>(
+            NULL, term1, term2, NULL);
+}
 
 
-}
-}
+
+} // namespace util
+} // namespace simple

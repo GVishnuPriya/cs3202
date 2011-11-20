@@ -54,9 +54,10 @@ am_unit_tests_OBJECTS = test_ast.$(OBJEXT) test_solver.$(OBJEXT) \
 	test_next.$(OBJEXT) test_inext.$(OBJEXT) \
 	test_matcher.$(OBJEXT) test_linker.$(OBJEXT) \
 	test_parser.$(OBJEXT) test_pql_parser.$(OBJEXT) \
-	test_predicate.$(OBJEXT) test_tokenizer.$(OBJEXT) \
-	../simple/ast.$(OBJEXT) ../simple/condition_set.$(OBJEXT) \
-	../simple/tuple.$(OBJEXT) \
+	test_predicate.$(OBJEXT) test_query.$(OBJEXT) \
+	test_tokenizer.$(OBJEXT) ../simple/ast.$(OBJEXT) \
+	../simple/condition_set.$(OBJEXT) ../simple/tuple.$(OBJEXT) \
+	../simple/query.$(OBJEXT) \
 	../simple/util/condition_utils.$(OBJEXT) \
 	../simple/util/ast_utils.$(OBJEXT) \
 	../simple/util/query_utils.$(OBJEXT) ../impl/matcher.$(OBJEXT) \
@@ -188,10 +189,12 @@ unit_tests_SOURCES = \
   test_parser.cpp \
   test_pql_parser.cpp \
   test_predicate.cpp \
+  test_query.cpp \
   test_tokenizer.cpp \
   ../simple/ast.cpp \
   ../simple/condition_set.cpp \
   ../simple/tuple.cpp \
+  ../simple/query.cpp \
   ../simple/util/condition_utils.cpp \
   ../simple/util/ast_utils.cpp \
   ../simple/util/query_utils.cpp \
@@ -293,6 +296,8 @@ clean-binPROGRAMS:
 	../simple/$(DEPDIR)/$(am__dirstamp)
 ../simple/tuple.$(OBJEXT): ../simple/$(am__dirstamp) \
 	../simple/$(DEPDIR)/$(am__dirstamp)
+../simple/query.$(OBJEXT): ../simple/$(am__dirstamp) \
+	../simple/$(DEPDIR)/$(am__dirstamp)
 ../simple/util/$(am__dirstamp):
 	@$(MKDIR_P) ../simple/util
 	@: > ../simple/util/$(am__dirstamp)
@@ -373,6 +378,7 @@ mostlyclean-compile:
 	-rm -f ../impl/solvers/same_name.$(OBJEXT)
 	-rm -f ../simple/ast.$(OBJEXT)
 	-rm -f ../simple/condition_set.$(OBJEXT)
+	-rm -f ../simple/query.$(OBJEXT)
 	-rm -f ../simple/tuple.$(OBJEXT)
 	-rm -f ../simple/util/ast_utils.$(OBJEXT)
 	-rm -f ../simple/util/condition_utils.$(OBJEXT)
@@ -395,6 +401,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/solvers/$(DEPDIR)/same_name.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../simple/$(DEPDIR)/ast.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../simple/$(DEPDIR)/condition_set.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../simple/$(DEPDIR)/query.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../simple/$(DEPDIR)/tuple.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../simple/util/$(DEPDIR)/ast_utils.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../simple/util/$(DEPDIR)/condition_utils.Po@am__quote@
@@ -416,6 +423,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_parser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_pql_parser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_predicate.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_query.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_solver.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_tokenizer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gtest/$(DEPDIR)/gtest-all.Po@am__quote@

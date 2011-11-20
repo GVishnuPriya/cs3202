@@ -70,24 +70,38 @@ void QueryProcessor::solve_clause<PqlVariableTerm, PqlVariableTerm>(
     std::string qvar1 = term1->get_query_variable();
     std::string qvar2 = term2->get_query_variable();
 
-    ConditionSet conditions1 = get_qvar(qvar1);
-    ConditionSet conditions2 = get_qvar(qvar2);
+    if(qvar1 == qvar2) {
+        ConditionSet conditions = get_qvar(qvar1);
+        ConditionSet new_conditions;
 
-    std::vector<ConditionPair> links;
-
-    for(ConditionSet::iterator cit1 = conditions1.begin();
-            cit1 != conditions1.end(); ++cit1)
-    {
-        for(ConditionSet::iterator cit2 = conditions2.begin();
-                cit2 != conditions2.end(); ++cit2)
+        for(ConditionSet::iterator cit = conditions.begin();
+                cit != conditions.end(); ++cit)
         {
-            if(solver->validate(*cit1, *cit2)) {
-                links.push_back(ConditionPair(*cit1, *cit2));
+            if(solver->validate(*cit, *cit)) {
+                new_conditions.insert(*cit);
             }
         }
+        _linker->update_results(qvar1, new_conditions);
+    } else {
+        ConditionSet conditions1 = get_qvar(qvar1);
+        ConditionSet conditions2 = get_qvar(qvar2);
+
+        std::vector<ConditionPair> links;
+
+        for(ConditionSet::iterator cit1 = conditions1.begin();
+                cit1 != conditions1.end(); ++cit1)
+        {
+            for(ConditionSet::iterator cit2 = conditions2.begin();
+                    cit2 != conditions2.end(); ++cit2)
+            {
+                if(solver->validate(*cit1, *cit2)) {
+                    links.push_back(ConditionPair(*cit1, *cit2));
+                }
+            }
+        }
+        _linker->update_links(qvar1, qvar2, links);
     }
 
-    _linker->update_links(qvar1, qvar2, links);
 }
 
 /*

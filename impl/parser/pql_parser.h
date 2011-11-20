@@ -128,10 +128,10 @@ class SimplePqlParser {
                 } else {
                     next_token(); // eat "that"
 
-                    _query_set.clauses.push_back(parse_clause());
+                    _query_set.clauses.insert(parse_clause());
                 }
             } else if(keyword == "and") {
-                    _query_set.clauses.push_back(parse_clause());
+                    _query_set.clauses.insert(parse_clause());
             } else if(keyword == "with") {
                 parse_with();
             } else if(keyword == "pattern") {
@@ -168,7 +168,7 @@ class SimplePqlParser {
         }
     }
 
-    std::shared_ptr<PqlClause> parse_clause() {
+    ClausePtr parse_clause() {
         std::string solver_name = current_token_as_keyword();
         next_token();
 
@@ -198,8 +198,7 @@ class SimplePqlParser {
         current_token_as<CloseBracketToken>();
         next_token();
 
-        return std::shared_ptr<PqlClause>(
-                new SimplePqlClause(solver, first_term, second_term));
+        return ClausePtr(new SimplePqlClause(solver, first_term, second_term));
     }
 
     PqlTerm* parse_term() {

@@ -18,10 +18,12 @@ unit_tests_SOURCES = \
   test_parser.cpp \
   test_pql_parser.cpp \
   test_predicate.cpp \
+  test_query.cpp \
   test_tokenizer.cpp \
   ../simple/ast.cpp \
   ../simple/condition_set.cpp \
   ../simple/tuple.cpp \
+  ../simple/query.cpp \
   ../simple/util/condition_utils.cpp \
   ../simple/util/ast_utils.cpp \
   ../simple/util/query_utils.cpp \

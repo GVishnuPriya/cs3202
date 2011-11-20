@@ -112,13 +112,26 @@ class PqlSelectorVisitor {
     virtual ~PqlSelectorVisitor() { }
 };
 
+class ClausePtr : public std::shared_ptr<PqlClause> {
+  public:
+    typedef std::shared_ptr<PqlClause> Parent;
+
+    ClausePtr(PqlClause *clause) : Parent(clause) { }
+
+    bool operator ==(const ClausePtr& other) const;
+
+    bool operator <(const ClausePtr& other) const;
+};
+
+typedef std::set<ClausePtr> ClauseSet;
+
 struct PqlQuerySet {
   public:
     std::map< std::string, 
         std::shared_ptr<SimplePredicate> >      predicates;
 
     std::shared_ptr<PqlSelector>                selector;
-    std::vector< std::shared_ptr<PqlClause> >   clauses;
+    std::set<ClausePtr>                         clauses;
 };
 
 } // namespace simple
