@@ -20,7 +20,7 @@
 
 
 #include "simple/util/statement_visitor_generator.h"
-#include "impl/solvers/modifies.h"
+#include "impl/solvers/uses.h"
 #include "impl/condition.h"
 
 namespace simple {
@@ -68,15 +68,15 @@ class UsesValidateExprVisitor : public ExprVisitor {
     UsesValidateExprVisitor(UsesSolver *solver, SimpleVariable *var) :
     _solver(solver), _var(var) { }
 
-    void visit_const(ConstAst*) {
+    void visit_const(ConstAst* ast) {
       _result = _solver->validate<ConstAst, SimpleVariable>(ast, _var);
     }
 
-    void visit_variable(VariableAst*) {
+    void visit_variable(VariableAst* ast) {
       _result = _solver->validate<VariableAst, SimpleVariable>(ast, _var);
     }
 
-    void visit_binary_op(BinaryOpAst*) {
+    void visit_binary_op(BinaryOpAst* ast) {
       _result = _solver->validate<BinaryOpAst, SimpleVariable>(ast, _var);
     }
 
@@ -136,7 +136,7 @@ template <>
 bool UsesSolver::validate<ExprAst, SimpleVariable>(
         ExprAst *ast, SimpleVariable *var)
 {
-    UsesValidateExprVisitor visitor(ast, var);
+    UsesValidateExprVisitor visitor(this, var);
     ast->accept_expr_visitor(&visitor);
   
     return visitor.return_result();
@@ -146,7 +146,7 @@ template <>
 bool UsesSolver::validate<VariableAst, SimpleVariable>(
         VariableAst *ast, SimpleVariable *var) 
 {
-    return ast->get_variable->equals(*var);
+    return *ast->get_variable() == *var;
 }
 
 template <>
@@ -241,7 +241,7 @@ ConditionSet UsesSolver::solve_right<StatementAst>(StatementAst *ast) {
 template <>
 ConditionSet UsesSolver::solve_right<ConditionalAst>(ConditionalAst *ast) {
     ConditionSet result;
-    result.insert(new SimpleVariableCondition(ast->get_variable()));
+    result.insert(new SimpleVariableCondition(*ast->get_variable()));
     
     StatementAst *then = ast->get_then_branch();
     while(then != NULL) {
@@ -261,7 +261,7 @@ ConditionSet UsesSolver::solve_right<ConditionalAst>(ConditionalAst *ast) {
 template <>
 ConditionSet UsesSolver::solve_right<WhileAst>(WhileAst *ast) {
     ConditionSet result;
-    result.insert(new SimpleVariableCondition(ast->get_variable()));
+    result.insert(new SimpleVariableCondition(*ast->get_variable()));
 
     StatementAst *body = ast->get_body();
     while(body != NULL) {
@@ -287,18 +287,15 @@ ConditionSet UsesSolver::solve_right<ProcAst>(ProcAst *ast) {
 
 template <>
 ConditionSet UsesSolver::solve_right<AssignmentAst>(AssignmentAst *ast) {
-    ConditionSet result;
-    result.insert(new SimpleVariableCondition(
-            *(ast->get_variable())));
-    return result;
+    return solve_right<ExprAst>(ast->get_expr());
 }
 
 template <>
 ConditionSet UsesSolver::solve_right<ExprAst>(ExprAst *ast) {
     ExprVisitorGenerator<UsesSolver, 
-        ExprVisitorTraits<UsesSolver> > visitor(this);
+        SolveRightVisitorTraits<UsesSolver> > visitor(this);
 
-    ast->accept_statement_visitor(&visitor);
+    ast->accept_expr_visitor(&visitor);
 
     return visitor.return_result();  
 }
@@ -323,8 +320,8 @@ template <>
 ConditionSet UsesSolver::solve_right<BinaryOpAst>(BinaryOpAst *ast) {
     ConditionSet result;
 
-    result.union_with(solve_right<ExprAst>(ast->get_lhs));
-    result.union_with(solve_right<ExprAst>(ast->get_rhs));
+    result.union_with(solve_right<ExprAst>(ast->get_lhs()));
+    result.union_with(solve_right<ExprAst>(ast->get_rhs()));
 
     return result;
 }

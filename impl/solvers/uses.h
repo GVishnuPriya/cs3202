@@ -26,6 +26,7 @@
 #include "simple/condition.h"
 #include "simple/condition_set.h"
 #include "simple/solver.h"
+#include "simple/util/set_utils.h"
 #include "simple/util/statement_visitor_generator.h"
 
 namespace simple {
@@ -94,7 +95,7 @@ ConditionSet UsesSolver::solve_left(Condition *condition) {
 
 template <typename Condition>
 std::set<SimpleVariable> UsesSolver::index_variables(Condition *condition) {
-    return ConditionSet();
+    return VariableSet();
 }
 
 template <>
@@ -116,6 +117,10 @@ bool UsesSolver::validate<ExprAst, SimpleVariable>(
 template <>
 bool UsesSolver::validate<VariableAst, SimpleVariable>(
         VariableAst *ast, SimpleVariable *var);
+
+template <>
+bool UsesSolver::validate<ConstAst, SimpleVariable>(
+        ConstAst *ast, SimpleVariable *var);
 
 template <>
 bool UsesSolver::validate<BinaryOpAst, SimpleVariable>(

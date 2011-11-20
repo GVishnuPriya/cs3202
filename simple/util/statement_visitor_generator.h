@@ -2,7 +2,7 @@
  * CS3201 Simple Static Analyzer
  * Copyright (C) 2011 Soares Chen Ruo Fei
  *  Contributor(s):
- *    Soares Chen Rou Fei (original author)
+ *    Soares Chen Ruo Fei (original author)
  *    Daniel Le <GreenRecycleBin@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -160,7 +160,7 @@ class ExprVisitorGenerator : public ExprVisitor {
         _result = VisitorTraits::template visit<VariableAst>(_visitor, ast, _context);
     }
 
-    virtual void visit_binaryop(BinaryOpAst *ast) {
+    virtual void visit_binary_op(BinaryOpAst *ast) {
         _result = VisitorTraits::template visit<BinaryOpAst>(_visitor, ast, _context);
     }
 
