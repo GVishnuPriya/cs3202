@@ -20,6 +20,8 @@
 
 namespace simple {
 
+SimpleRoot::SimpleRoot() : _procs(NULL) { }
+
 SimpleRoot::SimpleRoot(ProcAst *proc) : 
     _procs(new ProcListType()) 
 {

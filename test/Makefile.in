@@ -52,23 +52,28 @@ am_unit_tests_OBJECTS = test_ast.$(OBJEXT) test_solver.$(OBJEXT) \
 	test_parent.$(OBJEXT) test_iparent.$(OBJEXT) \
 	test_modifies.$(OBJEXT) test_condition.$(OBJEXT) \
 	test_next.$(OBJEXT) test_inext.$(OBJEXT) \
-	test_matcher.$(OBJEXT) test_linker.$(OBJEXT) \
-	test_parser.$(OBJEXT) test_pql_parser.$(OBJEXT) \
-	test_predicate.$(OBJEXT) test_processor.$(OBJEXT) \
-	test_query.$(OBJEXT) test_tokenizer.$(OBJEXT) \
-	../simple/ast.$(OBJEXT) ../simple/condition_set.$(OBJEXT) \
-	../simple/tuple.$(OBJEXT) ../simple/query.$(OBJEXT) \
+	test_matcher.$(OBJEXT) test_frontend.$(OBJEXT) \
+	test_linker.$(OBJEXT) test_parser.$(OBJEXT) \
+	test_pql_parser.$(OBJEXT) test_predicate.$(OBJEXT) \
+	test_processor.$(OBJEXT) test_query.$(OBJEXT) \
+	test_tokenizer.$(OBJEXT) ../simple/ast.$(OBJEXT) \
+	../simple/condition_set.$(OBJEXT) ../simple/tuple.$(OBJEXT) \
+	../simple/query.$(OBJEXT) \
 	../simple/util/condition_utils.$(OBJEXT) \
 	../simple/util/ast_utils.$(OBJEXT) \
 	../simple/util/query_utils.$(OBJEXT) ../impl/matcher.$(OBJEXT) \
 	../impl/linker.$(OBJEXT) ../impl/predicate.$(OBJEXT) \
 	../impl/processor.$(OBJEXT) ../impl/solvers/follows.$(OBJEXT) \
+	../impl/solvers/ifollows.$(OBJEXT) \
+	../impl/solvers/parent.$(OBJEXT) \
+	../impl/solvers/iparent.$(OBJEXT) \
 	../impl/solvers/modifies.$(OBJEXT) \
 	../impl/solvers/next.$(OBJEXT) ../impl/solvers/inext.$(OBJEXT) \
 	../impl/solvers/call.$(OBJEXT) ../impl/solvers/icall.$(OBJEXT) \
 	../impl/solvers/uses.$(OBJEXT) \
 	../impl/solvers/same_name.$(OBJEXT) \
-	../impl/parser/token.$(OBJEXT) gtest/gtest-all.$(OBJEXT) \
+	../impl/parser/token.$(OBJEXT) ../impl/parser/parser.$(OBJEXT) \
+	../impl/parser/pql_parser.$(OBJEXT) gtest/gtest-all.$(OBJEXT) \
 	test_main.$(OBJEXT)
 unit_tests_OBJECTS = $(am_unit_tests_OBJECTS)
 unit_tests_LDADD = $(LDADD)
@@ -187,6 +192,7 @@ unit_tests_SOURCES = \
   test_next.cpp \
   test_inext.cpp \
   test_matcher.cpp \
+  test_frontend.cpp \
   test_linker.cpp \
   test_parser.cpp \
   test_pql_parser.cpp \
@@ -206,6 +212,9 @@ unit_tests_SOURCES = \
   ../impl/predicate.cpp \
   ../impl/processor.cpp \
   ../impl/solvers/follows.cpp \
+  ../impl/solvers/ifollows.cpp \
+  ../impl/solvers/parent.cpp \
+  ../impl/solvers/iparent.cpp \
   ../impl/solvers/modifies.cpp \
   ../impl/solvers/next.cpp \
   ../impl/solvers/inext.cpp \
@@ -214,6 +223,8 @@ unit_tests_SOURCES = \
   ../impl/solvers/uses.cpp \
   ../impl/solvers/same_name.cpp \
   ../impl/parser/token.cpp \
+  ../impl/parser/parser.cpp \
+  ../impl/parser/pql_parser.cpp \
   gtest/gtest-all.cc \
   test_main.cpp
 
@@ -338,6 +349,12 @@ clean-binPROGRAMS:
 	@: > ../impl/solvers/$(DEPDIR)/$(am__dirstamp)
 ../impl/solvers/follows.$(OBJEXT): ../impl/solvers/$(am__dirstamp) \
 	../impl/solvers/$(DEPDIR)/$(am__dirstamp)
+../impl/solvers/ifollows.$(OBJEXT): ../impl/solvers/$(am__dirstamp) \
+	../impl/solvers/$(DEPDIR)/$(am__dirstamp)
+../impl/solvers/parent.$(OBJEXT): ../impl/solvers/$(am__dirstamp) \
+	../impl/solvers/$(DEPDIR)/$(am__dirstamp)
+../impl/solvers/iparent.$(OBJEXT): ../impl/solvers/$(am__dirstamp) \
+	../impl/solvers/$(DEPDIR)/$(am__dirstamp)
 ../impl/solvers/modifies.$(OBJEXT): ../impl/solvers/$(am__dirstamp) \
 	../impl/solvers/$(DEPDIR)/$(am__dirstamp)
 ../impl/solvers/next.$(OBJEXT): ../impl/solvers/$(am__dirstamp) \
@@ -360,6 +377,10 @@ clean-binPROGRAMS:
 	@: > ../impl/parser/$(DEPDIR)/$(am__dirstamp)
 ../impl/parser/token.$(OBJEXT): ../impl/parser/$(am__dirstamp) \
 	../impl/parser/$(DEPDIR)/$(am__dirstamp)
+../impl/parser/parser.$(OBJEXT): ../impl/parser/$(am__dirstamp) \
+	../impl/parser/$(DEPDIR)/$(am__dirstamp)
+../impl/parser/pql_parser.$(OBJEXT): ../impl/parser/$(am__dirstamp) \
+	../impl/parser/$(DEPDIR)/$(am__dirstamp)
 gtest/$(am__dirstamp):
 	@$(MKDIR_P) gtest
 	@: > gtest/$(am__dirstamp)
@@ -376,15 +397,20 @@ mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f ../impl/linker.$(OBJEXT)
 	-rm -f ../impl/matcher.$(OBJEXT)
+	-rm -f ../impl/parser/parser.$(OBJEXT)
+	-rm -f ../impl/parser/pql_parser.$(OBJEXT)
 	-rm -f ../impl/parser/token.$(OBJEXT)
 	-rm -f ../impl/predicate.$(OBJEXT)
 	-rm -f ../impl/processor.$(OBJEXT)
 	-rm -f ../impl/solvers/call.$(OBJEXT)
 	-rm -f ../impl/solvers/follows.$(OBJEXT)
 	-rm -f ../impl/solvers/icall.$(OBJEXT)
+	-rm -f ../impl/solvers/ifollows.$(OBJEXT)
 	-rm -f ../impl/solvers/inext.$(OBJEXT)
+	-rm -f ../impl/solvers/iparent.$(OBJEXT)
 	-rm -f ../impl/solvers/modifies.$(OBJEXT)
 	-rm -f ../impl/solvers/next.$(OBJEXT)
+	-rm -f ../impl/solvers/parent.$(OBJEXT)
 	-rm -f ../impl/solvers/same_name.$(OBJEXT)
 	-rm -f ../impl/solvers/uses.$(OBJEXT)
 	-rm -f ../simple/ast.$(OBJEXT)
@@ -403,13 +429,18 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/$(DEPDIR)/matcher.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/$(DEPDIR)/predicate.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/$(DEPDIR)/processor.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../impl/parser/$(DEPDIR)/parser.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../impl/parser/$(DEPDIR)/pql_parser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/parser/$(DEPDIR)/token.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/solvers/$(DEPDIR)/call.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/solvers/$(DEPDIR)/follows.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/solvers/$(DEPDIR)/icall.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../impl/solvers/$(DEPDIR)/ifollows.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/solvers/$(DEPDIR)/inext.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../impl/solvers/$(DEPDIR)/iparent.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/solvers/$(DEPDIR)/modifies.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/solvers/$(DEPDIR)/next.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../impl/solvers/$(DEPDIR)/parent.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/solvers/$(DEPDIR)/same_name.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../impl/solvers/$(DEPDIR)/uses.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../simple/$(DEPDIR)/ast.Po@am__quote@
@@ -423,6 +454,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_call.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_condition.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_follows.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_frontend.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_icall.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_ifollows.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_inext.Po@am__quote@

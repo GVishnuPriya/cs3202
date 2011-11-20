@@ -29,8 +29,9 @@ namespace impl {
 
 class QueryProcessor {
   public:
-    QueryProcessor(std::shared_ptr<QueryLinker> linker,
-            const std::map<std::string, PredicatePtr>& predicates,
+    QueryProcessor(
+            const std::shared_ptr<QueryLinker>& linker,
+            std::map<std::string, PredicatePtr> predicates,
             PredicatePtr wildcard_pred) :
         _linker(linker), _predicates(predicates), 
         _wildcard_pred(wildcard_pred)

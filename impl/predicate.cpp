@@ -308,6 +308,7 @@ template class PredicateGenerator<StatementPredicate>;
 template class PredicateGenerator<AssignPredicate>;
 template class PredicateGenerator<WhilePredicate>;
 template class PredicateGenerator<ConditionalPredicate>;
+template class PredicateGenerator<CallPredicate>;
 template class PredicateGenerator<VariablePredicate>;
 template class PredicateGenerator<ConstantPredicate>;
 

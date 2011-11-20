@@ -55,43 +55,15 @@ class IFollowSolver {
 };
 
 template <>
-ConditionSet IFollowSolver::solve_right<StatementAst>(StatementAst *statement) {
-    ConditionSet result;
+ConditionSet IFollowSolver::solve_right<StatementAst>(StatementAst *statement);
 
-    if(statement->next()) {
-        while(statement->next() != NULL) {
-            result.insert(new SimpleStatementCondition(statement->next()));
-            statement = statement->next();
-        }
-    }
-    return result;
-}
-    
 template <>
-ConditionSet IFollowSolver::solve_left<StatementAst>(StatementAst *statement) {
-    ConditionSet result;
-
-    if(statement->prev()) {
-        while(statement->prev() != NULL) {
-            result.insert(new SimpleStatementCondition(statement->prev()));
-            statement = statement->prev();
-        }
-    }
-    return result;
-}
+ConditionSet IFollowSolver::solve_left<StatementAst>(StatementAst *statement);
 
 template <>
 bool IFollowSolver::validate<StatementAst, StatementAst>(
-        StatementAst *left, StatementAst *right)
-{
-    while(left->next() != NULL) {
-        if(left->next() == right) {
-            return true;
-        }
-        left = left->next();
-    }
-    return false;
-}
+        StatementAst *left, StatementAst *right);
+
 
 } // namespace impl
 } // namespace simple

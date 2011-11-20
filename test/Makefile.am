@@ -14,6 +14,7 @@ unit_tests_SOURCES = \
   test_next.cpp \
   test_inext.cpp \
   test_matcher.cpp \
+  test_frontend.cpp \
   test_linker.cpp \
   test_parser.cpp \
   test_pql_parser.cpp \
@@ -33,6 +34,9 @@ unit_tests_SOURCES = \
   ../impl/predicate.cpp \
   ../impl/processor.cpp \
   ../impl/solvers/follows.cpp \
+  ../impl/solvers/ifollows.cpp \
+  ../impl/solvers/parent.cpp \
+  ../impl/solvers/iparent.cpp \
   ../impl/solvers/modifies.cpp \
   ../impl/solvers/next.cpp \
   ../impl/solvers/inext.cpp \
@@ -41,6 +45,8 @@ unit_tests_SOURCES = \
   ../impl/solvers/uses.cpp \
   ../impl/solvers/same_name.cpp \
   ../impl/parser/token.cpp \
+  ../impl/parser/parser.cpp \
+  ../impl/parser/pql_parser.cpp \
   gtest/gtest-all.cc \
   test_main.cpp
 

@@ -68,7 +68,7 @@ TEST(PqlParserTest, ComponentTest) {
 
     PredicateTable pred_table;
     pred_table["statement"] = statement_pred;
-    pred_table["variable"] = variable_pred;
+    pred_table["var"] = variable_pred;
 
     std::shared_ptr<MockTokenizer> tokenizer1(new MockTokenizer());
 
@@ -266,7 +266,7 @@ TEST(PqlParserTest, FullQueryTest) {
 
     PredicateTable pred_table;
     pred_table["statement"] = statement_pred;
-    pred_table["variable"] = variable_pred;
+    pred_table["var"] = variable_pred;
 
     /*
      * stmt s;

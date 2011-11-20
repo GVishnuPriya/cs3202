@@ -190,6 +190,10 @@ class SimpleSolverGenerator : public QuerySolver  {
 
   public:
     SimpleSolverGenerator(ConcreteSolver *solver) : _solver(solver) { }
+    
+    SimpleSolverGenerator(std::shared_ptr<ConcreteSolver> solver) : 
+        _solver(solver) 
+    { }
 
     virtual ConditionSet solve_left(SimpleCondition *right_condition) {
         SolverLeftVisitor visitor(_solver.get());
@@ -214,7 +218,7 @@ class SimpleSolverGenerator : public QuerySolver  {
     }
 
   private:
-    std::unique_ptr<ConcreteSolver> _solver;
+    std::shared_ptr<ConcreteSolver> _solver;
 
 };
     

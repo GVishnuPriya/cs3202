@@ -22,7 +22,6 @@
 #include "simple/condition.h"
 #include "simple/solver.h"
 #include "impl/condition.h"
-#include "simple/util/statement_visitor_generator.h"
 
 namespace simple {
 namespace impl {
@@ -58,96 +57,32 @@ class IParentSolver {
 
 
 template <>
-ConditionSet IParentSolver::solve_right<StatementAst>(StatementAst *statement) {
-    StatementVisitorGenerator<IParentSolver, 
-        SolveRightVisitorTraits<IParentSolver> > visitor(this);
-    statement->accept_statement_visitor(&visitor);
-    return visitor.return_result();
-}
+ConditionSet IParentSolver::solve_right<StatementAst>(StatementAst *statement);
 
 template <>
-ConditionSet IParentSolver::solve_right<WhileAst>(WhileAst *loop) {
-    ConditionSet result;
-    StatementAst *body = loop->get_body();
-
-    while(body != NULL) {
-        result.insert(new SimpleStatementCondition(body));
-        result.union_with(solve_right<StatementAst>(body));
-        body = body->next();
-    }
-
-    return result;
-}
+ConditionSet IParentSolver::solve_right<WhileAst>(WhileAst *loop);
 
 template <>
-ConditionSet IParentSolver::solve_right<ConditionalAst>(ConditionalAst *condition) {
-    ConditionSet result;
-    StatementAst *then_branch = condition->get_then_branch();
-    StatementAst *else_branch = condition->get_else_branch();
-
-    while(then_branch != NULL) {
-        result.insert(new SimpleStatementCondition(then_branch));
-        result.union_with(solve_right<StatementAst>(then_branch));
-        then_branch = then_branch->next();
-    }
-
-    while(else_branch != NULL) {
-        result.insert(new SimpleStatementCondition(else_branch));
-        result.union_with(solve_right<StatementAst>(else_branch));
-        else_branch = else_branch->next();
-    }
-
-    return result;
-}
+ConditionSet IParentSolver::solve_right<ConditionalAst>(ConditionalAst *condition);
     
 template <>
-ConditionSet IParentSolver::solve_left<StatementAst>(StatementAst *statement) {
-    ConditionSet result;
-
-    while(statement->get_parent() != NULL) {
-        result.insert(new SimpleStatementCondition(statement->get_parent()));
-        statement = statement->get_parent();
-    }
-    return result;
-}
+ConditionSet IParentSolver::solve_left<StatementAst>(StatementAst *statement);
 
 template <>
 bool IParentSolver::validate<StatementAst, StatementAst>(
-        StatementAst *left, StatementAst *right)
-{
-    StatementVisitorGenerator<IParentSolver, 
-        PartialValidateVisitorTraits<IParentSolver> > visitor(this, right);
-    left->accept_statement_visitor(&visitor);
-    return visitor.return_result();
-}
+        StatementAst *left, StatementAst *right);
 
 template <>
 bool IParentSolver::validate<ContainerAst, StatementAst>(
-        ContainerAst *container, StatementAst *statement)
-{
-    ContainerAst *parent = statement->get_parent();
-    while(parent != NULL) {
-        if(parent == container) {
-            return true;
-        }
-        parent = parent->get_parent();
-    }
-    return false;
-}
+        ContainerAst *container, StatementAst *statement);
 
 template <>
 bool IParentSolver::validate<ConditionalAst, StatementAst>(
-        ConditionalAst *condition, StatementAst *statement)
-{
-    return validate<ContainerAst, StatementAst>(condition, statement);
-}
+        ConditionalAst *condition, StatementAst *statement);
 
 template <>
 bool IParentSolver::validate<WhileAst, StatementAst>(
-        WhileAst *loop, StatementAst *statement)
-{
-    return validate<ContainerAst, StatementAst>(loop, statement);
-}
+        WhileAst *loop, StatementAst *statement);
 
 
 } // namespace impl

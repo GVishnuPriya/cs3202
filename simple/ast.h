@@ -136,6 +136,7 @@ class SimpleRoot {
     /*
      * Single proc construction
      */
+    SimpleRoot();
     SimpleRoot(ProcAst *proc);
     SimpleRoot(ProcListType *procs);
     SimpleRoot(const SimpleRoot& other);
