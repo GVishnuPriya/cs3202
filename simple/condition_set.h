@@ -84,6 +84,8 @@ class ConditionSet {
     bool operator ==(const ConditionSet& other) const;
     bool operator !=(const ConditionSet& other) const;
 
+    ConditionSet& operator =(const ConditionSet& other);
+
     iterator begin() const;
     iterator end() const;
 

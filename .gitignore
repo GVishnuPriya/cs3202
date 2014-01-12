@@ -5,6 +5,7 @@ Makefile
 unit_tests
 main
 config.log
+config.status
 *.o
 *.Po
 *.swp

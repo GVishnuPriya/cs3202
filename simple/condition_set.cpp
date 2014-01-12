@@ -124,6 +124,11 @@ bool ConditionSet::operator !=(const ConditionSet& other) const {
     return !equals(other);
 }
 
+ConditionSet& ConditionSet::operator =(const ConditionSet& other) {
+    _set = other._set;
+    return *this;
+}
+
 bool ConditionSet::has_element(const ConditionPtr& other) const {
     return _set.count(other) != 0;
 }
