@@ -2,15 +2,6 @@
 Architecture Overview
 =====================
 
-The static analyzer is consist of the following components:
-
-  - Simple AST
-  - Solver
-  - Condition
-  - PQL Clause
-  - Query Linker
-
-
 ## Simple AST
 
 The AST is consist of two sets of API. The first set of API has [read-only methods](../simple/ast.h), while the second set of API contain the [implementation details](../impl/ast.h) and allow mutation to the AST.
