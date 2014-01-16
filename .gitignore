@@ -20,7 +20,6 @@ Debug/
 *.sdf
 *.sln
 *.v11.suo
-*.vcxproj
 *.vcxproj.filters
 CMakeCache.txt
 CMakeFiles/
