@@ -46,7 +46,7 @@ unit_tests_SOURCES = \
   ../impl/parser/token.cpp \
   ../impl/parser/parser.cpp \
   ../impl/parser/pql_parser.cpp \
-  gtest/gtest-all.cc \
+  gtest/gtest-all.cpp \
   test_main.cpp
 
 LIBS = -pthread

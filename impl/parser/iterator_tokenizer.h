@@ -167,7 +167,12 @@ class IteratorTokenizer : public SimpleTokenizer {
         if(_it == _end) {
             return EOF;
         }
-        return _current_char = *++_it;
+
+        if(++_it == _end) {
+            return _current_char = EOF;
+        } else {
+            return _current_char = *_it;
+        }
     }
 
     SimpleToken* set_current_token(SimpleToken *token) {

@@ -4,6 +4,7 @@ dist/*
 Makefile
 unit_tests
 main
+spa
 config.log
 config.status
 *.o
@@ -21,3 +22,6 @@ Debug/
 *.v11.suo
 *.vcxproj
 *.vcxproj.filters
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake

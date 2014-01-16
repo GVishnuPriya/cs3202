@@ -62,7 +62,6 @@ class ConditionSet {
 
     ConditionSet();
     ConditionSet(const ConditionSet& other);
-    ConditionSet(ConditionSet& other);
     ConditionSet(ConditionSet&& other);
     ConditionSet(ConditionPtr condition);
     ConditionSet(std::set<ConditionPtr>&& set);

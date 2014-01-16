@@ -43,10 +43,6 @@ ConditionSet::ConditionSet(const ConditionSet& other) :
     _set(other._set) 
 { }
 
-ConditionSet::ConditionSet(ConditionSet& other) :
-    _set(other._set)
-{ }
-
 ConditionSet::ConditionSet(ConditionSet&& other) : 
     _set(std::move(other._set)) 
 { }
