@@ -78,7 +78,7 @@ class ConditionPrinter : public ConditionVisitor {
 
     void visit_pattern_condition(PatternCondition *condition) {
         _result = "(PatternCondition ";
-        _result += (long) condition->get_expr_ast();
+        _result += std::to_string((long) condition->get_expr_ast());
         _result += ")";
     }
 
