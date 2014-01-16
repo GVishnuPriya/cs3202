@@ -56,9 +56,6 @@ class UsesSolver {
     ConditionSet solve_left(Condition *condition);
 
     template <typename Condition>
-    ConditionSet solve_variable(Condition *condition, SimpleVariable *variable);
-
-    template <typename Condition>
     std::set<SimpleVariable> index_variables(Condition *condition);
 
     ~UsesSolver() { }
@@ -80,11 +77,6 @@ bool UsesSolver::validate(Condition1 *condition1, Condition2 *condition2) {
 
 template <typename Condition>
 ConditionSet UsesSolver::solve_right(Condition *condition) {
-    return ConditionSet(); // empty set
-}
-
-template <typename Condition>
-ConditionSet UsesSolver::solve_variable(Condition *condition, SimpleVariable *variable) {
     return ConditionSet(); // empty set
 }
 

@@ -61,22 +61,6 @@ class ModifiesValidateStatementVisitor : public StatementVisitor {
     bool _result;
 };
 
-class ModifiesVariableVisitorAdapter {
-  public:
-    ModifiesVariableVisitorAdapter(ModifiesSolver *solver, SimpleVariable *var) :
-        _solver(solver), _var(var)
-    { }
-
-    template <typename Ast>
-    ConditionSet solve_variable(Ast *ast) {
-        return _solver->solve_variable<Ast>(ast, _var);
-    }
-  private:
-    ModifiesSolver *_solver;
-    SimpleVariable *_var;
-};
-
-
 ModifiesSolver::ModifiesSolver(const SimpleRoot& ast) : 
     _ast(ast) 
 {
@@ -237,19 +221,6 @@ ConditionSet ModifiesSolver::solve_right<CallAst>(CallAst *ast) {
     return solve_right<ProcAst>(ast->get_proc_called());
 }
 
-template <>
-ConditionSet ModifiesSolver::solve_variable<AssignmentAst>(
-        AssignmentAst *ast, SimpleVariable *variable) 
-{
-    if(validate<AssignmentAst, SimpleVariable>(ast, variable)) {
-        ConditionSet result;
-        result.insert(new SimpleStatementCondition(ast));
-        return result;
-    } else {
-        return ConditionSet(); // empty set
-    }
-}
-
 /*
  * solve_left() definitions
  */
@@ -260,53 +231,6 @@ ConditionSet ModifiesSolver::solve_left<SimpleVariable>(SimpleVariable *variable
     } else {
         return ConditionSet();
     }
-}
-
-/*
- * solve_variable() definitions
- */
-template <>
-ConditionSet ModifiesSolver::solve_variable<CallAst>(CallAst *ast, SimpleVariable *variable) {
-    if(validate<CallAst, SimpleVariable>(ast, variable)) {
-        ConditionSet result;
-        result.insert(new SimpleStatementCondition(ast));
-        return result;
-    } else {
-        return ConditionSet(); // empty set
-    }
-}
-
-template <>
-ConditionSet ModifiesSolver::solve_variable<ProcAst>(ProcAst *ast, SimpleVariable *variable) {
-    ConditionSet result;
-    StatementAst *statements = ast->get_statement();
-
-    while(statements != NULL) {
-        result.union_with(solve_variable<StatementAst>(statements, variable));
-        statements = statements->next();
-    }
-
-    if(!result.is_empty()) {
-        result.insert(new SimpleProcCondition(ast));
-    }
-
-    return result;
-}
-
-template <>
-ConditionSet ModifiesSolver::solve_variable<StatementAst>(
-        StatementAst *ast, SimpleVariable *variable) 
-{
-    ModifiesVariableVisitorAdapter adapter(this, variable);
-    
-    StatementVisitorGenerator<
-        ModifiesVariableVisitorAdapter,
-        SolveVariableVisitorTraits<
-            ModifiesVariableVisitorAdapter> > 
-    visitor(&adapter);
-    
-    ast->accept_statement_visitor(&visitor);
-    return visitor.return_result();
 }
 
 /*

@@ -64,20 +64,6 @@ class IndexVariableVisitorTraits {
 };
 
 template <typename Solver>
-class SolveVariableVisitorTraits {
-  public:
-    typedef ConditionSet ResultType;
-    typedef int            ContextType;
-
-    template <typename Ast>
-    static ConditionSet visit(Solver *solver, Ast *ast, int *context = NULL) {
-        return solver->template solve_variable<Ast>(ast);
-    }
-  private:
-    SolveVariableVisitorTraits();
-};
-
-template <typename Solver>
 class SolveRightVisitorTraits {
   public:
     typedef ConditionSet ResultType;
