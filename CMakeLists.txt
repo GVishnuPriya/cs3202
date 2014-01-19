@@ -6,7 +6,7 @@ if(UNIX)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=gnu++0x -pthread")
 endif()
 
-include_directories ("${PROJECT_SOURCE_DIR}", "${PROJECT_SOURCE_DIR}/test")
+include_directories("${PROJECT_SOURCE_DIR}" , "${PROJECT_SOURCE_DIR}/test")
 
 set(SOURCE
   simple/ast.cpp 
