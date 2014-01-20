@@ -69,12 +69,12 @@ inline void set_while_body(SimpleStatementAst *ast, SimpleWhileAst *loop) {
     set_parent(ast, loop);
 }
 
-inline void set_then_branch(SimpleStatementAst *ast, SimpleConditionalAst *condition) {
+inline void set_then_branch(SimpleStatementAst *ast, SimpleIfAst *condition) {
     condition->set_then_branch(ast->as_ast());
     set_parent(ast, condition);
 }
 
-inline void set_else_branch(SimpleStatementAst *ast, SimpleConditionalAst *condition) {
+inline void set_else_branch(SimpleStatementAst *ast, SimpleIfAst *condition) {
     condition->set_else_branch(ast->as_ast());
     set_parent(ast, condition);
 }
@@ -92,7 +92,7 @@ template <>
 bool is_same_statement<WhileAst, WhileAst>(WhileAst *loop1, WhileAst *loop2);
 
 template <>
-bool is_same_statement<ConditionalAst, ConditionalAst>(ConditionalAst *condition1, ConditionalAst *condition2);
+bool is_same_statement<IfAst, IfAst>(IfAst *condition1, IfAst *condition2);
 
 bool is_same_statement_list(StatementAst *statement1, StatementAst *statement2);
 

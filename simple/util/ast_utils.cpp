@@ -34,8 +34,8 @@ class SecondSameStatementVisitor : public StatementVisitor {
         _result = is_same_statement<Ast, CallAst>(_stat1, stat2);
     }
 
-    void visit_conditional(ConditionalAst *stat2) {
-        _result = is_same_statement<Ast, ConditionalAst>(_stat1, stat2);
+    void visit_if(IfAst *stat2) {
+        _result = is_same_statement<Ast, IfAst>(_stat1, stat2);
     }
 
     void visit_while(WhileAst *stat2) {
@@ -69,8 +69,8 @@ class FirstSameStatementVisitor : public StatementVisitor {
         _result = visitor.return_result();
     }
 
-    void visit_conditional(ConditionalAst *stat1) {
-        SecondSameStatementVisitor<ConditionalAst> visitor(stat1);
+    void visit_if(IfAst *stat1) {
+        SecondSameStatementVisitor<IfAst> visitor(stat1);
         _stat2->accept_statement_visitor(&visitor);
         _result = visitor.return_result();
     }
@@ -116,7 +116,7 @@ bool is_same_statement<WhileAst, WhileAst>(WhileAst *loop1, WhileAst *loop2) {
 }
 
 template <>
-bool is_same_statement<ConditionalAst, ConditionalAst>(ConditionalAst *condition1, ConditionalAst *condition2) {
+bool is_same_statement<IfAst, IfAst>(IfAst *condition1, IfAst *condition2) {
     return (*condition1->get_variable() == *condition2->get_variable()) &&
         is_same_statement_list(condition1->get_then_branch(), condition2->get_then_branch()) &&
         is_same_statement_list(condition1->get_else_branch(), condition2->get_else_branch());

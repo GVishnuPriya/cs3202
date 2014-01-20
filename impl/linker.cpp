@@ -23,6 +23,56 @@ namespace impl {
 
 using namespace simple;
 
+bool SimpleQueryLinker::is_initialized(const std::string& qvar) {
+    return _qvar_table.count(qvar) > 0;
+}
+
+bool SimpleQueryLinker::has_condition(const std::string& qvar, const ConditionPtr& condition) {
+    return _qvar_table[qvar].has_element(condition);
+}
+
+bool SimpleQueryLinker::has_link(const std::string& qvar1,
+              const std::string& qvar2)
+{
+    return _qvar_link_table[qvar1].count(qvar2) > 0;
+}
+
+/*
+ * Add a single link between two conditions in qvar1 and qvar2.
+ * The adding is only successful if both of the query variables
+ * already has the respective conditions in their result set.
+ */
+bool SimpleQueryLinker::add_link(
+        const std::string& qvar1, const std::string& qvar2, 
+        const ConditionPtr& condition1, const ConditionPtr& condition2)
+{
+    if(has_condition(qvar1, condition1) && has_condition(qvar2, condition2)) {
+        _condition_link_table[QVarPair(qvar1, qvar2)][condition1].insert(condition2);
+        _condition_link_table[QVarPair(qvar2, qvar1)][condition2].insert(condition1);
+        return true;
+    } else {
+        return false;
+    }
+}
+
+void SimpleQueryLinker::update_results(
+        const std::string& qvar, 
+        const ConditionSet& new_set)
+{
+    if(!is_initialized(qvar)) {
+        _qvar_table[qvar] = new_set;
+    } else {
+        ConditionSet difference = _qvar_table[qvar].difference_with(new_set);
+        if(!difference.is_empty()) {
+            for(ConditionSet::iterator it = difference.begin(); 
+                    it != difference.end(); ++it )
+            {
+                remove_condition(qvar, *it);
+            }
+        }
+    }
+}
+
 void SimpleQueryLinker::update_links(
         const std::string& qvar1, const std::string& qvar2, 
         const std::vector<ConditionPair>& links)
@@ -48,41 +98,6 @@ void SimpleQueryLinker::update_links(
 
     _qvar_link_table[qvar1].insert(qvar2);
     _qvar_link_table[qvar2].insert(qvar1);
-}
-
-/*
- * Add a single link between two conditions in qvar1 and qvar2.
- * The adding is only successful if both of the query variables
- * already has the respective conditions in their result set.
- */
-bool SimpleQueryLinker::add_link(
-        const std::string& qvar1, const std::string& qvar2, 
-        const ConditionPtr& condition1, const ConditionPtr& condition2)
-{
-    if(has_condition(qvar1, condition1) && has_condition(qvar2, condition2)) {
-        _condition_link_table[QVarPair(qvar1, qvar2)][condition1].insert(condition2);
-        _condition_link_table[QVarPair(qvar2, qvar1)][condition2].insert(condition1);
-        return true;
-    } else {
-        return false;
-    }
-}
-
-void SimpleQueryLinker::update_results(const std::string& qvar, 
-        const ConditionSet& new_set)
-{
-    if(!is_initialized(qvar)) {
-        _qvar_table[qvar] = new_set;
-    } else {
-        ConditionSet difference = _qvar_table[qvar].difference_with(new_set);
-        if(!difference.is_empty()) {
-            for(ConditionSet::iterator it = difference.begin(); 
-                    it != difference.end(); ++it )
-            {
-                remove_condition(qvar, *it);
-            }
-        }
-    }
 }
 
 TupleList SimpleQueryLinker::make_tuples(
@@ -181,40 +196,40 @@ void SimpleQueryLinker::merge_tuples(const ConditionPtr& target_condition,
 void SimpleQueryLinker::remove_condition(
         const std::string& qvar, const ConditionPtr& condition)
 {
-    if(_qvar_table[qvar].has_element(condition)) {
-        _qvar_table[qvar].remove(condition);
+    if(!_qvar_table[qvar].has_element(condition)) return;
 
-        /*
-         * If it is a removal of the last condition in a qvar and
-         * makes it empty, the whole PQL is then fall into an invalid state.
-         */
-        if(_qvar_table[qvar].is_empty()) {
-            invalidate_state();
+    _qvar_table[qvar].remove(condition);
+
+    /*
+     * If it is a removal of the last condition in a qvar and
+     * makes it empty, the whole PQL is then fall into an invalid state.
+     */
+    if(_qvar_table[qvar].is_empty()) {
+        invalidate_state();
+    }
+
+    /*
+     * Iterate through the query variables that have linkage with this query variable
+     */
+    for(std::set<std::string>::iterator qit = _qvar_link_table[qvar].begin();
+        qit != _qvar_link_table[qvar].end(); ++qit)
+    {
+        // clear the current link table and move that to local variable
+        ConditionSet linked_set = std::move(
+                _condition_link_table[QVarPair(qvar, *qit)][condition]);
+
+        if(linked_set.is_empty()) {
+            continue;
         }
 
         /*
-         * Iterate through the query variables that have linkage with this query variable
+         * Iterate through the conditions in the iterated query variable that
+         * are linked to this condition.
          */
-        for(std::set<std::string>::iterator qit = _qvar_link_table[qvar].begin();
-            qit != _qvar_link_table[qvar].end(); ++qit)
+        for(ConditionSet::iterator cit = linked_set.begin();
+            cit != linked_set.end(); ++cit)
         {
-            // clear the current link table and move that to local variable
-            ConditionSet linked_set = std::move(
-                    _condition_link_table[QVarPair(qvar, *qit)][condition]);
-
-            if(linked_set.is_empty()) {
-                continue;
-            }
-
-            /*
-             * Iterate through the conditions in the iterated query variable that
-             * are linked to this condition.
-             */
-            for(ConditionSet::iterator cit = linked_set.begin();
-                cit != linked_set.end(); ++cit)
-            {
-                break_link(*qit, qvar, *cit, condition);
-            }
+            break_link(*qit, qvar, *cit, condition);
         }
     }
 }
@@ -238,20 +253,6 @@ void SimpleQueryLinker::break_link(
          */
         remove_condition(qvar1, condition1);
     }
-}
-
-bool SimpleQueryLinker::is_initialized(const std::string& qvar) {
-    return _qvar_table.count(qvar) > 0;
-}
-
-bool SimpleQueryLinker::has_condition(const std::string& qvar, const ConditionPtr& condition) {
-    return _qvar_table[qvar].has_element(condition);
-}
-
-bool SimpleQueryLinker::has_link(const std::string& qvar1,
-              const std::string& qvar2)
-{
-    return _qvar_link_table[qvar1].count(qvar2) > 0;
 }
 
 ConditionSet SimpleQueryLinker::get_linked_conditions(
@@ -296,29 +297,30 @@ ConditionSet SimpleQueryLinker::get_indirect_links(
 {
     if(has_link(qvar1, qvar2)) {
         return get_linked_conditions(qvar1, qvar2, condition1);
-    } else {
-        ConditionSet result;
+    }
 
-        for(std::set<std::string>::iterator qit = _qvar_link_table[qvar1].begin();
-            qit != _qvar_link_table[qvar1].end(); ++qit)
-        {
-            std::string mid_qvar = *qit;
+    ConditionSet result;
 
-            if(visited_qvars.count(mid_qvar) == 0) {
-                visited_qvars.insert(mid_qvar);
+    for(std::set<std::string>::iterator qit = _qvar_link_table[qvar1].begin();
+        qit != _qvar_link_table[qvar1].end(); ++qit)
+    {
+        std::string mid_qvar = *qit;
 
-                ConditionSet direct_links = get_linked_conditions(
-                        qvar1, mid_qvar, condition1);
-                for(ConditionSet::iterator cit = direct_links.begin();
-                    cit != direct_links.end(); ++cit)
-                {
-                    result.union_with(get_indirect_links(mid_qvar, qvar2,
-                                *cit, visited_qvars));
-                }
+        if(visited_qvars.count(mid_qvar) == 0) {
+            visited_qvars.insert(mid_qvar);
+
+            ConditionSet direct_links = get_linked_conditions(
+                    qvar1, mid_qvar, condition1);
+            for(ConditionSet::iterator cit = direct_links.begin();
+                cit != direct_links.end(); ++cit)
+            {
+                result.union_with(get_indirect_links(mid_qvar, qvar2,
+                            *cit, visited_qvars));
             }
         }
-        return result;
     }
+    
+    return result;
 }
 
 bool SimpleQueryLinker::validate(
@@ -359,8 +361,6 @@ bool SimpleQueryLinker::is_valid_state() {
 void SimpleQueryLinker::invalidate_state() {
     _valid_state = false;
 }
-
-
 
 }
 }

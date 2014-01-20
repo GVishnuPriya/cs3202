@@ -49,7 +49,7 @@ ConditionSet IParentSolver::solve_right<WhileAst>(WhileAst *loop) {
 }
 
 template <>
-ConditionSet IParentSolver::solve_right<ConditionalAst>(ConditionalAst *condition) {
+ConditionSet IParentSolver::solve_right<IfAst>(IfAst *condition) {
     ConditionSet result;
     StatementAst *then_branch = condition->get_then_branch();
     StatementAst *else_branch = condition->get_else_branch();
@@ -105,8 +105,8 @@ bool IParentSolver::validate<ContainerAst, StatementAst>(
 }
 
 template <>
-bool IParentSolver::validate<ConditionalAst, StatementAst>(
-        ConditionalAst *condition, StatementAst *statement)
+bool IParentSolver::validate<IfAst, StatementAst>(
+        IfAst *condition, StatementAst *statement)
 {
     return validate<ContainerAst, StatementAst>(condition, statement);
 }

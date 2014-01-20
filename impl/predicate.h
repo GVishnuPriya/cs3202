@@ -41,7 +41,7 @@ class PredicateGenerator :
     bool validate(ConditionPtr condition);
 
     void visit_assignment(AssignmentAst *assign);
-    void visit_conditional(ConditionalAst *condition);
+    void visit_if(IfAst *condition);
     void visit_while(WhileAst *loop);
     void visit_call(CallAst *call);
 
@@ -103,9 +103,9 @@ class AssignPredicate {
     static std::string get_name();
 };
 
-class ConditionalPredicate {
+class IfPredicate {
   public:
-    ConditionalPredicate();
+    IfPredicate();
 
     template <typename Condition>
     bool evaluate(Condition *condition);
@@ -158,7 +158,7 @@ typedef PredicateGenerator<ProcPredicate>           SimpleProcPredicate;
 typedef PredicateGenerator<StatementPredicate>      SimpleStatementPredicate;
 typedef PredicateGenerator<AssignPredicate>         SimpleAssignmentPredicate;
 typedef PredicateGenerator<WhilePredicate>          SimpleWhilePredicate;
-typedef PredicateGenerator<ConditionalPredicate>    SimpleConditionalPredicate;
+typedef PredicateGenerator<IfPredicate>    SimpleIfPredicate;
 typedef PredicateGenerator<CallPredicate>           SimpleCallPredicate;
 typedef PredicateGenerator<VariablePredicate>       SimpleVariablePredicate;
 typedef PredicateGenerator<ConstantPredicate>       SimpleConstantPredicate;
@@ -173,7 +173,7 @@ template <>
 bool StatementPredicate::evaluate<WhileAst>(WhileAst *loop);
 
 template <>
-bool StatementPredicate::evaluate<ConditionalAst>(ConditionalAst *condition);
+bool StatementPredicate::evaluate<IfAst>(IfAst *condition);
 
 template <>
 bool StatementPredicate::evaluate<CallAst>(CallAst *call);
@@ -182,7 +182,7 @@ template <>
 bool AssignPredicate::evaluate<AssignmentAst>(AssignmentAst *assign);
 
 template <>
-bool ConditionalPredicate::evaluate<ConditionalAst>(ConditionalAst *condition);
+bool IfPredicate::evaluate<IfAst>(IfAst *condition);
 
 template <>
 bool WhilePredicate::evaluate<WhileAst>(WhileAst *loop);

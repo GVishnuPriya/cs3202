@@ -59,7 +59,7 @@ TEST(NextTest, BasicTest) {
     EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(stat1, stat2)));
 }
 
-TEST(NextTest, ConditionalTest) {
+TEST(NextTest, IfTest) {
     /*
      * proc test {
      *   a = 0;
@@ -84,7 +84,7 @@ TEST(NextTest, ConditionalTest) {
     before->set_expr(new SimpleConstAst(0));
     set_proc(before, proc);
 
-    SimpleConditionalAst *condition = new SimpleConditionalAst();
+    SimpleIfAst *condition = new SimpleIfAst();
     condition->set_variable(var_i);
     set_next(before, condition);
 
@@ -281,7 +281,7 @@ TEST(NextTest, QuirksTest) {
     SimpleWhileAst *loop1 = new SimpleWhileAst();
     set_next(first, loop1);
 
-    SimpleConditionalAst *condition1 = new SimpleConditionalAst();
+    SimpleIfAst *condition1 = new SimpleIfAst();
     set_while_body(condition1, loop1);
 
     SimpleAssignmentAst *assign1 = new SimpleAssignmentAst();
@@ -293,7 +293,7 @@ TEST(NextTest, QuirksTest) {
     SimpleAssignmentAst *assign2 = new SimpleAssignmentAst();
     set_while_body(assign2, loop2);
 
-    SimpleConditionalAst *condition2 = new SimpleConditionalAst();
+    SimpleIfAst *condition2 = new SimpleIfAst();
     set_else_branch(condition2, condition1);
 
     SimpleAssignmentAst *assign3 = new SimpleAssignmentAst();

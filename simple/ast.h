@@ -27,7 +27,7 @@ namespace simple {
 class ProcAst;
 class StatementAst;
 class ContainerAst;
-class ConditionalAst;
+class IfAst;
 class WhileAst;
 class AssignmentAst;
 class CallAst;
@@ -234,11 +234,11 @@ class ContainerAst : public StatementAst {
 };
 
 /**
- * A ConditionalAst represents an if statement. In Simple only a single variable 
+ * A IfAst represents an if statement. In Simple only a single variable 
  * name is allowed to be used as condition, and the condition only evaluates to
  * true if the variable is zero.
  */
-class ConditionalAst : public ContainerAst {
+class IfAst : public ContainerAst {
   public:
     /**
      * Get the variable name used as the condition in the if statement. 
@@ -257,7 +257,7 @@ class ConditionalAst : public ContainerAst {
      */
     virtual StatementAst* get_else_branch() = 0;
 
-    virtual ~ConditionalAst() { }
+    virtual ~IfAst() { }
 };
 
 /**
@@ -386,7 +386,7 @@ class BinaryOpAst : public ExprAst {
 
 class ContainerVisitor {
   public:
-    virtual void visit_conditional(ConditionalAst*) = 0;
+    virtual void visit_if(IfAst*) = 0;
     virtual void visit_while(WhileAst*) = 0;
 
     virtual ~ContainerVisitor() { }

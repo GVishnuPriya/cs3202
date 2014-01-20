@@ -87,7 +87,7 @@ template <>
 void CallSolver::index_calls<WhileAst>(WhileAst *loop);
 
 template <>
-void CallSolver::index_calls<ConditionalAst>(ConditionalAst *condition);
+void CallSolver::index_calls<IfAst>(IfAst *condition);
 
 
 

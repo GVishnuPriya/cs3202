@@ -73,8 +73,8 @@ void PredicateGenerator<Predicate>::visit_assignment(AssignmentAst *assign) {
 }
 
 template <typename Predicate>
-void PredicateGenerator<Predicate>::visit_conditional(ConditionalAst *condition) {
-    if(_pred->template evaluate<ConditionalAst>(condition)) {
+void PredicateGenerator<Predicate>::visit_if(IfAst *condition) {
+    if(_pred->template evaluate<IfAst>(condition)) {
         _global_set.insert(new SimpleStatementCondition(condition));
     }
 
@@ -193,7 +193,7 @@ bool StatementPredicate::evaluate<WhileAst>(WhileAst *loop) {
 }
 
 template <>
-bool StatementPredicate::evaluate<ConditionalAst>(ConditionalAst *condition) {
+bool StatementPredicate::evaluate<IfAst>(IfAst *condition) {
     return true;
 }
 
@@ -222,19 +222,19 @@ std::string AssignPredicate::get_name() {
     return "assign";
 }
 
-ConditionalPredicate::ConditionalPredicate() { }
+IfPredicate::IfPredicate() { }
 
 template <typename Condition>
-bool ConditionalPredicate::evaluate(Condition *condition) {
+bool IfPredicate::evaluate(Condition *condition) {
     return false;
 }
 
 template <>
-bool ConditionalPredicate::evaluate<ConditionalAst>(ConditionalAst *condition) {
+bool IfPredicate::evaluate<IfAst>(IfAst *condition) {
     return true;
 }
 
-std::string ConditionalPredicate::get_name() {
+std::string IfPredicate::get_name() {
     return "if";
 }
 
@@ -307,7 +307,7 @@ template class PredicateGenerator<ProcPredicate>;
 template class PredicateGenerator<StatementPredicate>;
 template class PredicateGenerator<AssignPredicate>;
 template class PredicateGenerator<WhilePredicate>;
-template class PredicateGenerator<ConditionalPredicate>;
+template class PredicateGenerator<IfPredicate>;
 template class PredicateGenerator<CallPredicate>;
 template class PredicateGenerator<VariablePredicate>;
 template class PredicateGenerator<ConstantPredicate>;

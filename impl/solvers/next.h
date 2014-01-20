@@ -145,7 +145,7 @@ template <>
 StatementSet NextSolver::solve_next<StatementAst>(StatementAst *ast);
 
 template <>
-StatementSet NextSolver::solve_next<ConditionalAst>(ConditionalAst *ast);
+StatementSet NextSolver::solve_next<IfAst>(IfAst *ast);
 
 template <>
 StatementSet NextSolver::solve_next<WhileAst>(WhileAst *ast);
@@ -175,14 +175,14 @@ template <>
 StatementSet NextSolver::solve_preceeding_previous<CallAst>(CallAst *ast);
 
 template <>
-StatementSet NextSolver::solve_preceeding_previous<ConditionalAst>(ConditionalAst *ast);
+StatementSet NextSolver::solve_preceeding_previous<IfAst>(IfAst *ast);
 
 template <>
 bool NextSolver::validate<StatementAst, StatementAst>(
         StatementAst *statement1, StatementAst *statement2);
 
 template <>
-bool NextSolver::validate_next<ConditionalAst>(ConditionalAst *condition, StatementAst *statement);
+bool NextSolver::validate_next<IfAst>(IfAst *condition, StatementAst *statement);
 
 template <>
 bool NextSolver::validate_next<WhileAst>(WhileAst *loop, StatementAst *statement);
@@ -197,7 +197,7 @@ template <>
 bool NextSolver::validate_container_next<ContainerAst>(ContainerAst *container, StatementAst *statement);
 
 template <>
-bool NextSolver::validate_container_next<ConditionalAst>(ConditionalAst *container, StatementAst *statement);
+bool NextSolver::validate_container_next<IfAst>(IfAst *container, StatementAst *statement);
 
 template <>
 bool NextSolver::validate_container_next<WhileAst>(WhileAst *container, StatementAst *statement);
@@ -207,7 +207,7 @@ template <>
 StatementSet NextSolver::solve_container_next<ContainerAst>(ContainerAst *container);
 
 template <>
-StatementSet NextSolver::solve_container_next<ConditionalAst>(ConditionalAst *condition);
+StatementSet NextSolver::solve_container_next<IfAst>(IfAst *condition);
 
 template <>
 StatementSet NextSolver::solve_container_next<WhileAst>(WhileAst *loop);

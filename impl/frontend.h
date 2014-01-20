@@ -148,7 +148,7 @@ class SimplePqlFrontEnd {
         _pred_table["statement"] = PredicatePtr(new SimpleStatementPredicate(_ast));
         _pred_table["assign"] = PredicatePtr(new SimpleAssignmentPredicate(_ast));
         _pred_table["while"] = PredicatePtr(new SimpleWhilePredicate(_ast));
-        _pred_table["if"] = PredicatePtr(new SimpleConditionalPredicate(_ast));
+        _pred_table["if"] = PredicatePtr(new SimpleIfPredicate(_ast));
         _pred_table["call"] = PredicatePtr(new SimpleCallPredicate(_ast));
         _pred_table["var"] = PredicatePtr(new SimpleVariablePredicate(_ast));
         _pred_table["const"] = PredicatePtr(new SimpleConstantPredicate(_ast));

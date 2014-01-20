@@ -59,7 +59,7 @@ TEST(SolverTest, BasicTest) {
     SimpleVariable var_z("z");
     SimpleVariable var_a("a");
 
-    SimpleConditionalAst *condition = new SimpleConditionalAst();
+    SimpleIfAst *condition = new SimpleIfAst();
     set_proc(condition, proc1);
 
     SimpleWhileAst *loop = new SimpleWhileAst();

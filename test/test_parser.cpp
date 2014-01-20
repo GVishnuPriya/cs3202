@@ -216,7 +216,7 @@ TEST(ParserTest, WhileParser) {
     parser.current_token_as<EOFToken>();
 }
 
-TEST(ParserTest, ConditionalParser) {
+TEST(ParserTest, IfParser) {
     /*
      * if i {
      *   x = 1;
@@ -253,10 +253,10 @@ TEST(ParserTest, ConditionalParser) {
     SimpleVariable var_x("x");
     SimpleVariable var_y("y");
 
-    std::unique_ptr<SimpleConditionalAst> condition( parser.parse_conditional(&proc) );
+    std::unique_ptr<SimpleIfAst> condition( parser.parse_if(&proc) );
     EXPECT_EQ(*condition->get_variable(), var_i);
 
-    SimpleConditionalAst expected_condition;
+    SimpleIfAst expected_condition;
     expected_condition.set_variable(var_i);
     
     SimpleAssignmentAst *assign1 = new SimpleAssignmentAst();
@@ -269,7 +269,7 @@ TEST(ParserTest, ConditionalParser) {
     assign2->set_expr(new SimpleConstAst(2));
     set_else_branch(assign2, &expected_condition);
 
-    EXPECT_TRUE((is_same_statement<ConditionalAst, ConditionalAst>(condition.get(), &expected_condition)));
+    EXPECT_TRUE((is_same_statement<IfAst, IfAst>(condition.get(), &expected_condition)));
 
     parser.current_token_as<EOFToken>();
 }
@@ -477,7 +477,7 @@ TEST(ParserTest, IntegratedParserTest) {
     call->set_proc_called(&proc2);
     set_while_body(call, loop);
 
-    SimpleConditionalAst *condition = new SimpleConditionalAst();
+    SimpleIfAst *condition = new SimpleIfAst();
     condition->set_variable(var_j);
     set_next(call, condition);
 
@@ -564,7 +564,7 @@ TEST(ParserTest, FullItegrationTest) {
     call->set_proc_called(&proc2);
     set_while_body(call, loop);
 
-    SimpleConditionalAst *condition = new SimpleConditionalAst();
+    SimpleIfAst *condition = new SimpleIfAst();
     condition->set_variable(var_j);
     set_next(call, condition);
 

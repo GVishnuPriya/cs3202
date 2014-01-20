@@ -134,10 +134,10 @@ class SimpleStatementBase : public ParentType, public SimpleStatementAst {
     std::unique_ptr<StatementAst> _next;
 };
 
-class SimpleConditionalAst : public SimpleStatementBase<ConditionalAst> {
+class SimpleIfAst : public SimpleStatementBase<IfAst> {
   public:
-    SimpleConditionalAst() :
-        SimpleStatementBase<ConditionalAst>(),
+    SimpleIfAst() :
+        SimpleStatementBase<IfAst>(),
         _then_branch(), _else_branch(), _var()
     { }
 
@@ -166,14 +166,14 @@ class SimpleConditionalAst : public SimpleStatementBase<ConditionalAst> {
     }
 
     void accept_statement_visitor(StatementVisitor *visitor) {
-        visitor->visit_conditional(this);
+        visitor->visit_if(this);
     }
 
     void accept_container_visitor(ContainerVisitor *visitor) {
-        visitor->visit_conditional(this);
+        visitor->visit_if(this);
     }
 
-    ~SimpleConditionalAst() { }
+    ~SimpleIfAst() { }
 
   private:
     std::unique_ptr<StatementAst>   _then_branch;

@@ -64,7 +64,7 @@ TEST(CallTest, TrivialTest) {
     SimpleCallAst *call1 = new SimpleCallAst(proc2);
     set_proc(call1, proc1);
 
-    SimpleConditionalAst *condition = new SimpleConditionalAst();
+    SimpleIfAst *condition = new SimpleIfAst();
     condition->set_variable(var_i);
     set_next(call1, condition);
 

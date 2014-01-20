@@ -37,8 +37,8 @@ class UsesValidateStatementVisitor : public StatementVisitor {
         UsesSolver *solver, SimpleVariable *var) : 
         _solver(solver), _var(var) { }
 
-    void visit_conditional(ConditionalAst *ast) {
-        _result = _solver->validate<ConditionalAst, SimpleVariable>(ast, _var);
+    void visit_if(IfAst *ast) {
+        _result = _solver->validate<IfAst, SimpleVariable>(ast, _var);
     }
 
     void visit_while(WhileAst *ast) {
@@ -172,8 +172,8 @@ bool UsesSolver::validate<BinaryOpAst, SimpleVariable>(
 }
 
 template <>
-bool UsesSolver::validate<ConditionalAst, SimpleVariable>(
-        ConditionalAst *ast, SimpleVariable *var) 
+bool UsesSolver::validate<IfAst, SimpleVariable>(
+        IfAst *ast, SimpleVariable *var) 
 {
     if (ast->get_variable()->equals(*var)) {
       return true;
@@ -239,7 +239,7 @@ ConditionSet UsesSolver::solve_right<StatementAst>(StatementAst *ast) {
 }
 
 template <>
-ConditionSet UsesSolver::solve_right<ConditionalAst>(ConditionalAst *ast) {
+ConditionSet UsesSolver::solve_right<IfAst>(IfAst *ast) {
     ConditionSet result;
     result.insert(new SimpleVariableCondition(*ast->get_variable()));
     

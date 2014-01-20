@@ -101,8 +101,8 @@ bool ModifiesSolver::validate<AssignmentAst, SimpleVariable>(
         AssignmentAst *ast, SimpleVariable *var);
 
 template <>
-bool ModifiesSolver::validate<ConditionalAst, SimpleVariable>(
-        ConditionalAst *ast, SimpleVariable *var); 
+bool ModifiesSolver::validate<IfAst, SimpleVariable>(
+        IfAst *ast, SimpleVariable *var); 
 
 template <>
 bool ModifiesSolver::validate<WhileAst, SimpleVariable>(
@@ -116,7 +116,7 @@ template <>
 ConditionSet ModifiesSolver::solve_right<StatementAst>(StatementAst *ast);
 
 template <>
-ConditionSet ModifiesSolver::solve_right<ConditionalAst>(ConditionalAst *ast);
+ConditionSet ModifiesSolver::solve_right<IfAst>(IfAst *ast);
 
 template <>
 ConditionSet ModifiesSolver::solve_right<WhileAst>(WhileAst *ast);
@@ -143,7 +143,7 @@ template <>
 std::set<SimpleVariable> ModifiesSolver::index_variables<WhileAst>(WhileAst *ast);
 
 template <>
-std::set<SimpleVariable> ModifiesSolver::index_variables<ConditionalAst>(ConditionalAst *ast);
+std::set<SimpleVariable> ModifiesSolver::index_variables<IfAst>(IfAst *ast);
 
 template <>
 std::set<SimpleVariable> ModifiesSolver::index_variables<CallAst>(CallAst *ast);

@@ -142,7 +142,7 @@ void ICallSolver::index_calls<WhileAst>(WhileAst *loop) {
 }
 
 template <>
-void ICallSolver::index_calls<ConditionalAst>(ConditionalAst *condition) {
+void ICallSolver::index_calls<IfAst>(IfAst *condition) {
     StatementAst *statement = condition->get_then_branch();
     while(statement != NULL) {
         index_calls<StatementAst>(statement);

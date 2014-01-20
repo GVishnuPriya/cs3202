@@ -128,7 +128,7 @@ void CallSolver::index_calls<WhileAst>(WhileAst *loop) {
 }
 
 template <>
-void CallSolver::index_calls<ConditionalAst>(ConditionalAst *condition) {
+void CallSolver::index_calls<IfAst>(IfAst *condition) {
     StatementAst *statement = condition->get_then_branch();
     while(statement != NULL) {
         index_calls<StatementAst>(statement);

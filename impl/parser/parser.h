@@ -49,7 +49,7 @@ class SimpleParser {
 
     SimpleAssignmentAst* parse_assignment();
 
-    SimpleConditionalAst* parse_conditional(ProcAst *proc, ContainerAst *parent = NULL);
+    SimpleIfAst* parse_if(ProcAst *proc, ContainerAst *parent = NULL);
 
     SimpleWhileAst* parse_while(ProcAst *proc, ContainerAst *parent = NULL);
 

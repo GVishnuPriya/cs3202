@@ -101,7 +101,7 @@ template <>
 void SameNameSolver::index_name<AssignmentAst>(AssignmentAst *assign);
     
 template <>
-void SameNameSolver::index_name<ConditionalAst>(ConditionalAst *condition);
+void SameNameSolver::index_name<IfAst>(IfAst *condition);
 
 template <>
 void SameNameSolver::index_name<WhileAst>(WhileAst *loop);

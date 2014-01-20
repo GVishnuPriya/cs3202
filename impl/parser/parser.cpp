@@ -53,7 +53,7 @@ SimpleStatementAst* SimpleParser::parse_statement(ProcAst *proc, ContainerAst *p
     int line = current_line();
 
     if(identifier == "if") {
-        statement = parse_conditional(proc, parent);
+        statement = parse_if(proc, parent);
     } else if(identifier == "while") {
         statement = parse_while(proc, parent);
     } else if(identifier == "call") {
@@ -116,14 +116,14 @@ SimpleAssignmentAst* SimpleParser::parse_assignment() {
     return assign;
 }
 
-SimpleConditionalAst* SimpleParser::parse_conditional(ProcAst *proc, ContainerAst *parent) {
+SimpleIfAst* SimpleParser::parse_if(ProcAst *proc, ContainerAst *parent) {
     if(current_token_as<IdentifierToken>()->get_content() != "if") {
         throw ParserError();
     }
 
     // eat 'if'
     SimpleVariable var(next_token_as<IdentifierToken>()->get_content());
-    SimpleConditionalAst *condition = new SimpleConditionalAst();
+    SimpleIfAst *condition = new SimpleIfAst();
     condition->set_variable(var);
 
     next_token_as<OpenBraceToken>(); // eat var name

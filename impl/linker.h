@@ -106,6 +106,7 @@ class SimpleQueryLinker : public QueryLinker {
 
     bool is_valid_state();
     void invalidate_state();
+    
   private:
     std::map< QVarPair, 
         std::map<ConditionPtr, ConditionSet> >

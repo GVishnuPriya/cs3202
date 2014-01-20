@@ -59,7 +59,7 @@ TEST(PredicateTest, BasicTest) {
     SimpleVariable var_i("i");
     SimpleVariable var_j("j");
 
-    SimpleConditionalAst *condition = new SimpleConditionalAst();
+    SimpleIfAst *condition = new SimpleIfAst();
     condition->set_variable(var_i);
     set_proc(condition, proc1);
 

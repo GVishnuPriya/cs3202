@@ -82,7 +82,7 @@ class ValidateNextStatementVisitor : public StatementVisitor {
         _statement(statement)
     { }
 
-    void visit_conditional(ConditionalAst *ast);
+    void visit_if(IfAst *ast);
     void visit_while(WhileAst *ast);
     void visit_assignment(AssignmentAst *ast);
     void visit_call(CallAst *ast);
@@ -145,7 +145,7 @@ StatementSet NextSolver::solve_next<StatementAst>(StatementAst *ast) {
      * in the last of the list
      */
     if(ast->get_parent() && !ast->next()) {
-        if(is_statement_type<ConditionalAst>(ast->get_parent())) {
+        if(is_statement_type<IfAst>(ast->get_parent())) {
             /*
              * If the statement is the last statement in an if clause,
              * then the next statement is the one following the 
@@ -168,7 +168,7 @@ StatementSet NextSolver::solve_next<StatementAst>(StatementAst *ast) {
 }
 
 template <>
-StatementSet NextSolver::solve_next<ConditionalAst>(ConditionalAst *ast) {
+StatementSet NextSolver::solve_next<IfAst>(IfAst *ast) {
     StatementSet result;
 
     /*
@@ -233,8 +233,8 @@ class SolveNextContainerVisitor : public ContainerVisitor {
         _solver(solver), _result()
     { }
 
-    void visit_conditional(ConditionalAst *container) {
-        _result = _solver->solve_container_next<ConditionalAst>(container);
+    void visit_if(IfAst *container) {
+        _result = _solver->solve_container_next<IfAst>(container);
     }
 
     void visit_while(WhileAst *container) {
@@ -257,7 +257,7 @@ StatementSet NextSolver::solve_container_next<ContainerAst>(ContainerAst *contai
 }
 
 template <>
-StatementSet NextSolver::solve_container_next<ConditionalAst>(ConditionalAst *condition) {
+StatementSet NextSolver::solve_container_next<IfAst>(IfAst *condition) {
     if(condition->next()) {
         StatementSet result;
         result.insert(condition->next());
@@ -307,7 +307,7 @@ StatementSet NextSolver::solve_preceeding_previous<CallAst>(CallAst *ast) {
 }
 
 template <>
-StatementSet NextSolver::solve_preceeding_previous<ConditionalAst>(ConditionalAst *ast) {
+StatementSet NextSolver::solve_preceeding_previous<IfAst>(IfAst *ast) {
     StatementSet result;
     StatementAst *then_branch = ast->get_then_branch();
     StatementAst *else_branch = ast->get_else_branch();
@@ -335,7 +335,7 @@ StatementSet NextSolver::solve_previous<StatementAst>(StatementAst *ast) {
     
     /*
      * If the statement is not the first, then we look at it's previous
-     * statement and see if the previous statement happen to be a conditional
+     * statement and see if the previous statement happen to be a if
      * statement, which becomes handy according to the Next() specification.
      */
     if(ast->prev()) {
@@ -379,7 +379,7 @@ StatementSet NextSolver::solve_last_previous<StatementAst>(StatementAst *stateme
 }
 
 template <>
-StatementSet NextSolver::solve_last_previous<ConditionalAst>(ConditionalAst *condition) {
+StatementSet NextSolver::solve_last_previous<IfAst>(IfAst *condition) {
 
     StatementAst *then_branch = condition->get_then_branch();
     StatementAst *else_branch = condition->get_else_branch();
@@ -431,7 +431,7 @@ bool NextSolver::validate<StatementAst, StatementAst>(
 }
 
 template <>
-bool NextSolver::validate_next<ConditionalAst>(ConditionalAst *condition, StatementAst *statement)
+bool NextSolver::validate_next<IfAst>(IfAst *condition, StatementAst *statement)
 {
     return (condition->get_then_branch() == statement ||
             condition->get_else_branch() == statement);
@@ -479,8 +479,8 @@ class ValidateNextContainerVisitor : public ContainerVisitor {
         _solver(solver), _statement(statement), _result(false) 
     { }
 
-    void visit_conditional(ConditionalAst *container) {
-        _result = _solver->validate_container_next<ConditionalAst>(container, _statement);
+    void visit_if(IfAst *container) {
+        _result = _solver->validate_container_next<IfAst>(container, _statement);
     }
 
     void visit_while(WhileAst *container) {
@@ -504,7 +504,7 @@ bool NextSolver::validate_container_next<ContainerAst>(ContainerAst *container, 
 }
 
 template <>
-bool NextSolver::validate_container_next<ConditionalAst>(ConditionalAst *container, StatementAst *statement) {
+bool NextSolver::validate_container_next<IfAst>(IfAst *container, StatementAst *statement) {
     if(container->next()) {
         return container->next() == statement;
     } else if(container->get_parent()) {
@@ -528,8 +528,8 @@ bool NextSolver::validate_container_next<WhileAst>(WhileAst *container, Statemen
 
 
 
-void ValidateNextStatementVisitor::visit_conditional(ConditionalAst *ast) {
-    _result = _solver->validate_next<ConditionalAst>(ast, _statement);
+void ValidateNextStatementVisitor::visit_if(IfAst *ast) {
+    _result = _solver->validate_next<IfAst>(ast, _statement);
 }
 
 void ValidateNextStatementVisitor::visit_while(WhileAst *ast) {

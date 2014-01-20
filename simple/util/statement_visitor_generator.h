@@ -102,8 +102,8 @@ class StatementVisitorGenerator : public StatementVisitor {
         _visitor(visitor), _context(context) 
     { }
 
-    virtual void visit_conditional(ConditionalAst *ast) {
-        _result = VisitorTraits::template visit<ConditionalAst>(_visitor, ast, _context);
+    virtual void visit_if(IfAst *ast) {
+        _result = VisitorTraits::template visit<IfAst>(_visitor, ast, _context);
     }
 
     virtual void visit_while(WhileAst *ast) {

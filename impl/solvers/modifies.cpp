@@ -35,8 +35,8 @@ class ModifiesValidateStatementVisitor : public StatementVisitor {
         ModifiesSolver *solver, SimpleVariable *var) : 
         _solver(solver), _var(var) { }
 
-    void visit_conditional(ConditionalAst *ast) {
-        _result = _solver->validate<ConditionalAst, SimpleVariable>(ast, _var);
+    void visit_if(IfAst *ast) {
+        _result = _solver->validate<IfAst, SimpleVariable>(ast, _var);
     }
 
     void visit_while(WhileAst *ast) {
@@ -105,8 +105,8 @@ bool ModifiesSolver::validate<AssignmentAst, SimpleVariable>(
 }
 
 template <>
-bool ModifiesSolver::validate<ConditionalAst, SimpleVariable>(
-        ConditionalAst *ast, SimpleVariable *var) 
+bool ModifiesSolver::validate<IfAst, SimpleVariable>(
+        IfAst *ast, SimpleVariable *var) 
 {
     StatementAst *then_branch = ast->get_then_branch();
     while(then_branch != NULL) {
@@ -164,7 +164,7 @@ ConditionSet ModifiesSolver::solve_right<StatementAst>(StatementAst *ast) {
 }
 
 template <>
-ConditionSet ModifiesSolver::solve_right<ConditionalAst>(ConditionalAst *ast) {
+ConditionSet ModifiesSolver::solve_right<IfAst>(IfAst *ast) {
     ConditionSet result;
     
     StatementAst *then = ast->get_then_branch();
@@ -281,7 +281,7 @@ std::set<SimpleVariable> ModifiesSolver::index_variables<WhileAst>(WhileAst *ast
 }
 
 template <>
-std::set<SimpleVariable> ModifiesSolver::index_variables<ConditionalAst>(ConditionalAst *ast) {
+std::set<SimpleVariable> ModifiesSolver::index_variables<IfAst>(IfAst *ast) {
     std::set<SimpleVariable> result;
     ConditionPtr condition = new SimpleStatementCondition(ast);
 

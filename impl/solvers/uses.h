@@ -119,8 +119,8 @@ bool UsesSolver::validate<BinaryOpAst, SimpleVariable>(
         BinaryOpAst *ast, SimpleVariable *var);
 
 template <>
-bool UsesSolver::validate<ConditionalAst, SimpleVariable>(
-        ConditionalAst *ast, SimpleVariable *var); 
+bool UsesSolver::validate<IfAst, SimpleVariable>(
+        IfAst *ast, SimpleVariable *var); 
 
 template <>
 bool UsesSolver::validate<WhileAst, SimpleVariable>(
@@ -134,7 +134,7 @@ template <>
 ConditionSet UsesSolver::solve_right<StatementAst>(StatementAst *ast);
 
 template <>
-ConditionSet UsesSolver::solve_right<ConditionalAst>(ConditionalAst *ast);
+ConditionSet UsesSolver::solve_right<IfAst>(IfAst *ast);
 
 template <>
 ConditionSet UsesSolver::solve_right<WhileAst>(WhileAst *ast);

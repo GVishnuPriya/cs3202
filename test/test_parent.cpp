@@ -57,7 +57,7 @@ TEST(ParentTest, TrivialTest) {
     SimpleWhileAst *loop1 = new SimpleWhileAst();
     set_next(first, loop1);
 
-    SimpleConditionalAst *condition1 = new SimpleConditionalAst();
+    SimpleIfAst *condition1 = new SimpleIfAst();
     set_while_body(condition1, loop1);
 
     SimpleAssignmentAst *assign1 = new SimpleAssignmentAst();
@@ -69,7 +69,7 @@ TEST(ParentTest, TrivialTest) {
     SimpleAssignmentAst *assign2 = new SimpleAssignmentAst();
     set_while_body(assign2, loop2);
 
-    SimpleConditionalAst *condition2 = new SimpleConditionalAst();
+    SimpleIfAst *condition2 = new SimpleIfAst();
     set_else_branch(condition2, condition1);
 
     SimpleAssignmentAst *assign3 = new SimpleAssignmentAst();

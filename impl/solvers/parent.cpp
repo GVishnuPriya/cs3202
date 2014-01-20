@@ -46,7 +46,7 @@ ConditionSet ParentSolver::solve_right<WhileAst>(WhileAst *loop) {
 }
 
 template <>
-ConditionSet ParentSolver::solve_right<ConditionalAst>(ConditionalAst *condition) {
+ConditionSet ParentSolver::solve_right<IfAst>(IfAst *condition) {
     ConditionSet result;
     StatementAst *then_branch = condition->get_then_branch();
     StatementAst *else_branch = condition->get_else_branch();
@@ -85,8 +85,8 @@ bool ParentSolver::validate<StatementAst, StatementAst>(
 }
 
 template <>
-bool ParentSolver::validate<ConditionalAst, StatementAst>(
-        ConditionalAst *condition, StatementAst *statement)
+bool ParentSolver::validate<IfAst, StatementAst>(
+        IfAst *condition, StatementAst *statement)
 {
     return statement->get_parent() == static_cast<ContainerAst*>(condition);
 }

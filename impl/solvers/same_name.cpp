@@ -38,8 +38,8 @@ class SameNameStatementVisitor : public StatementVisitor {
         _solver->index_name<CallAst>(call);
     }
 
-    void visit_conditional(ConditionalAst *condition) {
-        _solver->index_name<ConditionalAst>(condition);
+    void visit_if(IfAst *condition) {
+        _solver->index_name<IfAst>(condition);
     }
 
     void visit_while(WhileAst *loop) {
@@ -145,7 +145,7 @@ void SameNameSolver::index_name<AssignmentAst>(AssignmentAst *assign) {
 }
 
 template <>
-void SameNameSolver::index_name<ConditionalAst>(ConditionalAst *condition) {
+void SameNameSolver::index_name<IfAst>(IfAst *condition) {
     index_name<SimpleVariable>(condition->get_variable());
     index_statement_list(condition->get_then_branch());
     index_statement_list(condition->get_else_branch());

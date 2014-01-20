@@ -85,7 +85,7 @@ template <>
 void ICallSolver::index_calls<WhileAst>(WhileAst *loop);
 
 template <>
-void ICallSolver::index_calls<ConditionalAst>(ConditionalAst *condition);
+void ICallSolver::index_calls<IfAst>(IfAst *condition);
 
 
 

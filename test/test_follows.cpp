@@ -55,7 +55,7 @@ TEST(FollowsTest, TrivialTest) {
     before->set_expr(new SimpleConstAst(0));
     set_proc(before, proc);
 
-    SimpleConditionalAst *condition = new SimpleConditionalAst();
+    SimpleIfAst *condition = new SimpleIfAst();
     condition->set_variable(var_i);
     set_next(before, condition);
 
