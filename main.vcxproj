@@ -19,10 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGUID>{A2CB0196-9A86-4984-8E8F-3CBB8F6CAC8C}</ProjectGUID>
+    <ProjectGUID>{703BE041-F9AC-4646-AFF5-64F2624A7B08}</ProjectGUID>
     <Keyword>Win32Proj</Keyword>
     <Platform>Win32</Platform>
-    <ProjectName>unit_tests</ProjectName>
+    <ProjectName>main</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -54,26 +54,26 @@
     <PropertyGroup>
       <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
       <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Users\crf\development\cs3202\Debug\</OutDir>
-      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">unit_tests.dir\Debug\</IntDir>
-      <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">unit_tests</TargetName>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">main.dir\Debug\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">main</TargetName>
       <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.exe</TargetExt>
       <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
       <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</GenerateManifest>
       <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Users\crf\development\cs3202\Release\</OutDir>
-      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">unit_tests.dir\Release\</IntDir>
-      <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">unit_tests</TargetName>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">main.dir\Release\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">main</TargetName>
       <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.exe</TargetExt>
       <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
       <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</GenerateManifest>
       <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\Users\crf\development\cs3202\MinSizeRel\</OutDir>
-      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">unit_tests.dir\MinSizeRel\</IntDir>
-      <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">unit_tests</TargetName>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">main.dir\MinSizeRel\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">main</TargetName>
       <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">.exe</TargetExt>
       <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkIncremental>
       <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">true</GenerateManifest>
       <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\Users\crf\development\cs3202\RelWithDebInfo\</OutDir>
-      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">unit_tests.dir\RelWithDebInfo\</IntDir>
-      <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">unit_tests</TargetName>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">main.dir\RelWithDebInfo\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">main</TargetName>
       <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">.exe</TargetExt>
       <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</LinkIncremental>
       <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</GenerateManifest>
@@ -112,8 +112,8 @@
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ImportLibrary>C:/Users/crf/development/cs3202/Debug/unit_tests.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/Users/crf/development/cs3202/Debug/unit_tests.pdb</ProgramDataBaseFile>
+      <ImportLibrary>C:/Users/crf/development/cs3202/Debug/main.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/crf/development/cs3202/Debug/main.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
       <Version></Version>
     </Link>
@@ -154,8 +154,8 @@
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <ImportLibrary>C:/Users/crf/development/cs3202/Release/unit_tests.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/Users/crf/development/cs3202/Release/unit_tests.pdb</ProgramDataBaseFile>
+      <ImportLibrary>C:/Users/crf/development/cs3202/Release/main.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/crf/development/cs3202/Release/main.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
       <Version></Version>
     </Link>
@@ -196,8 +196,8 @@
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <ImportLibrary>C:/Users/crf/development/cs3202/MinSizeRel/unit_tests.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/Users/crf/development/cs3202/MinSizeRel/unit_tests.pdb</ProgramDataBaseFile>
+      <ImportLibrary>C:/Users/crf/development/cs3202/MinSizeRel/main.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/crf/development/cs3202/MinSizeRel/main.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
       <Version></Version>
     </Link>
@@ -238,8 +238,8 @@
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ImportLibrary>C:/Users/crf/development/cs3202/RelWithDebInfo/unit_tests.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/Users/crf/development/cs3202/RelWithDebInfo/unit_tests.pdb</ProgramDataBaseFile>
+      <ImportLibrary>C:/Users/crf/development/cs3202/RelWithDebInfo/main.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/crf/development/cs3202/RelWithDebInfo/main.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
       <Version></Version>
     </Link>
@@ -300,8 +300,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="test\test_main.cpp"  />
-    <ClCompile Include="test\gtest\gtest-all.cpp"  />
+    <ClCompile Include="impl\command_line.cpp"  />
     <ClCompile Include="simple\ast.cpp"  />
     <ClCompile Include="simple\condition_set.cpp"  />
     <ClCompile Include="simple\tuple.cpp"  />
@@ -326,27 +325,6 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="impl\parser\token.cpp"  />
     <ClCompile Include="impl\parser\parser.cpp"  />
     <ClCompile Include="impl\parser\pql_parser.cpp"  />
-    <ClCompile Include="test\test_ast.cpp"  />
-    <ClCompile Include="test\test_solver.cpp"  />
-    <ClCompile Include="test\test_call.cpp"  />
-    <ClCompile Include="test\test_icall.cpp"  />
-    <ClCompile Include="test\test_follows.cpp"  />
-    <ClCompile Include="test\test_ifollows.cpp"  />
-    <ClCompile Include="test\test_parent.cpp"  />
-    <ClCompile Include="test\test_iparent.cpp"  />
-    <ClCompile Include="test\test_modifies.cpp"  />
-    <ClCompile Include="test\test_uses.cpp"  />
-    <ClCompile Include="test\test_condition.cpp"  />
-    <ClCompile Include="test\test_next.cpp"  />
-    <ClCompile Include="test\test_inext.cpp"  />
-    <ClCompile Include="test\test_frontend.cpp"  />
-    <ClCompile Include="test\test_linker.cpp"  />
-    <ClCompile Include="test\test_parser.cpp"  />
-    <ClCompile Include="test\test_pql_parser.cpp"  />
-    <ClCompile Include="test\test_predicate.cpp"  />
-    <ClCompile Include="test\test_processor.cpp"  />
-    <ClCompile Include="test\test_query.cpp"  />
-    <ClCompile Include="test\test_tokenizer.cpp"  />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="C:/Users/crf/development/cs3202/ZERO_CHECK.vcxproj">

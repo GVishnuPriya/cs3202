@@ -17,12 +17,16 @@ config.status
 /*.DS_Store
 /*.dep.inc
 Debug/
+Release/
 *.opensdf
 *.sdf
 *.sln
 *.v11.suo
+*.suo
 *.vcxproj.filters
 *.vcxproj.user
+*.dir
+Win32/
 CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake

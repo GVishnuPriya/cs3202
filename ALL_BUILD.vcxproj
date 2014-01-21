@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGUID>{4CBA8688-8429-4762-802B-7A94CB6EE541}</ProjectGUID>
+    <ProjectGUID>{137FBA66-21F5-47B7-B673-1C19D24D2BE3}</ProjectGUID>
     <Keyword>Win32Proj</Keyword>
     <Platform>Win32</Platform>
     <ProjectName>ALL_BUILD</ProjectName>
@@ -199,13 +199,16 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="C:/Users/crf/development/cs3202/ZERO_CHECK.vcxproj">
-      <Project>33D9A5B8-907B-471C-A815-3874F469A905</Project>
+      <Project>F3A0B1CC-4DCF-47D3-81FC-6D2E69B0C0D9</Project>
+    </ProjectReference>
+    <ProjectReference Include="C:/Users/crf/development/cs3202/main.vcxproj">
+      <Project>703BE041-F9AC-4646-AFF5-64F2624A7B08</Project>
     </ProjectReference>
     <ProjectReference Include="C:/Users/crf/development/cs3202/spa.vcxproj">
-      <Project>389A66FB-12FE-4023-B7DD-3A6C801BA7A4</Project>
+      <Project>BDE4B002-6AE0-4D75-8746-5B505F7011C1</Project>
     </ProjectReference>
     <ProjectReference Include="C:/Users/crf/development/cs3202/unit_tests.vcxproj">
-      <Project>C08E17E3-C6E8-45D8-9C8F-DBA045A10B0D</Project>
+      <Project>A2CB0196-9A86-4984-8E8F-3CBB8F6CAC8C</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
