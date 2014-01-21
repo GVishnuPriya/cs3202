@@ -270,24 +270,22 @@ bool SimpleQueryLinker::has_indirect_links(
         const std::string& qvar1, const std::string& qvar2,
         std::set<std::string> visited_qvars)
 {
-    if(has_link(qvar1, qvar2)) {
-        return true;
-    } else {
-        for(std::set<std::string>::iterator qit = _qvar_link_table[qvar1].begin();
-            qit != _qvar_link_table[qvar1].end(); ++qit)
-        {
+    if(has_link(qvar1, qvar2)) return true;
 
-            std::string mid_qvar = *qit;
+    for(std::set<std::string>::iterator qit = _qvar_link_table[qvar1].begin();
+        qit != _qvar_link_table[qvar1].end(); ++qit)
+    {
 
-            if(visited_qvars.count(mid_qvar) == 0) {
-                visited_qvars.insert(mid_qvar);
-                if(has_indirect_links(mid_qvar, qvar2, visited_qvars)) {
-                    return true;
-                }
+        std::string mid_qvar = *qit;
+
+        if(visited_qvars.count(mid_qvar) == 0) {
+            visited_qvars.insert(mid_qvar);
+            if(has_indirect_links(mid_qvar, qvar2, visited_qvars)) {
+                return true;
             }
         }
-        return false;
     }
+    return false;
 }
 
 ConditionSet SimpleQueryLinker::get_indirect_links(
@@ -341,6 +339,7 @@ ConditionSet SimpleQueryLinker::get_conditions(
     if(!is_initialized(qvar)) {
         _qvar_table[qvar] = pred->global_set();
     }
+    
     return _qvar_table[qvar];
 }
 

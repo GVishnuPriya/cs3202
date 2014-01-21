@@ -5,6 +5,7 @@ Makefile
 unit_tests
 main
 spa
+libspa.a
 config.log
 config.status
 *.o

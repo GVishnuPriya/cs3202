@@ -35,7 +35,9 @@ set(SOURCE
   impl/parser/pql_parser.cpp 
   )
 
-add_executable(spa 
+add_library(spa ${SOURCE})
+
+add_executable(main 
   impl/command_line.cpp 
   ${SOURCE}
   )
