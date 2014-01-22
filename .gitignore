@@ -16,12 +16,15 @@ config.status
 .deps
 /*.DS_Store
 /*.dep.inc
+sample/
 Debug/
 Release/
 *.opensdf
 *.sdf
 *.v11.suo
 *.suo
+*.sln
+*.vcxproj
 *.vcxproj.filters
 *.vcxproj.user
 *.dir
