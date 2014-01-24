@@ -102,7 +102,7 @@ class SimplePqlFrontEnd {
             new IteratorTokenizer<SourceIterator>(begin, end));
 
         _ast = parser.parse_program();
-        _line_table = parser.get_line_table();
+        _line_table = parser.get_statement_line_table();
     }
 
     void populate_solvers() {

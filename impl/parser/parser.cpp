@@ -25,8 +25,8 @@ using namespace simple;
 using namespace simple::impl;
 
 SimpleParser::SimpleParser(SimpleTokenizer *tokenizer) :
-    _line(1),
-    _line_table(),
+    _source_line(1),
+    _statement_line(1),
     _tokenizer(tokenizer)
 { 
     next_token();
@@ -50,7 +50,8 @@ SimpleStatementAst* SimpleParser::parse_statement(ProcAst *proc, ContainerAst *p
     std::string identifier = current_token_as<IdentifierToken>()->get_content();
     SimpleStatementAst *statement;
 
-    int line = current_line();
+    int source_line = _source_line;
+    int statement_line = _statement_line++;
 
     if(identifier == "if") {
         statement = parse_if(proc, parent);
@@ -64,7 +65,11 @@ SimpleStatementAst* SimpleParser::parse_statement(ProcAst *proc, ContainerAst *p
 
     statement->set_proc(proc);
     statement->set_container(parent);
-    set_line(statement, line);
+    statement->set_source_line(source_line);
+    statement->set_statement_line(statement_line);
+
+    _source_line_table[source_line] = statement->as_ast();
+    _statement_line_table[statement_line] = statement->as_ast();
 
     return statement;
 }
@@ -73,9 +78,6 @@ SimpleProcAst* SimpleParser::parse_proc() {
     if(current_token_as<IdentifierToken>()->get_content() != "proc") {
         throw ParserError();
     }
-
-    // unfortunately proc declaration does not counted as a line in CS3201
-    --_line; 
 
     std::string name = next_token_as<
         IdentifierToken>()->get_content(); // eat 'proc'
@@ -211,8 +213,12 @@ SimpleCallAst* SimpleParser::parse_call() {
     return call;
 }
 
-int SimpleParser::current_line() {
-    return _line;
+int SimpleParser::current_source_line() {
+    return _source_line;
+}
+
+int SimpleParser::current_statement_line() {
+    return _statement_line;
 }
 
 std::map<std::string, SimpleProcAst*>& SimpleParser::get_procs_table() {
@@ -227,14 +233,18 @@ SimpleProcAst* SimpleParser::get_proc(const std::string& proc_name) {
     }
 }
 
-const LineTable& SimpleParser::get_line_table() {
-    return _line_table;
+const LineTable& SimpleParser::get_source_line_table() {
+    return _source_line_table;
+}
+
+const LineTable& SimpleParser::get_statement_line_table() {
+    return _statement_line_table;
 }
 
 SimpleToken* SimpleParser::next_token() {
     _current_token = _tokenizer->next_token();
     if(current_token_is<NewLineToken>()) {
-        ++_line;
+        ++_source_line;
         return next_token();
     } else {
         return _current_token;
@@ -351,13 +361,6 @@ void SimpleParser::validate_all_procs_exist() {
         }
     }
 }
-
-void SimpleParser::set_line(SimpleStatementAst *statement, int line) {
-    statement->set_line(line);
-    _line_table[line] = statement->as_ast();
-}
-
-
 
 }
 }

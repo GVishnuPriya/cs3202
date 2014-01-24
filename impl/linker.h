@@ -35,7 +35,7 @@ class QueryLinkerError : public std::exception { };
 
 class SimpleQueryLinker : public QueryLinker {
   public:
-    SimpleQueryLinker() : _valid_state(true) { }
+    SimpleQueryLinker();
 
     void update_links(const std::string& qvar1, 
                    const std::string& qvar2, 
@@ -117,6 +117,9 @@ class SimpleQueryLinker : public QueryLinker {
     
     std::map< std::string, ConditionSet > 
     _qvar_table;
+
+    std::map< std::string, bool >
+    _initialize_table;
 
     bool _valid_state;
 };

@@ -23,6 +23,10 @@ namespace impl {
 
 using namespace simple;
 
+SimpleQueryLinker::SimpleQueryLinker() : 
+    _valid_state(true) 
+{ }
+
 bool SimpleQueryLinker::is_initialized(const std::string& qvar) {
     return _qvar_table.count(qvar) > 0;
 }

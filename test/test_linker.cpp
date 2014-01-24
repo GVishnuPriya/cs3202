@@ -110,6 +110,13 @@ TEST(TupleTest, TuplePtrTripleEquality) {
     EXPECT_EQ(list1, list2);
 }
 
+TEST(LinkerTest, EmptyResultTest) {
+    SimpleQueryLinker linker1;
+    EXPECT_EQ(linker1.is_initialized("x"), false);
+    linker1.update_results("x", ConditionSet());
+    EXPECT_EQ(linker1.is_initialized("x"), true);
+}
+
 TEST(LinkerTest, TrivialTest) {
     SimpleAssignmentAst stat11;
     SimpleAssignmentAst stat12;

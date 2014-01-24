@@ -51,7 +51,8 @@ class SimpleProcAst : public ProcAst {
 
 class SimpleStatementAst {
   public:
-    virtual void set_line(unsigned int line) = 0;
+    virtual void set_source_line(unsigned int line) = 0;
+    virtual void set_statement_line(unsigned int line) = 0;
     virtual void set_proc(ProcAst *proc) = 0;
     virtual void set_container(ContainerAst *container) = 0;
     virtual void set_next(StatementAst *next) = 0;
@@ -69,17 +70,26 @@ template <typename ParentType>
 class SimpleStatementBase : public ParentType, public SimpleStatementAst {
   public:
     SimpleStatementBase() :
-        _line(0), _proc(0), _container(0),
+        _source_line(0), _statement_line(0), _proc(0), _container(0),
         _prev(0), _next()
     { }
 
     SimpleStatementBase(int line) :
-        _line(line), _proc(0), _container(0),
+        _source_line(line), _statement_line(line), _proc(0), _container(0),
         _prev(0), _next()
     { }
 
+    void set_source_line(unsigned int line) {
+        _source_line = line;
+    }
+
+    void set_statement_line(unsigned int line) {
+        _statement_line = line;
+    }
+
     void set_line(unsigned int line) {
-        _line = line;
+        set_source_line(line);
+        set_statement_line(line);
     }
 
     void set_proc(ProcAst *proc) {
@@ -98,10 +108,14 @@ class SimpleStatementBase : public ParentType, public SimpleStatementAst {
         _prev = statement;
     }
 
-    int get_line() {
-        return _line;
+    int get_source_line() {
+        return _source_line;
     }
-    
+
+    int get_statement_line() {
+        return _statement_line;
+    }
+
     StatementAst* next() {
         return _next.get();
     }
@@ -125,7 +139,8 @@ class SimpleStatementBase : public ParentType, public SimpleStatementAst {
     virtual ~SimpleStatementBase() { }
 
   protected:
-    int _line;
+    int _source_line;
+    int _statement_line;
     ProcAst *_proc;
     ContainerAst *_container;
     StatementAst *_prev;

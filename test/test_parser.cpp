@@ -600,17 +600,17 @@ TEST(ParserTest, FullItegrationTest) {
     EXPECT_TRUE((is_same_statement_list(statement, assign1)));
     EXPECT_TRUE((is_same_statement_list(statement2, assign5)));
 
-    LineTable line_table = parser.get_line_table();
+    LineTable line_table = parser.get_statement_line_table();
 
-    EXPECT_EQ(statement->get_line(), 1);
+    EXPECT_EQ(statement->get_statement_line(), 1);
     EXPECT_TRUE(line_table[1] == statement);
 
     statement = statement->next();
-    EXPECT_EQ(statement->get_line(), 2);
+    EXPECT_EQ(statement->get_statement_line(), 2);
     EXPECT_TRUE(line_table[2] == statement);
 
     statement = statement->next();
-    EXPECT_EQ(statement->get_line(), 7);
+    EXPECT_EQ(statement->get_statement_line(), 7);
     EXPECT_TRUE(line_table[7] == statement);
 
     EXPECT_TRUE((is_same_statement<StatementAst, StatementAst>(
@@ -627,9 +627,9 @@ TEST(ParserTest, FullItegrationTest) {
 
     EXPECT_TRUE(statement->next() == NULL);
 
-    EXPECT_EQ(statement2->get_line(), 8);
+    EXPECT_EQ(statement2->get_statement_line(), 8);
 
-    EXPECT_EQ(parser.current_line(), 9);
+    EXPECT_EQ(parser.current_statement_line(), 9);
 }
 
 

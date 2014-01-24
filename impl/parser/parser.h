@@ -55,13 +55,15 @@ class SimpleParser {
 
     SimpleCallAst* parse_call();
 
-    int current_line();
+    int current_source_line();
+    int current_statement_line();
 
     std::map<std::string, SimpleProcAst*>& get_procs_table();
 
     SimpleProcAst* get_proc(const std::string& proc_name);
 
-    const LineTable& get_line_table();
+    const LineTable& get_source_line_table();
+    const LineTable& get_statement_line_table();
 
     template <typename Token>
     Token* current_token_as() {
@@ -106,12 +108,14 @@ class SimpleParser {
      */
     void validate_all_procs_exist();
 
-    void set_line(SimpleStatementAst *statement, int line);
-
   private:
-    int _line;
     std::map<std::string, SimpleProcAst*> _procs_table;
-    LineTable _line_table;
+    
+    int _source_line;
+    int _statement_line;
+
+    LineTable _source_line_table;
+    LineTable _statement_line_table;
 
     /*
      * The tokenizer takes ownership of the produced token pointers

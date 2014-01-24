@@ -315,8 +315,5 @@ std::set<SimpleVariable> ModifiesSolver::index_variables<StatementAst>(Statement
     return visitor.return_result();
 }
 
-
-
-
 } // namespace impl
 } // namespace simple
