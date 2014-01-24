@@ -227,6 +227,7 @@ TEST(ParserTest, IfParser) {
     MockTokenizer *tokenizer = new MockTokenizer();
     tokenizer->insert(new IdentifierToken("if"));
     tokenizer->insert(new IdentifierToken("i"));
+    tokenizer->insert(new IdentifierToken("then"));
     tokenizer->insert(new OpenBraceToken());
 
     tokenizer->insert(new IdentifierToken("x"));
@@ -395,6 +396,7 @@ TEST(ParserTest, IntegratedParserTest) {
 
     tokenizer->insert(new IdentifierToken("if"));
     tokenizer->insert(new IdentifierToken("j"));
+    tokenizer->insert(new IdentifierToken("then"));
     tokenizer->insert(new OpenBraceToken());
 
     tokenizer->insert(new IdentifierToken("x"));
@@ -522,7 +524,7 @@ TEST(ParserTest, FullItegrationTest) {
         "   a = 1; \n"
         "   while i { \n"
         "       call test2; \n"
-        "       if j { \n"
+        "       if j then { \n"
         "           x = (x+y)*(3+z); } else { \n"
         "           y = 2; } } \n"
         "   b = 4; } \n"

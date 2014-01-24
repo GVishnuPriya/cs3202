@@ -33,7 +33,11 @@ namespace parser {
 using namespace simple::impl;
 using namespace simple;
 
-class ParserError : public std::exception { };
+class ParserError : public std::runtime_error { 
+  public:
+    ParserError() : std::runtime_error("Parse Error") { }
+    ParserError(const std::string& message) : std::runtime_error(message) { }
+};
 
 class SimpleParser {
   public:

@@ -128,7 +128,19 @@ SimpleIfAst* SimpleParser::parse_if(ProcAst *proc, ContainerAst *parent) {
     SimpleIfAst *condition = new SimpleIfAst();
     condition->set_variable(var);
 
-    next_token_as<OpenBraceToken>(); // eat var name
+    // eat var name
+    next_token();
+
+    if(!current_token_is<IdentifierToken>()) {
+        throw ParserError("Expected then token after if expression");   
+    }
+
+    std::string then_token = current_token_as<IdentifierToken>()->get_content();
+    if(then_token != "then") {
+        throw ParserError("Expected then token after if expression");   
+    }
+
+    next_token_as<OpenBraceToken>(); // eat then
     next_token(); // eat '{'
 
     SimpleStatementAst *current = parse_statement(proc, condition);

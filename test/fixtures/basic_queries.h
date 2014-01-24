@@ -30,7 +30,7 @@ std::vector<PqlTestFixture> get_basic_test_fixtures() {
         "   a = 1; \n"
         "   while i { \n"
         "       call test2; \n"
-        "       if j { \n"
+        "       if j then { \n"
         "           x = (x+y)*(3+z); } else { \n"
         "           y = 2; } } \n"
         "   b = 4; } \n"
