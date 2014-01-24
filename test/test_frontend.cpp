@@ -31,7 +31,7 @@ using namespace simple::impl;
 
 TEST(FrontEndTest, IntegratedTest) {
     std::string source = 
-        "proc test1 { \n"
+        "procedure test1 { \n"
         "   a = 1; \n"
         "   while i { \n"
         "       call test2; \n"
@@ -39,7 +39,7 @@ TEST(FrontEndTest, IntegratedTest) {
         "           x = (x+y)*(3+z); } else { \n"
         "           y = 2; } } \n"
         "   b = 4; } \n"
-        "proc test2 { \n"
+        "procedure test2 { \n"
         "   c = 3; } \n";
 
     SimplePqlFrontEnd frontend(source.begin(), source.end());

@@ -283,7 +283,7 @@ TEST(ParserTest, ProcParser) {
      * }
      */
     MockTokenizer *tokenizer = new MockTokenizer();
-    tokenizer->insert(new IdentifierToken("proc"));
+    tokenizer->insert(new IdentifierToken("procedure"));
     tokenizer->insert(new IdentifierToken("test"));
     tokenizer->insert(new OpenBraceToken());
 
@@ -332,7 +332,7 @@ TEST(ParserTest, ProgramParser) {
      * }
      */
     MockTokenizer *tokenizer = new MockTokenizer();
-    tokenizer->insert(new IdentifierToken("proc"));
+    tokenizer->insert(new IdentifierToken("procedure"));
     tokenizer->insert(new IdentifierToken("test"));
     tokenizer->insert(new OpenBraceToken());
 
@@ -377,7 +377,7 @@ TEST(ParserTest, IntegratedParserTest) {
      * }
      */
     MockTokenizer *tokenizer = new MockTokenizer();
-    tokenizer->insert(new IdentifierToken("proc"));
+    tokenizer->insert(new IdentifierToken("procedure"));
     tokenizer->insert(new IdentifierToken("test1"));
     tokenizer->insert(new OpenBraceToken());
 
@@ -433,7 +433,7 @@ TEST(ParserTest, IntegratedParserTest) {
 
     tokenizer->insert(new CloseBraceToken());
 
-    tokenizer->insert(new IdentifierToken("proc"));
+    tokenizer->insert(new IdentifierToken("procedure"));
     tokenizer->insert(new IdentifierToken("test2"));
     tokenizer->insert(new OpenBraceToken());
 
@@ -520,7 +520,7 @@ TEST(ParserTest, IntegratedParserTest) {
 
 TEST(ParserTest, FullItegrationTest) {
     std::string source = 
-        "proc test1 { \n"
+        "procedure test1 { \n"
         "   a = 1; \n"
         "   while i { \n"
         "       call test2; \n"
@@ -528,7 +528,7 @@ TEST(ParserTest, FullItegrationTest) {
         "           x = (x+y)*(3+z); } else { \n"
         "           y = 2; } } \n"
         "   b = 4; } \n"
-        "proc test2 { \n"
+        "procedure test2 { \n"
         "   c = 3; } \n";
 
     SimpleParser parser(new IteratorTokenizer<

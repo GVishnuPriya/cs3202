@@ -26,7 +26,7 @@ std::vector<PqlTestFixture> get_basic_test_fixtures() {
 
     PqlTestFixture fixture1;
     fixture1.source = 
-        "proc test1 { \n"
+        "procedure test1 { \n"
         "   a = 1; \n"
         "   while i { \n"
         "       call test2; \n"
@@ -34,7 +34,7 @@ std::vector<PqlTestFixture> get_basic_test_fixtures() {
         "           x = (x+y)*(3+z); } else { \n"
         "           y = 2; } } \n"
         "   b = 4; } \n"
-        "proc test2 { \n"
+        "procedure test2 { \n"
         "   c = 3; } \n";
 
     PqlQueryFixture query11;

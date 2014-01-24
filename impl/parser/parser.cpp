@@ -24,6 +24,14 @@ namespace parser {
 using namespace simple;
 using namespace simple::impl;
 
+ParserError::ParserError() : 
+    std::runtime_error("Parse Error") 
+{ }
+
+ParserError::ParserError(const std::string& message) : 
+    std::runtime_error(message) 
+{ }
+
 SimpleParser::SimpleParser(SimpleTokenizer *tokenizer) :
     _source_line(1),
     _statement_line(1),
@@ -75,8 +83,8 @@ SimpleStatementAst* SimpleParser::parse_statement(ProcAst *proc, ContainerAst *p
 }
 
 SimpleProcAst* SimpleParser::parse_proc() {
-    if(current_token_as<IdentifierToken>()->get_content() != "proc") {
-        throw ParserError();
+    if(current_token_as<IdentifierToken>()->get_content() != "procedure") {
+        throw ParserError("Expected \"procedure\" keyword for procedure declaration.");
     }
 
     std::string name = next_token_as<
@@ -132,12 +140,12 @@ SimpleIfAst* SimpleParser::parse_if(ProcAst *proc, ContainerAst *parent) {
     next_token();
 
     if(!current_token_is<IdentifierToken>()) {
-        throw ParserError("Expected then token after if expression");   
+        throw ParserError("Expected \"then\" token after if expression");   
     }
 
     std::string then_token = current_token_as<IdentifierToken>()->get_content();
     if(then_token != "then") {
-        throw ParserError("Expected then token after if expression");   
+        throw ParserError("Expected \"then\" token after if expression");   
     }
 
     next_token_as<OpenBraceToken>(); // eat then

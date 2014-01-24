@@ -22,6 +22,7 @@
 #include <iterator>
 #include <algorithm>
 #include "impl/frontend.h"
+#include "impl/parser/parser.h"
 
 using namespace simple;
 using namespace simple::impl;
@@ -54,8 +55,12 @@ int main(int argc, const char* argv[]) {
                 cout << endl << "simple> ";
             }
 
+        } catch(ParserError& e) {
+            cout << "Error parsing simple source: " << e.what() << endl;
+            return 0;
+
         } catch(std::exception& e) {
-            cout << "InternalError" << e.what() << endl;
+            cout << "InternalError: " << e.what() << endl;
             return 0;
         }
     } else {

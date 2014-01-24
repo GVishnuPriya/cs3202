@@ -16,6 +16,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+ #pragma once
+
 #include <string>
 #include <vector>
 #include <map>
@@ -35,8 +37,8 @@ using namespace simple;
 
 class ParserError : public std::runtime_error { 
   public:
-    ParserError() : std::runtime_error("Parse Error") { }
-    ParserError(const std::string& message) : std::runtime_error(message) { }
+    ParserError();
+    ParserError(const std::string& message);
 };
 
 class SimpleParser {
