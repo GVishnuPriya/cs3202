@@ -42,7 +42,7 @@ class IteratorTokenizer : public SimpleTokenizer {
     }
 
     SimpleToken* next_token() {
-        while(current_char() == ' ') {
+        while(current_char() == ' ' || current_char() == '\t') {
             next_char();
         }
 
