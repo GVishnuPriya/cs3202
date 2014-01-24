@@ -22,7 +22,7 @@
 #include <vector>
 #include <map>
 #include <memory>
-#include <exception>
+#include <stdexcept>
 #include "simple/ast.h"
 #include "simple/util/ast_utils.h"
 #include "impl/ast.h"
