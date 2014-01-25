@@ -18,42 +18,12 @@
 
 #pragma once
 
-#include <exception>
+#include <stdexcept>
 #include <string>
+#include "impl/parse_error.h"
 
 namespace simple {
 namespace parser {
-
-class NoMoreTokenError : public std::exception { };
-
-
-class InvalidTokenError : public std::exception { 
-  public:
-    InvalidTokenError() :
-        _token("Invalid Token")
-    { }
-    
-    InvalidTokenError(char token) : 
-        _token("Invalid Token: ") 
-    { 
-        _token += token;
-    }
-
-    InvalidTokenError(std::string message) :
-        _token(message)
-    {
-
-    }
-
-    virtual const char* what() const throw() {
-        return _token.c_str();
-    }
-
-    virtual ~InvalidTokenError() throw() { }
-  private:
-    std::string _token;
-
-};
 
 class TokenType {
   public:
@@ -83,11 +53,10 @@ Token* token_cast(SimpleToken *token) {
     if(token->get_type() == Token::type) {
         return static_cast<Token*>(token);
     } else {
-        std::string message = "Invalid token_cast from ";
-        message += token->get_type().get_name();
-        message += " to ";
-        message += Token::type.get_name();
-        throw InvalidTokenError(message);
+        std::string message = "Invalid token_cast from " +
+            token->get_type().get_name() +
+            " to " + Token::type.get_name();
+        throw ParseError(message);
     }
 }
 

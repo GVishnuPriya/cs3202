@@ -55,12 +55,8 @@ int main(int argc, const char* argv[]) {
                 cout << endl << "simple> ";
             }
 
-        } catch(ParserError& e) {
-            cout << "Error parsing simple source: " << e.what() << endl;
-            return 0;
-
         } catch(std::exception& e) {
-            cout << "InternalError: " << e.what() << endl;
+            cout << "Error parsing simple source file: " << e.what() << endl;
             return 0;
         }
     } else {

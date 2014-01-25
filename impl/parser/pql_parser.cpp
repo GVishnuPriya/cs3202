@@ -113,7 +113,7 @@ void SimplePqlParser::parse_main_query() {
 
         if(keyword == "such") {
             if(current_token_as_keyword() != "that") {
-                throw PqlParserError();
+                throw ParseError("Expected \"that\" keyword after \"such\".");
             } else {
                 next_token(); // eat "that"
 
@@ -126,7 +126,7 @@ void SimplePqlParser::parse_main_query() {
         } else if(keyword == "pattern") {
             parse_pattern();
         } else {
-            throw PqlParserError();
+            throw ParseError("Invalid keyword " + keyword);
         }
     }
 }
@@ -136,7 +136,7 @@ std::shared_ptr<PqlSelector> SimplePqlParser::parse_selector() {
     next_token();
 
     if(first_keyword != "select") {
-        throw PqlParserError();
+        throw ParseError("Expected\"select\" keyword");
     }
 
     if(current_token_is<LessThanToken>()) {
@@ -171,7 +171,7 @@ ClausePtr SimplePqlParser::parse_clause() {
     std::shared_ptr<QuerySolver> solver = _solver_table[solver_name];
 
     if(!solver) {
-        throw PqlParserError();
+        throw ParseError("No solver found for clause " + solver_name);
     }
 
     current_token_as<OpenBracketToken>();
@@ -214,7 +214,7 @@ PqlTerm* SimplePqlParser::parse_term() {
         return new SimplePqlWildcardTerm();
 
     } else {
-        throw PqlParserError();
+        throw ParseError("Invalid clause term");
     }
 }
 
@@ -228,15 +228,15 @@ ConditionPtr SimplePqlParser::parse_condition(const std::string& name) {
 }
 
 void SimplePqlParser::parse_pattern() {
-    throw PqlParserError(); // not implemented
+    throw ParseError("Not yet implemented pattern clause"); // not implemented
 }
 
 void SimplePqlParser::parse_with() {
-    throw PqlParserError(); // not implemented
+    throw ParseError("Not yet implemented with clause"); // not implemented
 }
 
 std::shared_ptr<PqlSelector> SimplePqlParser::parse_tuple_selector() {
-    throw PqlParserError(); // not implemented
+    throw ParseError("Not yet implemented tuple selector"); // not implemented
 }
 
 std::string SimplePqlParser::current_token_as_keyword() {
@@ -260,14 +260,14 @@ SimpleToken* SimplePqlParser::current_token() {
 
 PredicatePtr SimplePqlParser::get_predicate(const std::string& name) {
     if(_pred_table.count(name) == 0) {
-        throw PqlParserError();
+        throw ParseError("Invalid predicate " + name);
     }
     return _pred_table[name];
 }
 
 StatementAst* SimplePqlParser::get_statement(int line) {
     if(_line_table.count(line) == 0) {
-        throw PqlParserError();
+        throw ParseError("No statement found at line " + line);
     }
     return _line_table[line];
 }

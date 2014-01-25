@@ -19,10 +19,11 @@
 #pragma once
 
 #include <string>
-#include <exception>
+#include <stdexcept>
 #include "simple/predicate.h"
 #include "simple/query.h"
 #include "simple/solver.h"
+#include "impl/parse_error.h"
 #include "impl/condition.h"
 #include "impl/parser/tokenizer.h"
 #include "impl/query.h"
@@ -33,7 +34,9 @@ namespace parser {
 using namespace simple;
 using namespace simple::impl;
 
-class PqlParserError : public std::exception { };
+class PqlParserError : public std::runtime_error {
+    using std::runtime_error::runtime_error;
+};
 
 class SimplePqlParser {
   public:

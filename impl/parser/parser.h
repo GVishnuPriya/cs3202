@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
- #pragma once
+#pragma once
 
 #include <string>
 #include <vector>
@@ -26,6 +26,7 @@
 #include "simple/ast.h"
 #include "simple/util/ast_utils.h"
 #include "impl/ast.h"
+#include "impl/parse_error.h"
 #include "impl/parser/token.h"
 #include "impl/parser/tokenizer.h"
 
@@ -34,12 +35,6 @@ namespace parser {
 
 using namespace simple::impl;
 using namespace simple;
-
-class ParserError : public std::runtime_error { 
-  public:
-    ParserError();
-    ParserError(const std::string& message);
-};
 
 class SimpleParser {
   public:

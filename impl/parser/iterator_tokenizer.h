@@ -25,7 +25,6 @@
 namespace simple {
 namespace parser {
 
-
 template <typename Iterator>
 class IteratorTokenizer : public SimpleTokenizer {
   public:
@@ -156,7 +155,7 @@ class IteratorTokenizer : public SimpleTokenizer {
             return set_current_token(new IntegerToken(atoi(value.c_str())));
         }
 
-        throw InvalidTokenError(current_char());
+        throw ParseError("Invalid token \"" + std::to_string(current_char()) + "\"");
     }
 
     char current_char() {

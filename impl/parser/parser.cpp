@@ -24,14 +24,6 @@ namespace parser {
 using namespace simple;
 using namespace simple::impl;
 
-ParserError::ParserError() : 
-    std::runtime_error("Parse Error") 
-{ }
-
-ParserError::ParserError(const std::string& message) : 
-    std::runtime_error(message) 
-{ }
-
 SimpleParser::SimpleParser(SimpleTokenizer *tokenizer) :
     _source_line(1),
     _statement_line(1),
@@ -84,7 +76,7 @@ SimpleStatementAst* SimpleParser::parse_statement(ProcAst *proc, ContainerAst *p
 
 SimpleProcAst* SimpleParser::parse_proc() {
     if(current_token_as<IdentifierToken>()->get_content() != "procedure") {
-        throw ParserError("Expected \"procedure\" keyword for procedure declaration.");
+        throw ParseError("Expected \"procedure\" keyword for procedure declaration.");
     }
 
     std::string name = next_token_as<
@@ -128,7 +120,7 @@ SimpleAssignmentAst* SimpleParser::parse_assignment() {
 
 SimpleIfAst* SimpleParser::parse_if(ProcAst *proc, ContainerAst *parent) {
     if(current_token_as<IdentifierToken>()->get_content() != "if") {
-        throw ParserError();
+        throw ParseError("Expected \"if\" token at line " + _source_line);
     }
 
     // eat 'if'
@@ -140,12 +132,12 @@ SimpleIfAst* SimpleParser::parse_if(ProcAst *proc, ContainerAst *parent) {
     next_token();
 
     if(!current_token_is<IdentifierToken>()) {
-        throw ParserError("Expected \"then\" token after if expression");   
+        throw ParseError("Expected \"then\" token after if expression at line " + _source_line);   
     }
 
     std::string then_token = current_token_as<IdentifierToken>()->get_content();
     if(then_token != "then") {
-        throw ParserError("Expected \"then\" token after if expression");   
+        throw ParseError("Expected \"then\" token after if expression at line " + _source_line);   
     }
 
     next_token_as<OpenBraceToken>(); // eat then
@@ -164,7 +156,7 @@ SimpleIfAst* SimpleParser::parse_if(ProcAst *proc, ContainerAst *parent) {
 
     // eat '}'
     if(next_token_as<IdentifierToken>()->get_content() != "else") {
-        throw ParserError();
+        throw ParseError("Expected \"else\" token at line " + _source_line);   
     }
 
     next_token_as<OpenBraceToken>(); // eat 'else'
@@ -188,7 +180,7 @@ SimpleIfAst* SimpleParser::parse_if(ProcAst *proc, ContainerAst *parent) {
 
 SimpleWhileAst* SimpleParser::parse_while(ProcAst *proc, ContainerAst *parent) {
     if(current_token_as<IdentifierToken>()->get_content() != "while") {
-        throw ParserError();
+        throw ParseError("Expected \"while\" token at line " + _source_line);   
     }
 
     // eat 'while'
@@ -217,7 +209,7 @@ SimpleWhileAst* SimpleParser::parse_while(ProcAst *proc, ContainerAst *parent) {
 
 SimpleCallAst* SimpleParser::parse_call() {
     if(current_token_as<IdentifierToken>()->get_content() != "call") {
-        throw ParserError();
+        throw ParseError("Expected \"call\" token at line " + _source_line);   
     }
 
     // eat 'call'
@@ -316,7 +308,7 @@ ExprAst* SimpleParser::parse_primary() {
     } else if(try_token<OpenBracketToken>(token)) {
         return parse_parent_expr();
     } else {
-        throw ParserError();
+        throw ParseError("Invalid primary expression at line " + _source_line);
     }
 }
 
@@ -369,15 +361,17 @@ int SimpleParser::operator_precedence() {
  */
 void SimpleParser::validate_all_procs_exist() {
     if(_procs.size() != _procs_table.size()) {
-        throw ParserError();
+        throw ParseError("Missing procedure definition in source file");
     }
 
     for(std::vector<ProcAst*>::iterator it = _procs.begin();
             it != _procs.end(); ++it)
     {
-        if(_procs_table.count((*it)->get_name()) != 1 ||
-           _procs_table[(*it)->get_name()] != *it) {
-            throw ParserError();
+        std::string proc_name = (*it)->get_name();
+        if(_procs_table.count(proc_name) != 1 ||
+           _procs_table[proc_name] != *it) 
+        {
+            throw ParseError("Missing procedure definition " + proc_name);
         }
     }
 }
