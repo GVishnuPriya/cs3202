@@ -18,6 +18,7 @@
 
 #pragma once
 
+#include <vector>
 #include <string>
 #include <algorithm>
 
@@ -41,8 +42,9 @@
 #include "impl/parser/pql_parser.h"
 #include "impl/parser/iterator_tokenizer.h"
 
-#include "impl/predicate.h"
 #include "impl/linker.h"
+#include "impl/selector.h"
+#include "impl/predicate.h"
 #include "impl/processor.h"
 
 namespace simple {
@@ -62,39 +64,31 @@ class SimplePqlFrontEnd {
         populate_predicates();
     }
 
-    template <typename Iterator, typename OutputIterator>
-    void process_query(Iterator begin, Iterator end, OutputIterator out)
+    template <typename Iterator>
+    std::vector<std::string> process_query(Iterator begin, Iterator end)
     {
-        try {
-            std::shared_ptr<QueryLinker> linker(new SimpleQueryLinker());
+        std::shared_ptr<QueryLinker> linker(new SimpleQueryLinker());
 
-            SimplePqlParser parser(std::shared_ptr<SimpleTokenizer>(
-                    new IteratorTokenizer<Iterator>(begin, end)),
-                    _ast, _line_table, _solver_table, _pred_table);
+        SimplePqlParser parser(std::shared_ptr<SimpleTokenizer>(
+                new IteratorTokenizer<Iterator>(begin, end)),
+                _ast, _line_table, _solver_table, _pred_table);
 
-            PqlQuerySet query = parser.parse_query();
+        PqlQuerySet query = parser.parse_query();
+        query.predicates["*"] = _wildcard_pred;
 
-            QueryProcessor processor(linker, query.predicates, _wildcard_pred);
+        QueryProcessor processor(linker, query.predicates, _wildcard_pred);
 
-            for(ClauseSet::iterator it = query.clauses.begin();
-                it != query.clauses.end(); ++it)
-            {
-                processor.solve_clause(it->get());
-            }
-
-            format_selected(linker.get(), query, out);
-        } catch(std::exception& e) {
-            print("Error parsing PQL query: ", out);
-            print(e.what(), out);
+        for(ClauseSet::iterator it = query.clauses.begin();
+            it != query.clauses.end(); ++it)
+        {
+            processor.solve_clause(it->get());
         }
+
+        //return std::vector<std::string>();
+        return format_result(&query, linker.get());
     }
   
   protected:
-    template <typename OutputIterator>
-    void print(const std::string& message, OutputIterator& out) {
-        std::copy(message.begin(), message.end(), out);
-    }
-
     template <typename SourceIterator>
     void parse_source(SourceIterator begin, SourceIterator end) 
     {
@@ -152,46 +146,6 @@ class SimplePqlFrontEnd {
         _pred_table["call"] = PredicatePtr(new SimpleCallPredicate(_ast));
         _pred_table["var"] = PredicatePtr(new SimpleVariablePredicate(_ast));
         _pred_table["const"] = PredicatePtr(new SimpleConstantPredicate(_ast));
-    }
-
-    template <typename OutputIterator>
-    void format_selected(QueryLinker *linker, PqlQuerySet& query, 
-                OutputIterator& out) 
-    {
-        PqlSelector *selector = query.selector.get();
-
-        if(is_selector<PqlBooleanSelector>(selector)) {
-            if(linker->is_valid_state()) {
-                print("true", out);
-            } else {
-                print("false", out);
-            }
-        } else if(is_selector<PqlSingleVarSelector>(selector)) {
-            PqlSingleVarSelector *var_selector = selector_cast<
-                            PqlSingleVarSelector>(selector);
-            
-            std::string qvar = var_selector->get_qvar_name();
-            SimplePredicate *pred;
-
-            if(query.predicates.count(qvar) > 0) {
-                pred = query.predicates[qvar].get();
-            } else {
-                pred = _wildcard_pred.get();
-            }
-
-            ConditionSet conditions = linker->get_conditions(qvar, pred);
-            
-            for(ConditionSet::iterator it = conditions.begin(); 
-                    it != conditions.end();)
-            {
-                print(condition_to_string(*it), out);
-                if(++it != conditions.end()) {
-                    print(", ", out);
-                }
-            }
-        } else {
-            print("Not implemented", out);
-        }
     }
 
   private:

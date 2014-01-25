@@ -25,7 +25,6 @@ namespace util {
 
 using namespace simple;
 
-
 bool is_less_than_term(PqlTerm *term1, PqlTerm *term2);
 
 bool is_same_term(PqlTerm *term1, PqlTerm *term2);

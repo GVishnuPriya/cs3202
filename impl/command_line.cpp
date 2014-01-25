@@ -21,6 +21,7 @@
 #include <fstream>
 #include <iterator>
 #include <algorithm>
+#include <stdexcept>
 #include "simple/spa.h"
 
 using std::cout;
@@ -46,14 +47,35 @@ int main(int argc, const char* argv[]) {
     }
 
     SimpleProgramAnalyzer *spa = create_simple_program_analyzer();
-    spa->parse(filename);
+
+    try {
+        spa->parse(filename);
+    } catch(std::runtime_error& e) {
+        cout << "Error parsing file. " << e.what() << endl;
+        return 0;
+    }
 
     std::string line;
     cout << "simple> ";
-    while(getline(cin, line)) {
-        std::string result = spa->evaluate(line);
 
-        cout << result << endl << "simple> ";
+    while(getline(cin, line)) {
+        try {
+            std::vector<std::string> result = spa->evaluate(line);
+
+            auto it = result.begin();
+            auto end = result.end();
+            
+            while(true) {
+                cout << *it;
+                
+                if(++it == end) break;
+                cout << ", ";
+            }
+        } catch(std::runtime_error& e) {
+            cout << "Error evaluating query. " << e.what() << endl;
+        }
+
+        cout << endl << "simple> ";
     }
 
     return 0;

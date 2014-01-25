@@ -12,7 +12,7 @@ class SimpleProgramAnalyzerImpl : public SimpleProgramAnalyzer {
   public:
     SimpleProgramAnalyzerImpl() { }
 
-    void parse(std::string filename) {
+    void parse(const std::string& filename) {
       std::ifstream source(filename);
       std::istreambuf_iterator<char> source_begin(source);
       std::istreambuf_iterator<char> source_end;
@@ -20,13 +20,8 @@ class SimpleProgramAnalyzerImpl : public SimpleProgramAnalyzer {
       _frontend.reset(new SimplePqlFrontEnd(source_begin, source_end));
     }
 
-    std::string evaluate(std::string query) {
-      std::stringstream ss;
-      
-      _frontend->process_query(query.begin(), query.end(), 
-        std::ostream_iterator<char>(ss));
-      
-      return ss.str();
+    std::vector<std::string> evaluate(const std::string& query) {
+      return _frontend->process_query(query.begin(), query.end());
     }
 
   private:

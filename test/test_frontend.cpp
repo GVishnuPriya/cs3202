@@ -48,18 +48,22 @@ TEST(FrontEndTest, IntegratedTest) {
         "stmt s; \n"
         "Select s such that Follows(1, s);";
 
-    std::string result1;
+    std::vector<std::string> result1 = frontend.process_query(
+        query1.begin(), query1.end());
     
-    frontend.process_query(query1.begin(), query1.end(), std::back_inserter(result1));
-    EXPECT_EQ(result1, "2");
+    EXPECT_EQ(result1.size(), 1);
+    EXPECT_EQ(result1[0], "2");
 
     std::string query2 = 
         "stmt s; var v; \n"
         "Select v such that Next(2, s) and Modifies(s, v);";
 
-    std::string result2;
-    frontend.process_query(query2.begin(), query2.end(), std::back_inserter(result2));
-    EXPECT_EQ(result2, "b, c");
+    std::vector<std::string> result2 = frontend.process_query(
+        query2.begin(), query2.end());
+    
+    EXPECT_EQ(result2.size(), 2);
+    EXPECT_EQ(result2[0], "b");
+    EXPECT_EQ(result2[1], "c");
 }
 
 class FrontEndFixtureTest : public testing::TestWithParam<PqlTestFixture> {
@@ -73,9 +77,11 @@ TEST_P(FrontEndFixtureTest, BasicTest) {
     for(std::vector<PqlQueryFixture>::iterator it = fixture.queries.begin();
             it != fixture.queries.end(); ++it)
     {
-        std::string result;
-        frontend.process_query(it->query.begin(), it->query.end(), std::back_inserter(result));
-        EXPECT_EQ(result, it->expected);
+        std::vector<std::string> result = frontend.process_query(
+            it->query.begin(), it->query.end());
+
+        EXPECT_EQ(result.size(), it->expected.size());
+        EXPECT_TRUE(std::equal(result.begin(), result.end(), it->expected.begin()));
     }
 }
 

@@ -18,22 +18,18 @@
 
 #pragma once
 
+#include <vector>
 #include <string>
+#include "simple/query.h"
+#include "simple/linker.h"
 
 namespace simple {
-namespace test {
+namespace impl {
 
-struct PqlQueryFixture {
-  public:
-    std::string query;
-    std::vector<std::string> expected;
-};
+using namespace simple;
 
-struct PqlTestFixture {
-  public:
-    std::string source;
-    std::vector<PqlQueryFixture> queries;
-};
+std::vector<std::string> format_result(
+    PqlQuerySet *query, QueryLinker *linker);
 
 }
 }
