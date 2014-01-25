@@ -21,8 +21,13 @@
 namespace simple {
 namespace parser {
 
-class ParseError : public std::runtime_error { 
-    using std::runtime_error::runtime_error;
+using std::runtime_error;
+
+class ParseError : public runtime_error {
+  public:
+    ParseError(const std::string& message) : 
+      runtime_error(message)
+    { }
 };
 
 }

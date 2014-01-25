@@ -34,10 +34,6 @@ namespace parser {
 using namespace simple;
 using namespace simple::impl;
 
-class PqlParserError : public std::runtime_error {
-    using std::runtime_error::runtime_error;
-};
-
 class SimplePqlParser {
   public:
     SimplePqlParser(
