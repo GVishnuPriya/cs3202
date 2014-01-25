@@ -180,9 +180,7 @@ class SimplePqlFrontEnd {
             }
 
             ConditionSet conditions = linker->get_conditions(qvar, pred);
-            print(qvar, out);
-            print(" = ", out);
-
+            
             for(ConditionSet::iterator it = conditions.begin(); 
                     it != conditions.end();)
             {

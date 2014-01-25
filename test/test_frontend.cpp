@@ -51,7 +51,7 @@ TEST(FrontEndTest, IntegratedTest) {
     std::string result1;
     
     frontend.process_query(query1.begin(), query1.end(), std::back_inserter(result1));
-    EXPECT_EQ(result1, "s = 2");
+    EXPECT_EQ(result1, "2");
 
     std::string query2 = 
         "stmt s; var v; \n"
@@ -59,7 +59,7 @@ TEST(FrontEndTest, IntegratedTest) {
 
     std::string result2;
     frontend.process_query(query2.begin(), query2.end(), std::back_inserter(result2));
-    EXPECT_EQ(result2, "v = \"b\", \"c\"");
+    EXPECT_EQ(result2, "b, c");
 }
 
 class FrontEndFixtureTest : public testing::TestWithParam<PqlTestFixture> {

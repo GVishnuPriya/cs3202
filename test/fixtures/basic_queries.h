@@ -41,7 +41,7 @@ std::vector<PqlTestFixture> get_basic_test_fixtures() {
     query11.query = 
         "stmt s; \n"
         "Select s such that Follows(1, s);";
-    query11.expected = "s = 2";
+    query11.expected = "2";
 
     fixture1.queries.push_back(query11);
 
@@ -49,7 +49,7 @@ std::vector<PqlTestFixture> get_basic_test_fixtures() {
     query12.query =
         "stmt s; var v; \n"
         "Select v such that Next(2, s) and Modifies(s, v);";
-    query12.expected = "v = \"b\", \"c\"";
+    query12.expected = "b, c";
 
     fixture1.queries.push_back(query12);
 

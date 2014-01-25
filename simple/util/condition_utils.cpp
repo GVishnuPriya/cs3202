@@ -63,16 +63,12 @@ class ConditionPrinter : public ConditionVisitor {
     }
 
     void visit_variable_condition(VariableCondition *condition) {
-        _result = "\"";
         _result += condition->get_variable()->get_name();
-        _result += "\"";
     }
 
     void visit_constant_condition(ConstantCondition *condition) {
         std::stringstream out;
-        out << '"';
         out << condition->get_constant()->get_int();
-        out << '"';
         _result = out.str();
     }
 
