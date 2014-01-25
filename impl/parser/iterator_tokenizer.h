@@ -155,7 +155,7 @@ class IteratorTokenizer : public SimpleTokenizer {
             return set_current_token(new IntegerToken(atoi(value.c_str())));
         }
 
-        throw ParseError("Invalid token \"" + std::to_string(current_char()) + "\"");
+        throw ParseError("Invalid token \"" + std::string(1, current_char()) + "\"");
     }
 
     char current_char() {

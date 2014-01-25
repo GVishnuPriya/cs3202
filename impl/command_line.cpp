@@ -31,7 +31,7 @@ using std::endl;
 bool file_exists(const std::string& filename)
 {
   std::ifstream ifile(filename);
-  return ifile;
+  return ifile != NULL;
 }
 
 int main(int argc, const char* argv[]) {
