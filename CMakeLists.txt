@@ -11,6 +11,7 @@ include_directories("${PROJECT_SOURCE_DIR}" , "${PROJECT_SOURCE_DIR}/test")
 set(SOURCE
   simple/ast.cpp 
   simple/condition_set.cpp 
+  simple/spa.cpp 
   simple/tuple.cpp 
   simple/query.cpp 
   simple/util/condition_utils.cpp 

@@ -21,15 +21,17 @@
 #include <fstream>
 #include <iterator>
 #include <algorithm>
-#include "impl/frontend.h"
-#include "impl/parser/parser.h"
-
-using namespace simple;
-using namespace simple::impl;
+#include "simple/spa.h"
 
 using std::cout;
 using std::cin;
 using std::endl;
+
+bool file_exists(const std::string& filename)
+{
+  std::ifstream ifile(filename);
+  return ifile;
+}
 
 int main(int argc, const char* argv[]) {
     if(argc < 2) {
@@ -37,30 +39,21 @@ int main(int argc, const char* argv[]) {
     }
 
     std::string filename(argv[1]);
-    std::ifstream source(filename);
 
-    if(source.is_open()) {
-        try {
-            std::istreambuf_iterator<char> source_begin(source);
-            std::istreambuf_iterator<char> source_end;
+    if(!file_exists(filename)) {
+        cout << "Unable to open file " << filename << endl;
+        return 0;
+    }
 
-            SimplePqlFrontEnd frontend(source_begin, source_end);
+    SimpleProgramAnalyzer *spa = create_simple_program_analyzer();
+    spa->parse(filename);
 
-            std::string line;
-            cout << "simple> ";
-            while(getline(cin, line)) {
-                frontend.process_query(line.begin(), line.end(),
-                        std::ostreambuf_iterator<char>(cout));
+    std::string line;
+    cout << "simple> ";
+    while(getline(cin, line)) {
+        std::string result = spa->evaluate(line);
 
-                cout << endl << "simple> ";
-            }
-
-        } catch(std::exception& e) {
-            cout << "Error parsing simple source file: " << e.what() << endl;
-            return 0;
-        }
-    } else {
-        cout << "file " << filename << " not found." << endl;
+        cout << result << endl << "simple> ";
     }
 
     return 0;
