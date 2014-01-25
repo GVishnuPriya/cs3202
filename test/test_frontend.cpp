@@ -51,7 +51,7 @@ TEST(FrontEndTest, IntegratedTest) {
     std::vector<std::string> result1 = frontend.process_query(
         query1.begin(), query1.end());
     
-    EXPECT_EQ(result1.size(), 1);
+    EXPECT_EQ((int)result1.size(), 1);
     EXPECT_EQ(result1[0], "2");
 
     std::string query2 = 
@@ -61,7 +61,7 @@ TEST(FrontEndTest, IntegratedTest) {
     std::vector<std::string> result2 = frontend.process_query(
         query2.begin(), query2.end());
     
-    EXPECT_EQ(result2.size(), 2);
+    EXPECT_EQ((int)result2.size(), 2);
     EXPECT_EQ(result2[0], "b");
     EXPECT_EQ(result2[1], "c");
 }
