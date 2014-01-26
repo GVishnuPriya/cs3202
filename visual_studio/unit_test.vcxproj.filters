@@ -18,73 +18,73 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="test\test_ast.cpp">
+    <ClCompile Include="..\test\test_ast.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test\test_call.cpp">
+    <ClCompile Include="..\test\test_call.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test\test_condition.cpp">
+    <ClCompile Include="..\test\test_condition.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test\test_follows.cpp">
+    <ClCompile Include="..\test\test_follows.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test\test_frontend.cpp">
+    <ClCompile Include="..\test\test_frontend.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test\test_icall.cpp">
+    <ClCompile Include="..\test\test_icall.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test\test_ifollows.cpp">
+    <ClCompile Include="..\test\test_ifollows.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test\test_inext.cpp">
+    <ClCompile Include="..\test\test_inext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test\test_iparent.cpp">
+    <ClCompile Include="..\test\test_iparent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test\test_linker.cpp">
+    <ClCompile Include="..\test\test_linker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test\test_main.cpp">
+    <ClCompile Include="..\test\test_main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test\test_modifies.cpp">
+    <ClCompile Include="..\test\test_modifies.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test\test_next.cpp">
+    <ClCompile Include="..\test\test_next.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test\test_parent.cpp">
+    <ClCompile Include="..\test\test_parent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test\test_parser.cpp">
+    <ClCompile Include="..\test\test_parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test\test_pql_parser.cpp">
+    <ClCompile Include="..\test\test_pql_parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test\test_predicate.cpp">
+    <ClCompile Include="..\test\test_predicate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test\test_processor.cpp">
+    <ClCompile Include="..\test\test_processor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test\test_query.cpp">
+    <ClCompile Include="..\test\test_query.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test\test_solver.cpp">
+    <ClCompile Include="..\test\test_solver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test\test_tokenizer.cpp">
+    <ClCompile Include="..\test\test_tokenizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test\test_uses.cpp">
+    <ClCompile Include="..\test\test_uses.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test\gtest\gtest-all.cpp">
+    <ClCompile Include="..\test\gtest\gtest-all.cpp">
       <Filter>Source Files\gtest</Filter>
     </ClCompile>
   </ItemGroup>

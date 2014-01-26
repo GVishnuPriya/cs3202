@@ -15,18 +15,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="autotest\AbstractWrapper.h">
+    <ClInclude Include="..\autotest\AbstractWrapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="autotest\TestWrapper.h">
+    <ClInclude Include="..\autotest\TestWrapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="simple\spa.h">
+    <ClInclude Include="..\simple\spa.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="autotest\TestWrapper.cpp">
+    <ClCompile Include="..\autotest\TestWrapper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual C++ Express 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libspa", "libspa.vcxproj", "{6BDBA65E-9DC1-4D00-932B-B329F191900E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libspa", "visual_studio\libspa.vcxproj", "{6BDBA65E-9DC1-4D00-932B-B329F191900E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "unit_test", "unit_test.vcxproj", "{42A30DCA-ED26-4F2F-B957-4283577212D6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "unit_test", "visual_studio\unit_test.vcxproj", "{42A30DCA-ED26-4F2F-B957-4283577212D6}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "auto_tester", "auto_tester.vcxproj", "{2BFB5488-D5BB-4E07-AE50-B404B0544A89}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "auto_tester", "visual_studio\auto_tester.vcxproj", "{2BFB5488-D5BB-4E07-AE50-B404B0544A89}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spa", "spa.vcxproj", "{C6947C37-7AF2-482F-AE47-72F1CD34E700}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spa", "visual_studio\spa.vcxproj", "{C6947C37-7AF2-482F-AE47-72F1CD34E700}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

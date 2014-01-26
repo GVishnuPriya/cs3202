@@ -24,6 +24,7 @@ Release/
 *.suo
 *.vcxproj.user
 *.dir
+flatfile.txt
 Win32/
 ipch/
 CMakeCache.txt

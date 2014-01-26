@@ -11,21 +11,21 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{6BDBA65E-9DC1-4D00-932B-B329F191900E}</ProjectGuid>
-    <RootNamespace>simple3202</RootNamespace>
-    <ProjectName>libspa</ProjectName>
+    <ProjectGuid>{2BFB5488-D5BB-4E07-AE50-B404B0544A89}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>auto_tester</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -37,60 +37,60 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>$(SolutionDir)\autotest\AutoTester_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>$(SolutionDir)\autotest\AutoTesterLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="impl\linker.cpp" />
-    <ClCompile Include="impl\parser\parser.cpp" />
-    <ClCompile Include="impl\parser\pql_parser.cpp" />
-    <ClCompile Include="impl\parser\token.cpp" />
-    <ClCompile Include="impl\predicate.cpp" />
-    <ClCompile Include="impl\processor.cpp" />
-    <ClCompile Include="impl\selector.cpp" />
-    <ClCompile Include="impl\solvers\call.cpp" />
-    <ClCompile Include="impl\solvers\follows.cpp" />
-    <ClCompile Include="impl\solvers\icall.cpp" />
-    <ClCompile Include="impl\solvers\ifollows.cpp" />
-    <ClCompile Include="impl\solvers\inext.cpp" />
-    <ClCompile Include="impl\solvers\iparent.cpp" />
-    <ClCompile Include="impl\solvers\modifies.cpp" />
-    <ClCompile Include="impl\solvers\next.cpp" />
-    <ClCompile Include="impl\solvers\parent.cpp" />
-    <ClCompile Include="impl\solvers\same_name.cpp" />
-    <ClCompile Include="impl\solvers\uses.cpp" />
-    <ClCompile Include="simple\ast.cpp" />
-    <ClCompile Include="simple\condition_set.cpp" />
-    <ClCompile Include="simple\query.cpp" />
-    <ClCompile Include="simple\spa.cpp" />
-    <ClCompile Include="simple\tuple.cpp" />
-    <ClCompile Include="simple\util\ast_utils.cpp" />
-    <ClCompile Include="simple\util\condition_utils.cpp" />
-    <ClCompile Include="simple\util\query_utils.cpp" />
+    <ClInclude Include="..\autotest\AbstractWrapper.h" />
+    <ClInclude Include="..\autotest\TestWrapper.h" />
+    <ClInclude Include="..\simple\spa.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\autotest\TestWrapper.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="libspa.vcxproj">
+      <Project>{6bdba65e-9dc1-4d00-932b-b329f191900e}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
