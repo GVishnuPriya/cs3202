@@ -23,12 +23,10 @@ Release/
 *.sdf
 *.v11.suo
 *.suo
-*.sln
-*.vcxproj
-*.vcxproj.filters
 *.vcxproj.user
 *.dir
 Win32/
+ipch/
 CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake

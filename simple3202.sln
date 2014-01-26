@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C++ Express 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libspa", "libspa.vcxproj", "{6BDBA65E-9DC1-4D00-932B-B329F191900E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "unit_test", "unit_test.vcxproj", "{42A30DCA-ED26-4F2F-B957-4283577212D6}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "auto_tester", "auto_tester.vcxproj", "{2BFB5488-D5BB-4E07-AE50-B404B0544A89}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6BDBA65E-9DC1-4D00-932B-B329F191900E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6BDBA65E-9DC1-4D00-932B-B329F191900E}.Debug|Win32.Build.0 = Debug|Win32
+		{6BDBA65E-9DC1-4D00-932B-B329F191900E}.Release|Win32.ActiveCfg = Release|Win32
+		{6BDBA65E-9DC1-4D00-932B-B329F191900E}.Release|Win32.Build.0 = Release|Win32
+		{42A30DCA-ED26-4F2F-B957-4283577212D6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{42A30DCA-ED26-4F2F-B957-4283577212D6}.Debug|Win32.Build.0 = Debug|Win32
+		{42A30DCA-ED26-4F2F-B957-4283577212D6}.Release|Win32.ActiveCfg = Release|Win32
+		{42A30DCA-ED26-4F2F-B957-4283577212D6}.Release|Win32.Build.0 = Release|Win32
+		{2BFB5488-D5BB-4E07-AE50-B404B0544A89}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2BFB5488-D5BB-4E07-AE50-B404B0544A89}.Debug|Win32.Build.0 = Debug|Win32
+		{2BFB5488-D5BB-4E07-AE50-B404B0544A89}.Release|Win32.ActiveCfg = Release|Win32
+		{2BFB5488-D5BB-4E07-AE50-B404B0544A89}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
