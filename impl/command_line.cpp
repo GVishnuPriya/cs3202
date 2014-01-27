@@ -65,7 +65,7 @@ int main(int argc, const char* argv[]) {
             auto it = result.begin();
             auto end = result.end();
             
-            while(true) {
+            while(it != end) {
                 cout << *it;
                 
                 if(++it == end) break;
