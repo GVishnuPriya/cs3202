@@ -112,10 +112,10 @@ class SimplePqlFrontEnd {
         _solver_table["iparent"] = std::shared_ptr<QuerySolver>(
             new SimpleSolverGenerator<IParentSolver>(new IParentSolver(_ast)));
 
-        _solver_table["call"] = std::shared_ptr<QuerySolver>(
+        _solver_table["calls"] = std::shared_ptr<QuerySolver>(
             new SimpleSolverGenerator<CallSolver>(new CallSolver(_ast)));
 
-        _solver_table["icall"] = std::shared_ptr<QuerySolver>(
+        _solver_table["icalls"] = std::shared_ptr<QuerySolver>(
             new SimpleSolverGenerator<ICallSolver>(new ICallSolver(_ast)));
 
         _solver_table["modifies"] = std::shared_ptr<QuerySolver>(

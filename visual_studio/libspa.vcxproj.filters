@@ -16,17 +16,17 @@
     <Filter Include="Source Files\simple">
       <UniqueIdentifier>{e45e32df-4bdd-41e2-aad6-112b4bfd7ed3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\..\simple\util">
-      <UniqueIdentifier>{a88ceeeb-3535-4daf-823b-7b25d55cd3a4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\impl">
       <UniqueIdentifier>{57502c7f-921f-441a-a383-a1ca962cc665}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\..\impl\parser">
-      <UniqueIdentifier>{12485113-5e4c-49a2-83dc-31ff0ffaca4b}</UniqueIdentifier>
+    <Filter Include="Source Files\impl\praser">
+      <UniqueIdentifier>{8ee72790-cfa6-440b-bef0-c15e945c4d5c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\..\impl\solver">
-      <UniqueIdentifier>{7109043e-dcfb-44bb-b991-958ca6349b5b}</UniqueIdentifier>
+    <Filter Include="Source Files\impl\solver">
+      <UniqueIdentifier>{bc752cbc-4d84-43d5-b2ce-0cf7188e2201}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\simple\util">
+      <UniqueIdentifier>{306ab8e1-a171-4924-b6db-4250f5b8a163}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -45,15 +45,6 @@
     <ClCompile Include="..\simple\ast.cpp">
       <Filter>Source Files\simple</Filter>
     </ClCompile>
-    <ClCompile Include="..\simple\util\ast_utils.cpp">
-      <Filter>Source Files\..\simple\util</Filter>
-    </ClCompile>
-    <ClCompile Include="..\simple\util\condition_utils.cpp">
-      <Filter>Source Files\..\simple\util</Filter>
-    </ClCompile>
-    <ClCompile Include="..\simple\util\query_utils.cpp">
-      <Filter>Source Files\..\simple\util</Filter>
-    </ClCompile>
     <ClCompile Include="..\impl\linker.cpp">
       <Filter>Source Files\impl</Filter>
     </ClCompile>
@@ -66,47 +57,187 @@
     <ClCompile Include="..\impl\selector.cpp">
       <Filter>Source Files\impl</Filter>
     </ClCompile>
-    <ClCompile Include="..\impl\parser\parser.cpp">
-      <Filter>Source Files\..\impl\parser</Filter>
+    <ClCompile Include="..\simple\util\ast_utils.cpp">
+      <Filter>Source Files\simple\util</Filter>
     </ClCompile>
-    <ClCompile Include="..\impl\parser\pql_parser.cpp">
-      <Filter>Source Files\..\impl\parser</Filter>
+    <ClCompile Include="..\simple\util\condition_utils.cpp">
+      <Filter>Source Files\simple\util</Filter>
     </ClCompile>
-    <ClCompile Include="..\impl\parser\token.cpp">
-      <Filter>Source Files\..\impl\parser</Filter>
-    </ClCompile>
-    <ClCompile Include="..\impl\solvers\call.cpp">
-      <Filter>Source Files\..\impl\solver</Filter>
-    </ClCompile>
-    <ClCompile Include="..\impl\solvers\follows.cpp">
-      <Filter>Source Files\..\impl\solver</Filter>
-    </ClCompile>
-    <ClCompile Include="..\impl\solvers\icall.cpp">
-      <Filter>Source Files\..\impl\solver</Filter>
-    </ClCompile>
-    <ClCompile Include="..\impl\solvers\ifollows.cpp">
-      <Filter>Source Files\..\impl\solver</Filter>
-    </ClCompile>
-    <ClCompile Include="..\impl\solvers\inext.cpp">
-      <Filter>Source Files\..\impl\solver</Filter>
-    </ClCompile>
-    <ClCompile Include="..\impl\solvers\iparent.cpp">
-      <Filter>Source Files\..\impl\solver</Filter>
-    </ClCompile>
-    <ClCompile Include="..\impl\solvers\modifies.cpp">
-      <Filter>Source Files\..\impl\solver</Filter>
-    </ClCompile>
-    <ClCompile Include="..\impl\solvers\next.cpp">
-      <Filter>Source Files\..\impl\solver</Filter>
+    <ClCompile Include="..\simple\util\query_utils.cpp">
+      <Filter>Source Files\simple\util</Filter>
     </ClCompile>
     <ClCompile Include="..\impl\solvers\parent.cpp">
-      <Filter>Source Files\..\impl\solver</Filter>
+      <Filter>Source Files\impl\solver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\impl\solvers\call.cpp">
+      <Filter>Source Files\impl\solver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\impl\solvers\follows.cpp">
+      <Filter>Source Files\impl\solver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\impl\solvers\icall.cpp">
+      <Filter>Source Files\impl\solver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\impl\solvers\ifollows.cpp">
+      <Filter>Source Files\impl\solver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\impl\solvers\inext.cpp">
+      <Filter>Source Files\impl\solver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\impl\solvers\iparent.cpp">
+      <Filter>Source Files\impl\solver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\impl\solvers\modifies.cpp">
+      <Filter>Source Files\impl\solver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\impl\solvers\next.cpp">
+      <Filter>Source Files\impl\solver</Filter>
     </ClCompile>
     <ClCompile Include="..\impl\solvers\same_name.cpp">
-      <Filter>Source Files\..\impl\solver</Filter>
+      <Filter>Source Files\impl\solver</Filter>
     </ClCompile>
     <ClCompile Include="..\impl\solvers\uses.cpp">
-      <Filter>Source Files\..\impl\solver</Filter>
+      <Filter>Source Files\impl\solver</Filter>
     </ClCompile>
+    <ClCompile Include="..\impl\parser\parser.cpp">
+      <Filter>Source Files\impl\praser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\impl\parser\token.cpp">
+      <Filter>Source Files\impl\praser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\impl\parser\pql_parser.cpp">
+      <Filter>Source Files\impl\praser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\impl\command_line.cpp">
+      <Filter>Source Files\impl</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\simple\ast.h">
+      <Filter>Source Files\simple</Filter>
+    </ClInclude>
+    <ClInclude Include="..\simple\condition.h">
+      <Filter>Source Files\simple</Filter>
+    </ClInclude>
+    <ClInclude Include="..\simple\condition_set.h">
+      <Filter>Source Files\simple</Filter>
+    </ClInclude>
+    <ClInclude Include="..\simple\linker.h">
+      <Filter>Source Files\simple</Filter>
+    </ClInclude>
+    <ClInclude Include="..\simple\predicate.h">
+      <Filter>Source Files\simple</Filter>
+    </ClInclude>
+    <ClInclude Include="..\simple\query.h">
+      <Filter>Source Files\simple</Filter>
+    </ClInclude>
+    <ClInclude Include="..\simple\solver.h">
+      <Filter>Source Files\simple</Filter>
+    </ClInclude>
+    <ClInclude Include="..\simple\spa.h">
+      <Filter>Source Files\simple</Filter>
+    </ClInclude>
+    <ClInclude Include="..\simple\tuple.h">
+      <Filter>Source Files\simple</Filter>
+    </ClInclude>
+    <ClInclude Include="..\simple\util\ast_utils.h">
+      <Filter>Source Files\simple\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\simple\util\condition_utils.h">
+      <Filter>Source Files\simple\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\simple\util\query_utils.h">
+      <Filter>Source Files\simple\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\simple\util\condition_visitor_generator.h">
+      <Filter>Source Files\simple\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\simple\util\set_utils.h">
+      <Filter>Source Files\simple\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\simple\util\solver_generator.h">
+      <Filter>Source Files\simple\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\simple\util\statement_visitor_generator.h">
+      <Filter>Source Files\simple\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\impl\solvers\ifollows.h">
+      <Filter>Source Files\impl\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\impl\solvers\inext.h">
+      <Filter>Source Files\impl\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\impl\solvers\iparent.h">
+      <Filter>Source Files\impl\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\impl\solvers\modifies.h">
+      <Filter>Source Files\impl\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\impl\solvers\next.h">
+      <Filter>Source Files\impl\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\impl\solvers\parent.h">
+      <Filter>Source Files\impl\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\impl\solvers\same_name.h">
+      <Filter>Source Files\impl\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\impl\solvers\uses.h">
+      <Filter>Source Files\impl\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\impl\solvers\call.h">
+      <Filter>Source Files\impl\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\impl\solvers\follows.h">
+      <Filter>Source Files\impl\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\impl\solvers\icall.h">
+      <Filter>Source Files\impl\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\impl\parser\parser.h">
+      <Filter>Source Files\impl\praser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\impl\parser\pql_parser.h">
+      <Filter>Source Files\impl\praser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\impl\parser\token.h">
+      <Filter>Source Files\impl\praser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\impl\parser\tokenizer.h">
+      <Filter>Source Files\impl\praser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\impl\parser\iterator_tokenizer.h">
+      <Filter>Source Files\impl\praser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\impl\condition.h">
+      <Filter>Source Files\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\impl\frontend.h">
+      <Filter>Source Files\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\impl\linker.h">
+      <Filter>Source Files\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\impl\parse_error.h">
+      <Filter>Source Files\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\impl\predicate.h">
+      <Filter>Source Files\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\impl\processor.h">
+      <Filter>Source Files\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\impl\query.h">
+      <Filter>Source Files\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\impl\selector.h">
+      <Filter>Source Files\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\impl\solver_table.h">
+      <Filter>Source Files\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\impl\ast.h">
+      <Filter>Source Files\impl</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
