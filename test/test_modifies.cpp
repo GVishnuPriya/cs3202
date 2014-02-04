@@ -55,18 +55,18 @@ TEST(ModifiesTest, FixtureTest1) {
     /*
      * Test true validation
      */
-    EXPECT_TRUE((solver.validate<AssignmentAst, SimpleVariable>(assign, &var)));
+    EXPECT_TRUE((solver.validate<StatementAst, SimpleVariable>(assign, &var)));
     EXPECT_TRUE((solver.validate<StatementAst, SimpleVariable>(assign, &var)));
     EXPECT_TRUE((solver.validate<ProcAst, SimpleVariable>(proc, &var)));
     // Different variable objects with same name
     EXPECT_TRUE((solver.validate<StatementAst, SimpleVariable>(assign, &var3)));
-    EXPECT_TRUE((solver.validate<AssignmentAst, SimpleVariable>(assign, &var3)));
+    EXPECT_TRUE((solver.validate<StatementAst, SimpleVariable>(assign, &var3)));
     EXPECT_TRUE((solver.validate<ProcAst, SimpleVariable>(proc, &var3)));
     /*
      * Test false validation
      */
     EXPECT_FALSE((solver.validate<StatementAst, SimpleVariable>(assign, &var2)));
-    EXPECT_FALSE((solver.validate<AssignmentAst, SimpleVariable>(assign, &var2)));
+    EXPECT_FALSE((solver.validate<StatementAst, SimpleVariable>(assign, &var2)));
     EXPECT_FALSE((solver.validate<ProcAst, SimpleVariable>(proc, &var2)));
 
     /*
