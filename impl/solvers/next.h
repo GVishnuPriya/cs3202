@@ -19,6 +19,7 @@
 #pragma once
 
 #include <set>
+#include <map>
 #include "simple/ast.h"
 #include "simple/util/ast_utils.h"
 #include "simple/condition.h"
@@ -29,14 +30,6 @@ namespace simple {
 namespace impl {
 
 using namespace simple;
-
-class NextQuerySolver {
-  public:
-    virtual StatementSet solve_next_statement(StatementAst *statement) = 0;
-    virtual StatementSet solve_prev_statement(StatementAst *statement) = 0;
-
-    virtual ~NextQuerySolver() { }
-};
 
 class NextSolver : public NextQuerySolver {
   public:
@@ -75,9 +68,10 @@ class NextSolver : public NextQuerySolver {
     template <typename Container>
     bool validate_container_next(Container *container, StatementAst *statement);
 
-
   private:
     SimpleRoot _ast;
+    std::map<StatementAst*, StatementSet> _next_cache;
+    std::map<StatementAst*, StatementSet> _prev_cache;
 };
 
 template <typename Condition>

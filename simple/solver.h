@@ -41,6 +41,14 @@ class QuerySolver : public QueryValidator {
    virtual ~QuerySolver() { }
 };
 
+class NextQuerySolver {
+  public:
+    virtual StatementSet solve_next_statement(StatementAst *statement) = 0;
+    virtual StatementSet solve_prev_statement(StatementAst *statement) = 0;
+
+    virtual ~NextQuerySolver() { }
+};
+
 typedef std::map<std::string, std::shared_ptr<QuerySolver> > SolverTable;
 
 } // namespace matcher

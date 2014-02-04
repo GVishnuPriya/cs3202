@@ -20,7 +20,6 @@
 
 #include <map>
 #include "simple/solver.h"
-#include "impl/solvers/next.h"
 #include "simple/condition_set.h"
 #include "simple/ast.h"
 
@@ -60,8 +59,6 @@ class INextSolver {
     std::shared_ptr<NextQuerySolver> _next_solver;
     INextTable _inext_cache;
     INextTable _iprev_cache;
-    INextTable _inext_partial_cache;
-    INextTable _iprev_partial_cache;
 };
 
 template <>

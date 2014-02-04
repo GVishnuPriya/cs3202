@@ -21,12 +21,13 @@
 #include "impl/solvers/next.h"
 #include "simple/util/statement_visitor_generator.h"
 #include "simple/util/ast_utils.h"
+#include "simple/util/statement_set.h"
 
 namespace simple {
 namespace impl {
 
 using namespace simple;
-using simple::util::is_statement_type;
+using namespace simple::util;
 
 class SolveNextVisitorTraits {
   public:
@@ -100,27 +101,13 @@ class ValidateNextStatementVisitor : public StatementVisitor {
 template <>
 ConditionSet NextSolver::solve_right<StatementAst>(StatementAst *ast) {
     StatementSet statements = solve_next<StatementAst>(ast);
-    ConditionSet result;
-
-    for(StatementSet::iterator it = statements.begin(); 
-            it!= statements.end(); ++it)
-    {
-        result.insert(new SimpleStatementCondition(*it));
-    }
-    return result;
+    return statement_set_to_condition_set(statements);
 }
 
 template <>
 ConditionSet NextSolver::solve_left<StatementAst>(StatementAst *ast) {
     StatementSet statements = solve_previous<StatementAst>(ast);
-    ConditionSet result;
-
-    for(StatementSet::iterator it = statements.begin(); 
-            it!= statements.end(); ++it)
-    {
-        result.insert(new SimpleStatementCondition(*it));
-    }
-    return result;
+    return statement_set_to_condition_set(statements);
 }
 
 StatementSet NextSolver::solve_next_statement(StatementAst *statement) {
@@ -134,6 +121,8 @@ StatementSet NextSolver::solve_prev_statement(StatementAst *statement) {
 
 template <>
 StatementSet NextSolver::solve_next<StatementAst>(StatementAst *ast) {
+    if(_next_cache.count(ast) > 0) return _next_cache[ast];
+
     StatementSet result;
     
     StatementVisitorGenerator<NextSolver,
@@ -164,6 +153,8 @@ StatementSet NextSolver::solve_next<StatementAst>(StatementAst *ast) {
     }
 
     union_set(result, visitor.return_result());
+
+    _next_cache[ast] = result;
     return result;
 }
 
@@ -331,6 +322,8 @@ StatementSet NextSolver::solve_preceeding_previous<IfAst>(IfAst *ast) {
 
 template <>
 StatementSet NextSolver::solve_previous<StatementAst>(StatementAst *ast) {
+    if(_prev_cache.count(ast) > 0) return _prev_cache[ast];
+
     StatementSet result;
     
     /*
@@ -354,6 +347,7 @@ StatementSet NextSolver::solve_previous<StatementAst>(StatementAst *ast) {
 
     union_set(result, visitor.return_result());
 
+    _prev_cache[ast] = result;
     return result;
 }
 

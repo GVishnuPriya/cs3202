@@ -19,10 +19,13 @@
 #include <list>
 #include "impl/solvers/inext.h"
 #include "impl/condition.h"
+#include "simple/util/statement_set.h"
 #include "simple/util/statement_visitor_generator.h"
 
 namespace simple {
 namespace impl {
+
+using namespace simple::util;
 
 template <>
 ConditionSet INextSolver::solve_right<StatementAst>(StatementAst *statement) {
@@ -35,13 +38,7 @@ ConditionSet INextSolver::solve_right<StatementAst>(StatementAst *statement) {
         return ConditionSet();
     }
 
-    ConditionSet result;
-
-    for(StatementSet::iterator it = result_stats.begin(); 
-            it != result_stats.end(); ++it)
-    {
-        result.insert(new SimpleStatementCondition(*it));
-    }
+    ConditionSet result = statement_set_to_condition_set(result_stats);
 
     // cache the result for future use
     _inext_cache[statement] = std::move(result_stats);
@@ -59,13 +56,7 @@ ConditionSet INextSolver::solve_left<StatementAst>(StatementAst *statement) {
         return ConditionSet();
     }
 
-    ConditionSet result;
-
-    for(StatementSet::iterator it = result_stats.begin(); 
-            it != result_stats.end(); ++it)
-    {
-        result.insert(new SimpleStatementCondition(*it));
-    }
+    ConditionSet result = statement_set_to_condition_set(result_stats);
 
     // cache the result for future use
     _iprev_cache[statement] = std::move(result_stats);

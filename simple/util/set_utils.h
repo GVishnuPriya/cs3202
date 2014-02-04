@@ -27,7 +27,6 @@ namespace util {
 typedef std::set<StatementAst*>     StatementSet;
 typedef std::set<SimpleVariable>    VariableSet;
 
-
 template <typename T>
 void union_set(std::set<T>& set1, const std::set<T>& set2) {
     if(set2.size() == 0) {
@@ -55,7 +54,6 @@ std::set<T> difference_set(const std::set<T>& set1, const std::set<T>& set2) {
 
     return result;
 }
-
 
 } // namespace util
 } // namespace simple

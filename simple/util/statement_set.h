@@ -1,6 +1,6 @@
 /*
  * CS3201 Simple Static Analyzer
- * Copyright (C) 2011 Soares Chen Ruo Fei
+ * Copyright (C) 2014 Soares Chen
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,44 +16,27 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "impl/solvers/follows.h"
+#pragma once
 
+#include "impl/condition.h"
+#include "simple/condition_set.h"
 
-namespace simple {
-namespace impl {
+namespace simple{
+namespace util {
 
-using namespace simple;
-using namespace simple::util;
+using namespace impl;
 
-
-template <>
-ConditionSet FollowSolver::solve_right<StatementAst>(StatementAst *ast) {
+inline ConditionSet statement_set_to_condition_set(const StatementSet& statement_set) {
     ConditionSet result;
 
-    if(ast->next()) {
-        result.insert(new SimpleStatementCondition(ast->next()));
+    for(StatementSet::iterator it = statement_set.begin(); 
+            it!= statement_set.end(); ++it)
+    {
+        result.insert(new SimpleStatementCondition(*it));
     }
+
     return result;
 }
-
-template <>
-ConditionSet FollowSolver::solve_left<StatementAst>(StatementAst *ast) {
-    ConditionSet result;
-
-    if(ast->prev()) {
-        result.insert(new SimpleStatementCondition(ast->prev()));
-    }
-    return result;
-}
-
-template <>
-bool FollowSolver::validate<StatementAst, StatementAst>(
-        StatementAst *left, StatementAst *right)
-{
-    return left->next() == right;
-}
-
-
 
 }
 }

@@ -106,5 +106,4 @@ struct ConditionPair {
 
 ::std::ostream& operator<<(::std::ostream& os, const ConditionSet& set);
 
-
 } // namespace simple
