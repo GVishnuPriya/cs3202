@@ -49,6 +49,22 @@ class NextQuerySolver {
     virtual ~NextQuerySolver() { }
 };
 
+class ModifiesQuerySolver {
+  public:
+    virtual VariableSet solve_modified_vars(StatementAst *statement) = 0;
+    virtual StatementSet solve_modifying_statements(const SimpleVariable& variable) = 0;
+
+    virtual ~ModifiesQuerySolver() { }
+};
+
+class UsesQuerySolver {
+  public:
+    virtual VariableSet solve_used_vars(StatementAst *statement) = 0;
+    virtual StatementSet solve_using_statements(const SimpleVariable& variable) = 0;
+
+    virtual ~UsesQuerySolver() { }
+};
+
 typedef std::map<std::string, std::shared_ptr<QuerySolver> > SolverTable;
 
 } // namespace matcher

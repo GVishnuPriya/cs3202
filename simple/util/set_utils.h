@@ -24,9 +24,6 @@
 namespace simple {
 namespace util {
 
-typedef std::set<StatementAst*>     StatementSet;
-typedef std::set<SimpleVariable>    VariableSet;
-
 template <typename T>
 void union_set(std::set<T>& set1, const std::set<T>& set2) {
     if(set2.size() == 0) {

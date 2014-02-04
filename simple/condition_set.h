@@ -28,6 +28,9 @@ namespace simple {
 
 using namespace simple::util;
 
+typedef std::set<StatementAst*>     StatementSet;
+typedef std::set<SimpleVariable>    VariableSet;
+
 class ConditionPtr {
   public:
     ConditionPtr(SimpleCondition *condition);

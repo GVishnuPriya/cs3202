@@ -17,14 +17,16 @@
  */
 
 
-#include "simple/util/statement_visitor_generator.h"
-#include "impl/solvers/modifies.h"
 #include "impl/condition.h"
+#include "impl/solvers/modifies.h"
+#include "simple/util/set_convert.h"
+#include "simple/util/statement_visitor_generator.h"
 
 namespace simple {
 namespace impl {
 
 using namespace simple;
+using namespace simple::util;
 
 /*
  * Helper classes
@@ -67,6 +69,30 @@ ModifiesSolver::ModifiesSolver(const SimpleRoot& ast) :
    for(SimpleRoot::iterator it = _ast.begin(); it != _ast.end(); ++it) {
        index_variables<ProcAst>(*it);
    } 
+}
+
+VariableSet ModifiesSolver::solve_modified_vars(StatementAst *statement) {
+    return solve_modified<StatementAst>(statement);
+}
+
+StatementSet ModifiesSolver::solve_modifying_statements(const SimpleVariable& variable) {
+    if(_modifying_statement_index.count(variable)) {
+        return _modifying_statement_index[variable];
+    } else {
+        return StatementSet();
+    }
+}
+
+/*
+ * solve_left() definitions
+ */
+template <>
+ConditionSet ModifiesSolver::solve_left<SimpleVariable>(SimpleVariable *variable) {
+    if(_modifying_condition_index.count(*variable)) {
+        return _modifying_condition_index[*variable];
+    } else {
+        return ConditionSet();
+    }
 }
 
 /*
@@ -222,91 +248,90 @@ ConditionSet ModifiesSolver::solve_right<CallAst>(CallAst *ast) {
 }
 
 /*
- * solve_left() definitions
- */
-template <>
-ConditionSet ModifiesSolver::solve_left<SimpleVariable>(SimpleVariable *variable) {
-    if(_var_index.count(*variable)) {
-        return _var_index[*variable];
-    } else {
-        return ConditionSet();
-    }
-}
-
-/*
  * index_variable()
  */
-void ModifiesSolver::index_statement_list(
-        StatementAst *statement, ConditionPtr condition, 
-        std::set<SimpleVariable>& result) 
-{
+
+void ModifiesSolver::index_statement(StatementAst *statement, const SimpleVariable& variable) {
+    _modifying_statement_index[variable].insert(statement);
+    _modifying_condition_index[variable].insert(new SimpleStatementCondition(statement));
+}
+
+void ModifiesSolver::index_container_statement(StatementAst *statement, const VariableSet& variables) {
+    for(auto it = variables.begin(); it != variables.end(); ++it) {
+        index_statement(statement, *it);
+    }
+}
+
+void ModifiesSolver::index_container_condition(ConditionPtr condition, const VariableSet& variables) {
+    for(auto it = variables.begin(); it != variables.end(); ++it) {
+        _modifying_condition_index[*it].insert(condition);
+    }
+}
+
+VariableSet ModifiesSolver::index_statement_list(StatementAst *statement) {
+    VariableSet result;
+
     while(statement != NULL) {
-        std::set<SimpleVariable> current_result = index_variables<StatementAst>(statement);
-        for(std::set<SimpleVariable>::iterator it = current_result.begin(); 
-                it != current_result.end(); ++it) 
-        {
-            if(result.count(*it) == 0) {
-                _var_index[*it].insert(condition);
-                result.insert(*it);
-            }
-        }
+        VariableSet current_result = index_variables<StatementAst>(statement);
+        union_set(result, current_result);
         statement = statement->next();
     }
-}
-
-template <>
-std::set<SimpleVariable> ModifiesSolver::index_variables<ProcAst>(ProcAst *proc) {
-    std::set<SimpleVariable> result;
-
-    index_statement_list(proc->get_statement(), new SimpleProcCondition(proc), result);
 
     return result;
 }
 
 template <>
-std::set<SimpleVariable> ModifiesSolver::index_variables<AssignmentAst>(AssignmentAst *assign) {
-    _var_index[*assign->get_variable()].insert(new SimpleStatementCondition(assign));
-    std::set<SimpleVariable> result;
-    result.insert(*assign->get_variable());
-    return result;
-}
+VariableSet ModifiesSolver::index_variables<ProcAst>(ProcAst *proc) {
+    VariableSet result = index_statement_list(proc->get_statement());
 
-template <>
-std::set<SimpleVariable> ModifiesSolver::index_variables<WhileAst>(WhileAst *ast) {
-    std::set<SimpleVariable> result;
-
-    index_statement_list(ast->get_body(), new SimpleStatementCondition(ast), result);
+    index_container_condition(new SimpleProcCondition(proc), result);
 
     return result;
 }
 
 template <>
-std::set<SimpleVariable> ModifiesSolver::index_variables<IfAst>(IfAst *ast) {
-    std::set<SimpleVariable> result;
-    ConditionPtr condition = new SimpleStatementCondition(ast);
+VariableSet ModifiesSolver::index_variables<AssignmentAst>(AssignmentAst *assign) {
+    SimpleVariable modified_var = *assign->get_variable();
 
-    index_statement_list(ast->get_then_branch(), condition, result);
-    index_statement_list(ast->get_else_branch(), condition, result);
+    index_statement(assign, modified_var);
+
+    VariableSet result;
+    result.insert(modified_var);
+    
+    return result;
+}
+
+template <>
+VariableSet ModifiesSolver::index_variables<WhileAst>(WhileAst *ast) {
+    VariableSet result = index_statement_list(ast->get_body());
+
+    index_container_statement(ast, result);
 
     return result;
 }
 
 template <>
-std::set<SimpleVariable> ModifiesSolver::index_variables<CallAst>(CallAst *ast) {
-    std::set<SimpleVariable> result = index_variables<ProcAst>(ast->get_proc_called());
-    ConditionPtr this_condition = new SimpleStatementCondition(ast);
+VariableSet ModifiesSolver::index_variables<IfAst>(IfAst *ast) {
+    VariableSet result = index_statement_list(ast->get_then_branch());
+    VariableSet else_result = index_statement_list(ast->get_else_branch());
 
-    for(std::set<SimpleVariable>::iterator it = result.begin();
-            it != result.end(); ++it)
-    {
-        _var_index[*it].insert(this_condition);
-    }
+    union_set(result, else_result);
+    index_container_statement(ast, result);
 
     return result;
 }
 
 template <>
-std::set<SimpleVariable> ModifiesSolver::index_variables<StatementAst>(StatementAst *statement) {
+VariableSet ModifiesSolver::index_variables<CallAst>(CallAst *ast) {
+    VariableSet result = index_variables<ProcAst>(ast->get_proc_called());
+
+    index_container_statement(ast, result);
+
+    return result;
+}
+
+template <>
+VariableSet ModifiesSolver::index_variables<StatementAst>(StatementAst *statement) {
     StatementVisitorGenerator<ModifiesSolver,
         IndexVariableVisitorTraits<ModifiesSolver> > 
     visitor(this);

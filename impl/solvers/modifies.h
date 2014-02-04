@@ -31,15 +31,7 @@ namespace impl {
 
 using namespace simple;
 
-class ModifiesQuerySolver {
-  public:
-    virtual VariableSet solve_modified_vars(StatementAst *statement) = 0;
-    virtual StatementSet solve_modifying_stats(SimpleVariable *var) = 0;
-
-    virtual ~ModifiesQuerySolver() { }
-};
-
-class ModifiesSolver {
+class ModifiesSolver : public ModifiesQuerySolver {
   public:
     ModifiesSolver(const SimpleRoot& ast);
 
@@ -53,14 +45,29 @@ class ModifiesSolver {
     ConditionSet solve_left(Condition *condition);
 
     template <typename Condition>
-    std::set<SimpleVariable> index_variables(Condition *condition);
+    VariableSet solve_modified(Condition *condition);
+
+    template <typename Condition>
+    StatementSet solve_modifying(Condition *condition);
+
+    VariableSet solve_modified_vars(StatementAst *statement);
+    StatementSet solve_modifying_statements(const SimpleVariable& variable);
+
+    template <typename Condition>
+    VariableSet index_variables(Condition *condition);
 
     ~ModifiesSolver() { }
+
   private:
     SimpleRoot _ast;
-    std::map<SimpleVariable, ConditionSet> _var_index;
+    std::map<SimpleVariable, ConditionSet> _modifying_condition_index;
+    std::map<SimpleVariable, StatementSet> _modifying_statement_index;
+    std::map<StatementAst*, VariableSet> _modified_cache;
 
-    void index_statement_list(StatementAst *statement, ConditionPtr condition, std::set<SimpleVariable>& result);
+    VariableSet index_statement_list(StatementAst *statement);
+    void index_statement(StatementAst *statement, const SimpleVariable& variable);
+    void index_container_statement(StatementAst *statement, const VariableSet& variables);
+    void index_container_condition(ConditionPtr condition, const VariableSet& variables);
 };
 
 /*
@@ -83,10 +90,19 @@ ConditionSet ModifiesSolver::solve_left(Condition *condition) {
 }
 
 template <typename Condition>
-std::set<SimpleVariable> ModifiesSolver::index_variables(Condition *condition) {
+VariableSet ModifiesSolver::index_variables(Condition *condition) {
     return ConditionSet();
 }
 
+template <typename Condition>
+VariableSet ModifiesSolver::solve_modified(Condition *condition) {
+    return VariableSet();
+}
+
+template <typename Condition>
+StatementSet ModifiesSolver::solve_modifying(Condition *condition) {
+    return StatementSet();
+}
 
 template <>
 bool ModifiesSolver::validate<StatementAst, SimpleVariable>(
@@ -134,22 +150,22 @@ template <>
 ConditionSet ModifiesSolver::solve_left<SimpleVariable>(SimpleVariable *variable);
 
 template <>
-std::set<SimpleVariable> ModifiesSolver::index_variables<ProcAst>(ProcAst *proc);
+VariableSet ModifiesSolver::index_variables<ProcAst>(ProcAst *proc);
 
 template <>
-std::set<SimpleVariable> ModifiesSolver::index_variables<AssignmentAst>(AssignmentAst *assign);
+VariableSet ModifiesSolver::index_variables<AssignmentAst>(AssignmentAst *assign);
 
 template <>
-std::set<SimpleVariable> ModifiesSolver::index_variables<WhileAst>(WhileAst *ast);
+VariableSet ModifiesSolver::index_variables<WhileAst>(WhileAst *ast);
 
 template <>
-std::set<SimpleVariable> ModifiesSolver::index_variables<IfAst>(IfAst *ast);
+VariableSet ModifiesSolver::index_variables<IfAst>(IfAst *ast);
 
 template <>
-std::set<SimpleVariable> ModifiesSolver::index_variables<CallAst>(CallAst *ast);
+VariableSet ModifiesSolver::index_variables<CallAst>(CallAst *ast);
 
 template <>
-std::set<SimpleVariable> ModifiesSolver::index_variables<StatementAst>(StatementAst *statement);
+VariableSet ModifiesSolver::index_variables<StatementAst>(StatementAst *statement);
 
 
 } // namespace impl

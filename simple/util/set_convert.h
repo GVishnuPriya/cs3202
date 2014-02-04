@@ -29,10 +29,22 @@ using namespace impl;
 inline ConditionSet statement_set_to_condition_set(const StatementSet& statement_set) {
     ConditionSet result;
 
-    for(StatementSet::iterator it = statement_set.begin(); 
+    for(auto it = statement_set.begin(); 
             it!= statement_set.end(); ++it)
     {
         result.insert(new SimpleStatementCondition(*it));
+    }
+
+    return result;
+}
+
+inline ConditionSet variable_set_to_condition_set(const VariableSet& variable_set) {
+    ConditionSet result;
+
+    for(auto it = variable_set.begin(); 
+            it!= variable_set.end(); ++it)
+    {
+        result.insert(new SimpleVariableCondition(*it));
     }
 
     return result;

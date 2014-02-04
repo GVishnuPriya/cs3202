@@ -19,7 +19,7 @@
 #include <list>
 #include "impl/solvers/inext.h"
 #include "impl/condition.h"
-#include "simple/util/statement_set.h"
+#include "simple/util/set_convert.h"
 #include "simple/util/statement_visitor_generator.h"
 
 namespace simple {
