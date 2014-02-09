@@ -35,6 +35,7 @@ set(SOURCE
   impl/parser/token.cpp 
   impl/parser/parser.cpp 
   impl/parser/pql_parser.cpp 
+  impl/expr.cpp
   )
 
 add_library(spa ${SOURCE})
