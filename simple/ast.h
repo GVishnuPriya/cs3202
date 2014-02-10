@@ -66,6 +66,10 @@ class SimpleVariable {
         return equals(other);
     }
 
+    bool operator !=(const SimpleVariable& other) const {
+        return !equals(other);
+    }
+
     bool operator <(const SimpleVariable& other) const {
         return _name < other._name;
     }

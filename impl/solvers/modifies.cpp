@@ -32,7 +32,7 @@ template <typename Solver>
 class IndexModifiesVisitorTraits {
   public:
     typedef VariableSet ResultType;
-    typedef int                    ContextType;
+    typedef int ContextType;
 
     template <typename Ast>
     static VariableSet visit(
