@@ -25,7 +25,6 @@
 #include "simple/condition_set.h"
 #include "simple/solver.h"
 #include "simple/util/statement_visitor_generator.h"
-#include "impl/expr.h"
 
 namespace simple {
 namespace impl {

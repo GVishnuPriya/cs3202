@@ -21,7 +21,7 @@
 #include "impl/solvers/uses.h"
 #include "simple/util/set_convert.h"
 #include "simple/util/statement_visitor_generator.h"
-#include "impl/expr.h"
+#include "simple/util/expr.h"
 
 namespace simple {
 namespace impl {

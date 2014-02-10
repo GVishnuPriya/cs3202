@@ -1,7 +1,8 @@
 
-#include "impl/expr.h"
+#include "simple/util/expr.h"
 
 namespace simple{
+namespace util {
 
 class ExprVisitorHelper : public ExprVisitor {    
   public:
@@ -28,4 +29,5 @@ VariableSet get_expr_vars(ExprAst *ast) {
     return helper.result;
 }  
 
+}
 }

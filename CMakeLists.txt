@@ -14,8 +14,9 @@ set(SOURCE
   simple/spa.cpp 
   simple/tuple.cpp 
   simple/query.cpp 
-  simple/util/condition_utils.cpp 
   simple/util/ast_utils.cpp 
+  simple/util/condition_utils.cpp 
+  simple/util/expr.cpp
   simple/util/query_utils.cpp 
   impl/linker.cpp 
   impl/predicate.cpp 
@@ -36,7 +37,6 @@ set(SOURCE
   impl/parser/token.cpp 
   impl/parser/parser.cpp 
   impl/parser/pql_parser.cpp 
-  impl/expr.cpp
   )
 
 add_library(spa ${SOURCE})
