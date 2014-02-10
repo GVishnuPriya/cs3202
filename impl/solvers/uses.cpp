@@ -1,8 +1,6 @@
 /*
  * CS3201 Simple Static Analyzer
  * Copyright (C) 2011 Soares Chen Ruo Fei
- *  Contributor(s):
- *    Daniel Le <GreenRecycleBin@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,83 +17,56 @@
  */
 
 
-#include "simple/util/statement_visitor_generator.h"
-#include "impl/solvers/uses.h"
 #include "impl/condition.h"
+#include "impl/solvers/uses.h"
+#include "simple/util/set_convert.h"
+#include "simple/util/statement_visitor_generator.h"
+#include "impl/expr.h"
 
 namespace simple {
 namespace impl {
 
 using namespace simple;
+using namespace simple::util;
 
-/*
- * Helper classes
- */
-class UsesValidateStatementVisitor : public StatementVisitor {
+template <typename Solver>
+class IndexUsesVisitorTraits {
   public:
-    UsesValidateStatementVisitor(
-        UsesSolver *solver, SimpleVariable *var) : 
-        _solver(solver), _var(var) { }
+    typedef VariableSet ResultType;
+    typedef int                    ContextType;
 
-    void visit_if(IfAst *ast) {
-        _result = _solver->validate<IfAst, SimpleVariable>(ast, _var);
+    template <typename Ast>
+    static VariableSet visit(
+            Solver *solver, Ast *ast, int *context = NULL) 
+    {
+        return solver->template index_uses<Ast>(ast);
     }
-
-    void visit_while(WhileAst *ast) {
-        _result = _solver->validate<WhileAst, SimpleVariable>(ast, _var);
-    }
-
-    void visit_assignment(AssignmentAst *ast) {
-        _result = _solver->validate<AssignmentAst, SimpleVariable>(ast, _var);
-    }
-
-    void visit_call(CallAst *ast) {
-        _result = _solver->validate<CallAst, SimpleVariable>(ast, _var);
-    }
-
-    bool return_result() {
-        return _result;
-    }
-
   private:
-    UsesSolver *_solver;
-    SimpleVariable *_var;
-    bool _result;
-};
-
-class UsesValidateExprVisitor : public ExprVisitor {
-  public:
-    UsesValidateExprVisitor(UsesSolver *solver, SimpleVariable *var) :
-    _solver(solver), _var(var) { }
-
-    void visit_const(ConstAst* ast) {
-      _result = _solver->validate<ConstAst, SimpleVariable>(ast, _var);
-    }
-
-    void visit_variable(VariableAst* ast) {
-      _result = _solver->validate<VariableAst, SimpleVariable>(ast, _var);
-    }
-
-    void visit_binary_op(BinaryOpAst* ast) {
-      _result = _solver->validate<BinaryOpAst, SimpleVariable>(ast, _var);
-    }
-
-    bool return_result() {
-      return _result;
-    }
-
-  private:
-    UsesSolver *_solver;
-    SimpleVariable *_var;
-    bool _result;
+    IndexUsesVisitorTraits();
 };
 
 UsesSolver::UsesSolver(const SimpleRoot& ast) : 
     _ast(ast) 
 {
    for(SimpleRoot::iterator it = _ast.begin(); it != _ast.end(); ++it) {
-       index_variables<ProcAst>(*it);
+       index_uses<ProcAst>(*it);
    } 
+}
+
+VariableSet UsesSolver::solve_used_vars(StatementAst *statement) {
+    return _used_by_statement_index[statement];
+}
+
+StatementSet UsesSolver::solve_using_statements(const SimpleVariable& variable) {
+    return _using_statement_index[variable];
+}
+
+/*
+ * solve_left() definitions
+ */
+template <>
+ConditionSet UsesSolver::solve_left<SimpleVariable>(SimpleVariable *variable) {
+    return _using_condition_index[*variable];
 }
 
 /*
@@ -103,232 +74,134 @@ UsesSolver::UsesSolver(const SimpleRoot& ast) :
  */
 template <>
 bool UsesSolver::validate<StatementAst, SimpleVariable>(
-        StatementAst *ast, SimpleVariable *var) 
+        StatementAst *statement, SimpleVariable *var) 
 {
-    UsesValidateStatementVisitor visitor(this, var);
-    ast->accept_statement_visitor(&visitor);
-    return visitor.return_result();
+    return _used_by_statement_index[statement].count(*var) > 0;
 }
 
 template <>
 bool UsesSolver::validate<ProcAst, SimpleVariable>(
         ProcAst *ast, SimpleVariable *var)
 {
-    StatementAst *body = ast->get_statement();
-    while(body != NULL) {
-        if(validate<StatementAst, SimpleVariable>(body, var)) {
-            return true;
-        }
-        body = body->next();
-    }
-
-    return false;
+    return _using_condition_index[*var].has_element(new SimpleProcCondition(ast));
 }
-
-template <>
-bool UsesSolver::validate<AssignmentAst, SimpleVariable>(
-        AssignmentAst *ast, SimpleVariable *var) 
-{
-    return validate<ExprAst, SimpleVariable>(ast->get_expr(), var);
-}
-
-template <>
-bool UsesSolver::validate<ExprAst, SimpleVariable>(
-        ExprAst *ast, SimpleVariable *var)
-{
-    UsesValidateExprVisitor visitor(this, var);
-    ast->accept_expr_visitor(&visitor);
-  
-    return visitor.return_result();
-}
-
-template <>
-bool UsesSolver::validate<VariableAst, SimpleVariable>(
-        VariableAst *ast, SimpleVariable *var) 
-{
-    return *ast->get_variable() == *var;
-}
-
-template <>
-bool UsesSolver::validate<ConstAst, SimpleVariable>(
-        ConstAst *ast, SimpleVariable *var)
-{
-    return false;
-}
-
-template <>
-bool UsesSolver::validate<BinaryOpAst, SimpleVariable>(
-        BinaryOpAst *ast, SimpleVariable *var) 
-{
-    if (validate<ExprAst, SimpleVariable>(ast->get_lhs(), var)) {
-      return true;
-    }
-
-    if (validate<ExprAst, SimpleVariable>(ast->get_rhs(), var)) {
-      return true;
-    }
-
-    return false;
-}
-
-template <>
-bool UsesSolver::validate<IfAst, SimpleVariable>(
-        IfAst *ast, SimpleVariable *var) 
-{
-    if (ast->get_variable()->equals(*var)) {
-      return true;
-    }
-
-    StatementAst *then_branch = ast->get_then_branch();
-    while(then_branch != NULL) {
-        if(validate<StatementAst, SimpleVariable>(then_branch, var)) {
-            return true;
-        }
-        then_branch = then_branch->next();
-    }
-
-    StatementAst *else_branch = ast->get_else_branch();
-    while(else_branch != NULL) {
-        if(validate<StatementAst, SimpleVariable>(else_branch, var)) {
-            return true;
-        }
-        else_branch = else_branch->next();
-    }
-
-    return false;
-}
-
-template <>
-bool UsesSolver::validate<WhileAst, SimpleVariable>(
-        WhileAst *ast, SimpleVariable *var)
-{
-    if (ast->get_variable()->equals(*var)) {
-      return true;
-    }
-
-    StatementAst *body = ast->get_body();
-    while(body != NULL) {
-        if(validate<StatementAst, SimpleVariable>(body, var)) {
-            return true;
-        }
-        body = body->next();
-    }
-
-    return false;
-}
-
-template <>
-bool UsesSolver::validate<CallAst, SimpleVariable>(
-        CallAst *ast, SimpleVariable *var)
-{
-    return validate<ProcAst, SimpleVariable>(ast->get_proc_called(), var);
-}
-
 
 /*
  * solve_right() definitions
  */
 template <>
 ConditionSet UsesSolver::solve_right<StatementAst>(StatementAst *ast) {
-    StatementVisitorGenerator<UsesSolver, 
-        SolveRightVisitorTraits<UsesSolver> > visitor(this);
-
-    ast->accept_statement_visitor(&visitor);
-
-    return visitor.return_result();
-}
-
-template <>
-ConditionSet UsesSolver::solve_right<IfAst>(IfAst *ast) {
-    ConditionSet result;
-    result.insert(new SimpleVariableCondition(*ast->get_variable()));
-    
-    StatementAst *then = ast->get_then_branch();
-    while(then != NULL) {
-        result.union_with(solve_right<StatementAst>(then));
-        then = then->next();
-    }
-
-    StatementAst *el = ast->get_else_branch();
-    while(el != NULL) {
-        result.union_with(solve_right<StatementAst>(el));
-        el = el->next();
-    }
-
-    return result;
-}
-
-template <>
-ConditionSet UsesSolver::solve_right<WhileAst>(WhileAst *ast) {
-    ConditionSet result;
-    result.insert(new SimpleVariableCondition(*ast->get_variable()));
-
-    StatementAst *body = ast->get_body();
-    while(body != NULL) {
-        result.union_with(solve_right<StatementAst>(body));
-        body = body->next();
-    }
-
-    return result;
+    return variable_set_to_condition_set(_used_by_statement_index[ast]);
 }
 
 template <>
 ConditionSet UsesSolver::solve_right<ProcAst>(ProcAst *ast) {
-    ConditionSet result;
-    
-    StatementAst *body = ast->get_statement();
-    while(body != NULL) {
-        result.union_with(solve_right<StatementAst>(body));
-        body = body->next();
+    return _used_by_condition_index[new SimpleProcCondition(ast)];
+}
+
+/*
+ * index_variable()
+ */
+
+void UsesSolver::index_statement(StatementAst *statement, const SimpleVariable& variable) {
+    _using_statement_index[variable].insert(statement);
+    _used_by_statement_index[statement].insert(variable);
+
+    index_condition(new SimpleStatementCondition(statement), variable);
+}
+
+void UsesSolver::index_condition(ConditionPtr condition, const SimpleVariable& variable) {
+    _using_condition_index[variable].insert(condition);
+    _used_by_condition_index[condition].insert(new SimpleVariableCondition(variable));
+}
+
+void UsesSolver::index_container_statement(StatementAst *statement, const VariableSet& variables) {
+    ConditionPtr condition = new SimpleStatementCondition(statement);
+
+    for(auto it = variables.begin(); it != variables.end(); ++it) {
+        index_statement(statement, *it);
+    }
+}
+
+void UsesSolver::index_container_condition(ConditionPtr condition, const VariableSet& variables) {
+    for(auto it = variables.begin(); it != variables.end(); ++it) {
+        index_condition(condition, *it);
+    }
+}
+
+VariableSet UsesSolver::index_statement_list(StatementAst *statement) {
+    VariableSet result;
+
+    while(statement != NULL) {
+        VariableSet current_result = index_uses<StatementAst>(statement);
+        union_set(result, current_result);
+        statement = statement->next();
     }
 
     return result;
 }
 
 template <>
-ConditionSet UsesSolver::solve_right<AssignmentAst>(AssignmentAst *ast) {
-    return solve_right<ExprAst>(ast->get_expr());
-}
+VariableSet UsesSolver::index_uses<ProcAst>(ProcAst *proc) {
+    VariableSet result = index_statement_list(proc->get_statement());
 
-template <>
-ConditionSet UsesSolver::solve_right<ExprAst>(ExprAst *ast) {
-    ExprVisitorGenerator<UsesSolver, 
-        SolveRightVisitorTraits<UsesSolver> > visitor(this);
-
-    ast->accept_expr_visitor(&visitor);
-
-    return visitor.return_result();  
-}
-
-template <>
-ConditionSet UsesSolver::solve_right<VariableAst>(VariableAst *ast) {
-    ConditionSet result;
-    result.insert(new SimpleVariableCondition(
-            *(ast->get_variable())));
+    index_container_condition(new SimpleProcCondition(proc), result);
 
     return result;
 }
 
 template <>
-ConditionSet UsesSolver::solve_right<ConstAst>(ConstAst *ast) {
-    ConditionSet result;
+VariableSet UsesSolver::index_uses<AssignmentAst>(AssignmentAst *assign) {
+    ExprAst* used_expr = assign->get_expr();
+    VariableSet result = get_expr_vars(used_expr);
+
+    for(VariableSet::iterator it = result.begin(); it != result.end(); ++it) {
+        index_statement(assign, *it);
+    }
 
     return result;
 }
 
 template <>
-ConditionSet UsesSolver::solve_right<BinaryOpAst>(BinaryOpAst *ast) {
-    ConditionSet result;
-
-    result.union_with(solve_right<ExprAst>(ast->get_lhs()));
-    result.union_with(solve_right<ExprAst>(ast->get_rhs()));
+VariableSet UsesSolver::index_uses<WhileAst>(WhileAst *ast) {
+    VariableSet result = index_statement_list(ast->get_body());
+    SimpleVariable var_used = *ast->get_variable();
+    result.insert(var_used);
+    index_container_statement(ast, result);
 
     return result;
 }
 
 template <>
-ConditionSet UsesSolver::solve_right<CallAst>(CallAst *ast) {
-    return solve_right<ProcAst>(ast->get_proc_called());
+VariableSet UsesSolver::index_uses<IfAst>(IfAst *ast) {
+    VariableSet result = index_statement_list(ast->get_then_branch());
+    VariableSet else_result = index_statement_list(ast->get_else_branch());
+    SimpleVariable var_used = *ast->get_variable();
+    
+    union_set(result, else_result); 
+    result.insert(var_used);
+    index_container_statement(ast, result);
+
+    return result;
+}
+
+template <>
+VariableSet UsesSolver::index_uses<CallAst>(CallAst *ast) {
+    VariableSet result = index_uses<ProcAst>(ast->get_proc_called());
+
+    index_container_statement(ast, result);
+
+    return result;
+}
+
+template <>
+VariableSet UsesSolver::index_uses<StatementAst>(StatementAst *statement) {
+    StatementVisitorGenerator<UsesSolver,
+        IndexUsesVisitorTraits<UsesSolver> > 
+    visitor(this);
+
+    statement->accept_statement_visitor(&visitor);
+    return visitor.return_result();
 }
 
 } // namespace impl

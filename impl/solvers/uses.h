@@ -1,8 +1,6 @@
 /*
  * CS3201 Simple Static Analyzer
  * Copyright (C) 2011 Soares Chen Ruo Fei
- *  Contributor(s):
- *    Daniel Le <GreenRecycleBin@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,23 +24,15 @@
 #include "simple/condition.h"
 #include "simple/condition_set.h"
 #include "simple/solver.h"
-#include "simple/util/set_utils.h"
 #include "simple/util/statement_visitor_generator.h"
+#include "impl/expr.h"
 
 namespace simple {
 namespace impl {
 
 using namespace simple;
 
-class UsesQuerySolver {
-  public:
-    virtual VariableSet solve_used_vars(StatementAst *statement) = 0;
-    virtual StatementSet solve_using_stats(SimpleVariable *var) = 0;
-
-    virtual ~UsesQuerySolver() { }
-};
-
-class UsesSolver {
+class UsesSolver : public UsesQuerySolver {
   public:
     UsesSolver(const SimpleRoot& ast);
 
@@ -55,15 +45,28 @@ class UsesSolver {
     template <typename Condition>
     ConditionSet solve_left(Condition *condition);
 
+    VariableSet solve_used_vars(StatementAst *statement);
+    StatementSet solve_using_statements(const SimpleVariable& variable);
+
     template <typename Condition>
-    std::set<SimpleVariable> index_variables(Condition *condition);
+    VariableSet index_uses(Condition *condition);
 
     ~UsesSolver() { }
+
   private:
     SimpleRoot _ast;
-    std::map<SimpleVariable, ConditionSet> _var_index;
 
-    void index_statement_list(StatementAst *statement, ConditionPtr condition, std::set<SimpleVariable>& result);
+    std::map<SimpleVariable, StatementSet> _using_statement_index;
+    std::map<SimpleVariable, ConditionSet> _using_condition_index;
+
+    std::map<StatementAst*, VariableSet> _used_by_statement_index;
+    std::map<ConditionPtr, ConditionSet> _used_by_condition_index;
+
+    VariableSet index_statement_list(StatementAst *statement);
+    void index_statement(StatementAst *statement, const SimpleVariable& variable);
+    void index_condition(ConditionPtr condition, const SimpleVariable& variable);
+    void index_container_statement(StatementAst *statement, const VariableSet& variables);
+    void index_container_condition(ConditionPtr condition, const VariableSet& variables);
 };
 
 /*
@@ -86,8 +89,8 @@ ConditionSet UsesSolver::solve_left(Condition *condition) {
 }
 
 template <typename Condition>
-std::set<SimpleVariable> UsesSolver::index_variables(Condition *condition) {
-    return VariableSet();
+VariableSet UsesSolver::index_uses(Condition *condition) {
+    return ConditionSet();
 }
 
 template <>
@@ -99,66 +102,32 @@ bool UsesSolver::validate<ProcAst, SimpleVariable>(
         ProcAst *ast, SimpleVariable *var);
 
 template <>
-bool UsesSolver::validate<AssignmentAst, SimpleVariable>(
-        AssignmentAst *ast, SimpleVariable *var);
-
-template <>
-bool UsesSolver::validate<ExprAst, SimpleVariable>(
-        ExprAst *ast, SimpleVariable *var);
-
-template <>
-bool UsesSolver::validate<VariableAst, SimpleVariable>(
-        VariableAst *ast, SimpleVariable *var);
-
-template <>
-bool UsesSolver::validate<ConstAst, SimpleVariable>(
-        ConstAst *ast, SimpleVariable *var);
-
-template <>
-bool UsesSolver::validate<BinaryOpAst, SimpleVariable>(
-        BinaryOpAst *ast, SimpleVariable *var);
-
-template <>
-bool UsesSolver::validate<IfAst, SimpleVariable>(
-        IfAst *ast, SimpleVariable *var); 
-
-template <>
-bool UsesSolver::validate<WhileAst, SimpleVariable>(
-        WhileAst *ast, SimpleVariable *var);
-
-template <>
-bool UsesSolver::validate<CallAst, SimpleVariable>(
-        CallAst *ast, SimpleVariable *var);
-
-template <>
 ConditionSet UsesSolver::solve_right<StatementAst>(StatementAst *ast);
-
-template <>
-ConditionSet UsesSolver::solve_right<IfAst>(IfAst *ast);
-
-template <>
-ConditionSet UsesSolver::solve_right<WhileAst>(WhileAst *ast);
 
 template <>
 ConditionSet UsesSolver::solve_right<ProcAst>(ProcAst *ast);
 
 template <>
-ConditionSet UsesSolver::solve_right<AssignmentAst>(AssignmentAst *ast);
+ConditionSet UsesSolver::solve_left<SimpleVariable>(SimpleVariable *variable);
 
 template <>
-ConditionSet UsesSolver::solve_right<ExprAst>(ExprAst *ast);
+VariableSet UsesSolver::index_uses<ProcAst>(ProcAst *proc);
 
 template <>
-ConditionSet UsesSolver::solve_right<VariableAst>(VariableAst *ast);
+VariableSet UsesSolver::index_uses<AssignmentAst>(AssignmentAst *assign);
 
 template <>
-ConditionSet UsesSolver::solve_right<ConstAst>(ConstAst *ast);
+VariableSet UsesSolver::index_uses<WhileAst>(WhileAst *ast);
 
 template <>
-ConditionSet UsesSolver::solve_right<BinaryOpAst>(BinaryOpAst *ast);
+VariableSet UsesSolver::index_uses<IfAst>(IfAst *ast);
 
 template <>
-ConditionSet UsesSolver::solve_right<CallAst>(CallAst *ast);
+VariableSet UsesSolver::index_uses<CallAst>(CallAst *ast);
+
+template <>
+VariableSet UsesSolver::index_uses<StatementAst>(StatementAst *statement);
+
 
 } // namespace impl
 } // namespace simple
