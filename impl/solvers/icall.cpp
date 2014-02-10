@@ -20,7 +20,6 @@
 #include "impl/condition.h"
 #include "simple/util/statement_visitor_generator.h"
 
-
 namespace simple {
 namespace impl {
 
