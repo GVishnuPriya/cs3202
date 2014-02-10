@@ -125,8 +125,7 @@ class SimplePqlFrontEnd {
         std::shared_ptr<NextSolver> next_solver(new NextSolver(_ast));
         std::shared_ptr<INextSolver> inext_solver(new INextSolver(_ast, next_solver));
         
-        std::shared_ptr<AffectsSolver> affects_solver( new AffectsSolver(
-            next_solver, uses_solver, modifies_solver));
+        std::shared_ptr<AffectsSolver> affects_solver(new AffectsSolver(next_solver));
 
         _solver_table["modifies"] = std::shared_ptr<QuerySolver>(
             new SimpleSolverGenerator<ModifiesSolver>(modifies_solver));

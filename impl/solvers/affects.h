@@ -14,9 +14,7 @@ using namespace simple::util;
 
 class AffectsSolver {
   public:
-    AffectsSolver(std::shared_ptr<NextQuerySolver> next_solver,
-      std::shared_ptr<UsesQuerySolver> uses_solver,
-      std::shared_ptr<ModifiesQuerySolver> modifies_solver);
+    AffectsSolver(std::shared_ptr<NextQuerySolver> next_solver);
 
     template <typename Condition>
     StatementSet solve_affected_statements(Condition *statement);
@@ -47,8 +45,6 @@ class AffectsSolver {
     
   private:
     std::shared_ptr<NextQuerySolver> _next_solver;
-    std::shared_ptr<UsesQuerySolver> _uses_solver;
-    std::shared_ptr<ModifiesQuerySolver> _modifies_solver;
 
     std::map< std::pair<SimpleVariable, StatementAst*>, StatementSet> 
     _affected_by_var_cache;

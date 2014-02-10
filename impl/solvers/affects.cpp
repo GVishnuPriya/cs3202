@@ -62,12 +62,8 @@ class SolveAffectingStatementsVisitorTraits {
     }
 };
 
-AffectsSolver::AffectsSolver(std::shared_ptr<NextQuerySolver> next_solver,
-    std::shared_ptr<UsesQuerySolver> uses_solver,
-    std::shared_ptr<ModifiesQuerySolver> modifies_solver) :
-    _next_solver(next_solver),
-    _uses_solver(uses_solver),
-    _modifies_solver(modifies_solver)
+AffectsSolver::AffectsSolver(std::shared_ptr<NextQuerySolver> next_solver) :
+    _next_solver(next_solver)
 { }
 
 template <>
