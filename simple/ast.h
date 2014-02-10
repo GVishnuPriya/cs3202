@@ -20,7 +20,8 @@
 
 #include <memory>
 #include <string>
-#include <map>
+#include <functional>
+#include <unordered_map>
 
 namespace simple {
 
@@ -39,7 +40,7 @@ class ContainerVisitor;
 class StatementVisitor;
 class ExprVisitor;
 
-typedef std::map<int, StatementAst*> LineTable;
+typedef std::unordered_map<int, StatementAst*> LineTable;
 
 class InconsistentAstError : public std::exception { };
 
@@ -54,7 +55,7 @@ class SimpleVariable {
     SimpleVariable(const std::string& name) : _name(name) { }
     SimpleVariable(const SimpleVariable& other) : _name(other._name) { }
 
-    std::string get_name() {
+    std::string get_name() const {
         return _name;
     }
 
@@ -124,7 +125,7 @@ class ProcAst {
 
 class SimpleRoot {
   public:
-    typedef std::map<std::string, std::shared_ptr<ProcAst> > ProcListType;
+    typedef std::unordered_map<std::string, std::shared_ptr<ProcAst> > ProcListType;
 
     class iterator;
 
@@ -416,3 +417,17 @@ class ExprVisitor {
 
 
 } // namespace simple
+
+
+namespace std {
+
+using namespace simple;
+
+template <>
+struct hash<SimpleVariable> { 
+    std::size_t operator()(const SimpleVariable& key) const {
+        return hash<std::string>()(key.get_name());
+    }
+};
+
+}

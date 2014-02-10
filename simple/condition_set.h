@@ -21,6 +21,7 @@
 #include <set>
 #include <memory>
 #include <iostream>
+#include <functional>
 #include "simple/condition.h"
 #include "simple/util/set_utils.h"
 
@@ -110,3 +111,16 @@ struct ConditionPair {
 ::std::ostream& operator<<(::std::ostream& os, const ConditionSet& set);
 
 } // namespace simple
+
+namespace std {
+
+using namespace simple;
+
+template <>
+struct hash<ConditionPtr> { 
+    std::size_t operator()(const ConditionPtr& key) const {
+        return hash<SimpleCondition*>()(key.get());
+    }
+};
+
+}

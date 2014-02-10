@@ -18,8 +18,9 @@
 
 #pragma once
 
-#include <map>
 #include <set>
+#include <unordered_map>
+
 #include "simple/ast.h"
 #include "simple/condition.h"
 #include "simple/condition_set.h"
@@ -55,11 +56,11 @@ class UsesSolver : public UsesQuerySolver {
   private:
     SimpleRoot _ast;
 
-    std::map<SimpleVariable, StatementSet> _using_statement_index;
-    std::map<SimpleVariable, ConditionSet> _using_condition_index;
+    std::unordered_map<SimpleVariable, StatementSet> _using_statement_index;
+    std::unordered_map<SimpleVariable, ConditionSet> _using_condition_index;
 
-    std::map<StatementAst*, VariableSet> _used_by_statement_index;
-    std::map<ConditionPtr, ConditionSet> _used_by_condition_index;
+    std::unordered_map<StatementAst*, VariableSet> _used_by_statement_index;
+    std::unordered_map<ConditionPtr, ConditionSet> _used_by_condition_index;
 
     VariableSet index_statement_list(StatementAst *statement);
     void index_statement(StatementAst *statement, const SimpleVariable& variable);

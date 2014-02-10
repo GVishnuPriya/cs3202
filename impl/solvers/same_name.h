@@ -19,6 +19,7 @@
 #pragma once
 
 #include <string>
+#include <unordered_map>
 #include "simple/ast.h"
 #include "impl/condition.h"
 
@@ -73,7 +74,7 @@ class SameNameSolver {
     }
 
   private:
-    std::map<std::string, ConditionSet> _name_table;
+    std::unordered_map<std::string, ConditionSet> _name_table;
     SimpleRoot _ast;
 };
 
