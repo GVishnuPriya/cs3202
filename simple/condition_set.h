@@ -119,7 +119,7 @@ using namespace simple;
 template <>
 struct hash<ConditionPtr> { 
     std::size_t operator()(const ConditionPtr& key) const {
-        return hash<SimpleCondition*>()(key.get());
+        return key.get()->get_hash();
     }
 };
 

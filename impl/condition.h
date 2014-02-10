@@ -18,6 +18,7 @@
 
 #pragma once
 
+#include <functional>
 #include "simple/condition.h"
 
 namespace simple {
@@ -31,6 +32,10 @@ class SimpleStatementCondition : public StatementCondition {
 
     StatementAst* get_statement_ast() {
         return _ast;
+    }
+
+    std::size_t get_hash() {
+        return std::hash<StatementAst*>()(_ast);
     }
 
     void accept_condition_visitor(ConditionVisitor *visitor) {
@@ -49,6 +54,10 @@ class SimpleProcCondition : public ProcCondition {
 
     ProcAst* get_proc_ast() {
         return _proc;
+    }
+
+    std::size_t get_hash() {
+        return std::hash<ProcAst*>()(_proc);
     }
 
     void accept_condition_visitor(ConditionVisitor *visitor) {
@@ -71,6 +80,10 @@ class SimpleVariableCondition : public VariableCondition {
         return &_var;
     }
 
+    std::size_t get_hash() {
+        return std::hash<SimpleVariable>()(_var);
+    }
+
     virtual void accept_condition_visitor(ConditionVisitor *visitor) {
         visitor->visit_variable_condition(this);
     }
@@ -88,6 +101,10 @@ class SimpleConstantCondition : public ConstantCondition {
         return &_value;
     }
 
+    std::size_t get_hash() {
+        return std::hash<int>()(_value.get_int());
+    }
+
     virtual void accept_condition_visitor(ConditionVisitor *visitor) {
         visitor->visit_constant_condition(this);
     }
@@ -103,6 +120,11 @@ class SimplePatternCondition : public PatternCondition {
 
     ExprAst* get_expr_ast() {
         return _pattern.get();
+    }
+
+    std::size_t get_hash() {
+        // TODO: compute real expr hash
+        return std::hash<ExprAst*>()(_pattern.get());
     }
 
     void accept_condition_visitor(ConditionVisitor *visitor) {

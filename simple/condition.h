@@ -26,7 +26,10 @@ class ConditionVisitor;
 
 class SimpleCondition {
   public:
+    virtual std::size_t get_hash() = 0;
+
     virtual void accept_condition_visitor(ConditionVisitor *visitor) = 0;
+    
     virtual ~SimpleCondition() { }
 };
 
