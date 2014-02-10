@@ -21,9 +21,9 @@ class AffectsSolver {
     template <typename Condition>
     StatementSet solve_affected_statements(Condition *statement);
 
-    StatementSet solve_affected_statements(StatementAst *statement);
+    template <typename Condition>
+    StatementSet solve_affecting_statements(Condition *statement);
 
-    StatementSet solve_affecting_statements(StatementAst *statement);
     bool validate_affect(StatementAst *statement1, StatementAst *statement2);
 
     template <typename Condition1, typename Condition2>
@@ -40,8 +40,10 @@ class AffectsSolver {
     template <typename Condition>
     StatementSet solve_affected_by_var(SimpleVariable var, Condition *condition);
 
-    StatementSet solve_prev_affecting_with_vars(VariableSet vars, StatementAst *statement);
-    StatementSet solve_affecting_with_vars(VariableSet vars, StatementAst *statement);
+    StatementSet solve_prev_affecting_with_var(SimpleVariable var, StatementAst *statement);
+
+    template <typename Condition>
+    StatementSet solve_affecting_with_var(SimpleVariable var, Condition *statement);
     
   private:
     std::shared_ptr<NextQuerySolver> _next_solver;
@@ -54,6 +56,11 @@ class AffectsSolver {
 
 template <typename Condition>
 StatementSet AffectsSolver::solve_affected_statements(Condition *statement) {
+    return StatementSet();
+}
+
+template <typename Condition>
+StatementSet AffectsSolver::solve_affecting_statements(Condition *statement) {
     return StatementSet();
 }
 
@@ -90,6 +97,26 @@ StatementSet AffectsSolver::solve_affected_by_var<WhileAst>(
 
 template <>
 StatementSet AffectsSolver::solve_affected_by_var<CallAst>(
+    SimpleVariable var, CallAst *statement);
+
+template <>
+StatementSet AffectsSolver::solve_affecting_with_var<StatementAst>(
+    SimpleVariable var, StatementAst *statement);
+
+template <>
+StatementSet AffectsSolver::solve_affecting_with_var<AssignmentAst>(
+    SimpleVariable var, AssignmentAst *statement);
+
+template <>
+StatementSet AffectsSolver::solve_affecting_with_var<IfAst>(
+    SimpleVariable var, IfAst *statement);
+
+template <>
+StatementSet AffectsSolver::solve_affecting_with_var<WhileAst>(
+    SimpleVariable var, WhileAst *statement);
+
+template <>
+StatementSet AffectsSolver::solve_affecting_with_var<CallAst>(
     SimpleVariable var, CallAst *statement);
 
 }

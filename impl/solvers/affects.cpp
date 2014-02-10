@@ -10,7 +10,7 @@ namespace impl {
 using namespace simple;
 using namespace simple::util;
 
-class SolveAffectedByVarsVisitorTraits {
+class SolveAffectedByVarVisitorTraits {
   public:
     typedef StatementSet ResultType;
     typedef SimpleVariable ContextType;
@@ -20,6 +20,19 @@ class SolveAffectedByVarsVisitorTraits {
             AffectsSolver *solver, Ast *ast, SimpleVariable *var) 
     {
         return solver->template solve_affected_by_var<Ast>(*var, ast);
+    }
+};
+
+class SolveAffectingWithVarVisitorTraits {
+  public:
+    typedef StatementSet ResultType;
+    typedef SimpleVariable ContextType;
+
+    template <typename Ast>
+    static StatementSet visit(
+            AffectsSolver *solver, Ast *ast, SimpleVariable *var) 
+    {
+        return solver->template solve_affecting_with_var<Ast>(*var, ast);
     }
 };
 
@@ -33,6 +46,19 @@ class SolveAffectedStatementsVisitorTraits {
             AffectsSolver *solver, Ast *ast, int *ctx) 
     {
         return solver->template solve_affected_statements<Ast>(ast);
+    }
+};
+
+class SolveAffectingStatementsVisitorTraits {
+  public:
+    typedef StatementSet ResultType;
+    typedef int ContextType;
+
+    template <typename Ast>
+    static StatementSet visit(
+            AffectsSolver *solver, Ast *ast, int *ctx) 
+    {
+        return solver->template solve_affecting_statements<Ast>(ast);
     }
 };
 
@@ -80,7 +106,7 @@ StatementSet AffectsSolver::solve_affected_by_var<StatementAst>(
 
     _affected_by_var_cache[key] = StatementSet();
 
-    StatementVisitorGenerator<AffectsSolver, SolveAffectedByVarsVisitorTraits>
+    StatementVisitorGenerator<AffectsSolver, SolveAffectedByVarVisitorTraits>
         visitor(this, &var);
 
     statement->accept_statement_visitor(&visitor);
@@ -130,45 +156,92 @@ StatementSet AffectsSolver::solve_affected_by_var<CallAst>(
     return solve_next_affected_by_var(var, statement);
 }
 
-StatementSet AffectsSolver::solve_affecting_statements(StatementAst *affected) {
-    VariableSet used_vars = _uses_solver->solve_used_vars(affected);
-    return solve_prev_affecting_with_vars(used_vars, affected);
+
+template <>
+StatementSet AffectsSolver::solve_affecting_statements<StatementAst>(StatementAst *statement) {
+    StatementVisitorGenerator<AffectsSolver, SolveAffectingStatementsVisitorTraits>
+    visitor(this);
+
+    statement->accept_statement_visitor(&visitor);
+    return visitor.return_result();
 }
 
-StatementSet AffectsSolver::solve_prev_affecting_with_vars(VariableSet vars, StatementAst *statement) {
-    StatementSet prev = _next_solver->solve_prev_statement(statement);
-
+template <>
+StatementSet AffectsSolver::solve_affecting_statements<AssignmentAst>(AssignmentAst *statement) {
+    VariableSet used_vars = get_expr_vars(statement->get_expr());
+    
     StatementSet result;
-    for(auto it=prev.begin(); it != prev.end(); ++it) {
-        union_set(result, solve_affecting_with_vars(vars, *it));
+    for(auto it=used_vars.begin(); it!= used_vars.end(); ++it) {
+        union_set(result, solve_prev_affecting_with_var(*it, statement));
     }
 
     return result;
 }
 
-StatementSet AffectsSolver::solve_affecting_with_vars(VariableSet vars, StatementAst *statement) {
-    VariableSet modified_vars = _modifies_solver->solve_modified_vars(statement);
-
-    bool is_affecting;
-    VariableSet remaining_vars;
-    for(auto it = vars.begin(); it != vars.end(); ++it) {
-        if(modified_vars.count(*it) > 0) {
-            is_affecting = true;
-        } else {
-            remaining_vars.insert(*it);
-        }
+StatementSet AffectsSolver::solve_prev_affecting_with_var(SimpleVariable var, StatementAst *statement) {
+    StatementSet prev = _next_solver->solve_prev_statement(statement);
+    
+    StatementSet result;
+    for(auto it=prev.begin(); it != prev.end(); ++it) {
+        union_set(result, solve_affecting_with_var<StatementAst>(var, *it));
     }
 
-    if(remaining_vars.size() > 0) {
-        StatementSet result = solve_prev_affecting_with_vars(remaining_vars, statement);
-        if(is_affecting) result.insert(statement);
-        return result;
+    return result;
+}
 
-    } else {
+template <>
+StatementSet AffectsSolver::solve_affecting_with_var<StatementAst>(
+    SimpleVariable var, StatementAst *statement) 
+{
+    std::pair<SimpleVariable, StatementAst*> key(var, statement);
+    if(_affected_by_var_cache.count(key) > 0) return _affected_by_var_cache[key];
+
+    _affected_by_var_cache[key] = StatementSet();
+
+    StatementVisitorGenerator<AffectsSolver, SolveAffectingWithVarVisitorTraits>
+        visitor(this, &var);
+
+    statement->accept_statement_visitor(&visitor);
+    StatementSet result = visitor.return_result();
+
+    _affected_by_var_cache[key] = result;
+    return result;
+}
+
+template <>
+StatementSet AffectsSolver::solve_affecting_with_var<AssignmentAst>(
+    SimpleVariable var, AssignmentAst *statement) 
+{
+    SimpleVariable modified_var = *statement->get_variable();
+
+    if(modified_var == var) {
         StatementSet result;
-        if(is_affecting) result.insert(statement);
+        result.insert(statement);
         return result;
+    } else {
+        return solve_prev_affecting_with_var(var, statement);
     }
+}
+
+template <>
+StatementSet AffectsSolver::solve_affecting_with_var<IfAst>(
+    SimpleVariable var, IfAst *statement)
+{
+    return solve_prev_affecting_with_var(var, statement);
+}
+
+template <>
+StatementSet AffectsSolver::solve_affecting_with_var<WhileAst>(
+    SimpleVariable var, WhileAst *statement)
+{
+    return solve_prev_affecting_with_var(var, statement);
+}
+
+template <>
+StatementSet AffectsSolver::solve_affecting_with_var<CallAst>(
+    SimpleVariable var, CallAst *statement)
+{
+    return solve_prev_affecting_with_var(var, statement);
 }
 
 bool AffectsSolver::validate_affect(StatementAst *affecting, StatementAst *affected) {
@@ -182,7 +255,7 @@ ConditionSet AffectsSolver::solve_right<StatementAst>(StatementAst *affected) {
 
 template <>
 ConditionSet AffectsSolver::solve_left<StatementAst>(StatementAst *affecting) {
-    return statement_set_to_condition_set(solve_affecting_statements(affecting));
+    return statement_set_to_condition_set(solve_affecting_statements<StatementAst>(affecting));
 }
 
 template <>
