@@ -21,6 +21,7 @@ set(SOURCE
   impl/predicate.cpp 
   impl/processor.cpp 
   impl/selector.cpp 
+  impl/solvers/affects.cpp 
   impl/solvers/follows.cpp 
   impl/solvers/ifollows.cpp 
   impl/solvers/parent.cpp 
