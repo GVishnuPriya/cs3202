@@ -20,7 +20,6 @@
 #include "simple/util/expr.h"
 #include "simple/util/ast_utils.h"
 #include "simple/util/condition_utils.h"
-#include "simple/util/condition_visitor_generator.h"
 
 namespace simple {
 namespace util {
@@ -89,7 +88,6 @@ std::string condition_to_string(SimpleCondition *condition) {
     ConditionPrinter printer(condition);
     return printer.return_result();
 }
-
 
 template <>
 bool is_same_condition<SimpleCondition, SimpleCondition>(

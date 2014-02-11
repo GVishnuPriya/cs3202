@@ -21,11 +21,15 @@
 #include <string>
 #include <iostream>
 #include "simple/condition.h"
+#include "simple/util/condition_visitor_generator.h"
 
 namespace simple {
 namespace util {
 
 std::string condition_to_string(SimpleCondition *condition);
+
+template <typename Condition>
+Condition* condition_cast(SimpleCondition *condition);
 
 template <typename Condition1, typename Condition2>
 bool is_same_condition(Condition1 *condition1, Condition2 *condition2) {
@@ -106,6 +110,45 @@ bool is_less_than_condition<ProcCondition, ProcCondition>(
 template <>
 bool is_less_than_condition<PatternCondition, PatternCondition>(
         PatternCondition *condition1, PatternCondition *condition2);
+
+
+template <typename SourceCondition, typename TargetCondition>
+struct ConditionCaster {
+    static TargetCondition* condition_cast(SourceCondition *condition) {
+        return NULL;
+    }
+};
+
+template <typename Condition>
+struct ConditionCaster<Condition, Condition> 
+{
+    static Condition* condition_cast(Condition *condition) {
+        return condition;
+    }
+};
+
+template <typename TargetCondition>
+class ConditionCastVisitorTraits {
+  public:
+    typedef TargetCondition* ResultType;
+
+    template <typename SourceCondition>
+    static TargetCondition* visit(SimpleCondition *c, SourceCondition *condition) {
+        return ConditionCaster<SourceCondition, TargetCondition>::
+            condition_cast(condition);
+    }
+};
+
+template <typename Condition>
+Condition* condition_cast(SimpleCondition *condition) {
+    ConditionVisitorGenerator<SimpleCondition, 
+        ConditionCastVisitorTraits<Condition> > 
+        visitor(condition);
+
+    condition->accept_condition_visitor(&visitor);
+    return visitor.return_result();
+}
+
 
 } // namespace util
 } // namespace simple

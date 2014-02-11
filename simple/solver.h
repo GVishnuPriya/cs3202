@@ -91,6 +91,7 @@ class UsesQuerySolver {
     virtual ~UsesQuerySolver() { }
 };
 
-typedef std::map<std::string, std::shared_ptr<QuerySolver> > SolverTable;
+typedef std::shared_ptr<QuerySolver> SolverPtr;
+typedef std::map<std::string, SolverPtr > SolverTable;
 
 } // namespace matcher
