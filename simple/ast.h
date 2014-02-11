@@ -100,6 +100,10 @@ class SimpleConstant {
         return _value;
     }
 
+    operator int() {
+        return _value;
+    }
+
     ~SimpleConstant() { }
 
   private:
