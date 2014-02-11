@@ -68,13 +68,18 @@ AffectsSolver::AffectsSolver(std::shared_ptr<NextQuerySolver> next_solver) :
 
 template <>
 StatementSet AffectsSolver::solve_affected_statements<StatementAst>(StatementAst *statement) {
+    if(_affected_statements_cache.count(statement) > 0) return _affected_statements_cache[statement];
+
     _affected_by_var_cache.clear();
 
     StatementVisitorGenerator<AffectsSolver, SolveAffectedStatementsVisitorTraits>
     visitor(this);
 
     statement->accept_statement_visitor(&visitor);
-    return visitor.return_result();
+    StatementSet result = visitor.return_result();
+
+    _affected_statements_cache[statement] = result;
+    return result;
 }
 
 template <>
@@ -157,13 +162,18 @@ StatementSet AffectsSolver::solve_affected_by_var<CallAst>(
 
 template <>
 StatementSet AffectsSolver::solve_affecting_statements<StatementAst>(StatementAst *statement) {
+    if(_affecting_statements_cache.count(statement) > 0) return _affecting_statements_cache[statement];
+
     _affecting_with_var_cache.clear();
 
     StatementVisitorGenerator<AffectsSolver, SolveAffectingStatementsVisitorTraits>
     visitor(this);
 
     statement->accept_statement_visitor(&visitor);
-    return visitor.return_result();
+    StatementSet result = visitor.return_result();
+
+    _affecting_statements_cache[statement] = result;
+    return result;
 }
 
 template <>

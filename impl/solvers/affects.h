@@ -46,6 +46,9 @@ class AffectsSolver {
   private:
     std::shared_ptr<NextQuerySolver> _next_solver;
 
+    std::map< StatementAst*, StatementSet > _affected_statements_cache;
+    std::map< StatementAst*, StatementSet > _affecting_statements_cache;
+
     std::map< std::pair<SimpleVariable, StatementAst*>, StatementSet> 
     _affected_by_var_cache;
 
