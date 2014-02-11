@@ -10,8 +10,9 @@ namespace impl {
 using namespace simple;
 using namespace simple::util;
 
-IAffectsSolver::IAffectsSolver(std::shared_ptr<NextQuerySolver> next_solver) :
-    AffectsSolver(next_solver)
+IAffectsSolver::IAffectsSolver(std::shared_ptr<NextQuerySolver> next_solver,
+    std::shared_ptr<ModifiesSolver> modifies_solver) :
+    AffectsSolver(next_solver, modifies_solver)
 { }
 
 StatementSet IAffectsSolver::solve_affected_by_var_assignment(

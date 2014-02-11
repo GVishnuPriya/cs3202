@@ -29,6 +29,9 @@ using namespace simple::util;
 class UsesSolver : public AssignmentSolver {
   public:
     UsesSolver(const SimpleRoot& ast);
+
+    VariableSet get_vars_used_by_statement(StatementAst *statement);
+    VariableSet get_vars_used_by_proc(ProcAst *proc);
 };
 
 } // namespace impl

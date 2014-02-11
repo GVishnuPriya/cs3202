@@ -38,5 +38,13 @@ UsesSolver::UsesSolver(const SimpleRoot& ast) :
     AssignmentSolver(ast, std::shared_ptr<AssignStatementSolver>(new UsesAssignSolver()))
 { }
 
+VariableSet UsesSolver::get_vars_used_by_statement(StatementAst *statement) {
+    return get_right_vars_from_statement(statement);
+}
+
+VariableSet UsesSolver::get_vars_used_by_proc(ProcAst *proc) {
+    return get_right_vars_from_proc(proc);
+}
+
 }
 }

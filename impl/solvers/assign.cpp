@@ -50,6 +50,14 @@ AssignmentSolver::AssignmentSolver(const SimpleRoot& ast,
     }
 }
 
+VariableSet AssignmentSolver::get_right_vars_from_statement(StatementAst *statement) {
+    return _left_statement_index[statement];
+}
+
+VariableSet AssignmentSolver::get_right_vars_from_proc(ProcAst *proc) {
+    return _left_proc_index[proc];
+}
+
 /*
  * solve_left() definitions
  */

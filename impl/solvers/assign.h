@@ -44,6 +44,9 @@ class AssignmentSolver {
     AssignmentSolver(const SimpleRoot& ast, 
         std::shared_ptr<AssignStatementSolver> assign_solver);
 
+    VariableSet get_right_vars_from_statement(StatementAst *statement);
+    VariableSet get_right_vars_from_proc(ProcAst *proc);
+
     template <typename Condition1, typename Condition2>
     bool validate(Condition1 *condition1, Condition2 *condition2);
 

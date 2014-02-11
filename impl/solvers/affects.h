@@ -5,6 +5,7 @@
 #include <memory>
 #include <utility>
 #include "simple/solver.h"
+#include "impl/solvers/modifies.h"
 
 namespace simple {
 namespace impl {
@@ -14,7 +15,8 @@ using namespace simple::util;
 
 class AffectsSolver {
   public:
-    AffectsSolver(std::shared_ptr<NextQuerySolver> next_solver);
+    AffectsSolver(std::shared_ptr<NextQuerySolver> next_solver,
+        std::shared_ptr<ModifiesSolver> modifies_solver);
 
     virtual StatementSet solve_affected_by_var_assignment(
         SimpleVariable var, AssignmentAst *statement);
@@ -51,6 +53,7 @@ class AffectsSolver {
     
   protected:
     std::shared_ptr<NextQuerySolver> _next_solver;
+    std::shared_ptr<ModifiesSolver> _modifies_solver;
 
     std::map< StatementAst*, StatementSet > _affected_statements_cache;
     std::map< StatementAst*, StatementSet > _affecting_statements_cache;

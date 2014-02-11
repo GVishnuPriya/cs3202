@@ -28,6 +28,9 @@ using namespace simple;
 class ModifiesSolver : public AssignmentSolver {
   public:
     ModifiesSolver(const SimpleRoot& ast);
+
+    VariableSet get_vars_modified_by_statement(StatementAst *statement);
+    VariableSet get_vars_modified_by_proc(ProcAst *proc);
 };
 
 } // namespace impl

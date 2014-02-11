@@ -62,8 +62,9 @@ class SolveAffectingStatementsVisitorTraits {
     }
 };
 
-AffectsSolver::AffectsSolver(std::shared_ptr<NextQuerySolver> next_solver) :
-    _next_solver(next_solver)
+AffectsSolver::AffectsSolver(std::shared_ptr<NextQuerySolver> next_solver,
+    std::shared_ptr<ModifiesSolver> modifies_solver) :
+    _next_solver(next_solver), _modifies_solver(modifies_solver)
 { }
 
 StatementSet AffectsSolver::solve_affected_by_var_assignment(
@@ -176,6 +177,12 @@ template <>
 StatementSet AffectsSolver::solve_affected_by_var<CallAst>(
     SimpleVariable var, CallAst *statement)
 {
+    if(_modifies_solver->get_vars_modified_by_proc(
+        statement->get_proc_called()).count(var) > 0)
+    {
+        return StatementSet();
+    }
+    
     return solve_next_affected_by_var(var, statement);
 }
 
@@ -263,6 +270,12 @@ template <>
 StatementSet AffectsSolver::solve_affecting_with_var<CallAst>(
     SimpleVariable var, CallAst *statement)
 {
+    if(_modifies_solver->get_vars_modified_by_proc(
+        statement->get_proc_called()).count(var) > 0)
+    {
+        return StatementSet();
+    }
+
     return solve_prev_affecting_with_var(var, statement);
 }
 

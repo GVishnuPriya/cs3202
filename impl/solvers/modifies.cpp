@@ -39,5 +39,13 @@ ModifiesSolver::ModifiesSolver(const SimpleRoot& ast) :
     AssignmentSolver(ast, std::shared_ptr<AssignStatementSolver>(new ModifiesAssignSolver()))
 { }
 
+VariableSet ModifiesSolver::get_vars_modified_by_statement(StatementAst *statement) {
+    return get_right_vars_from_statement(statement);
+}
+
+VariableSet ModifiesSolver::get_vars_modified_by_proc(ProcAst *proc) {
+    return get_right_vars_from_proc(proc);
+}
+
 } // namespace impl
 } // namespace simple

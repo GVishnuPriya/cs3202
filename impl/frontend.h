@@ -120,8 +120,10 @@ class SimplePqlFrontEnd {
         _solver_table["icalls"] = std::shared_ptr<QuerySolver>(
             new SimpleSolverGenerator<ICallSolver>(new ICallSolver(_ast)));
 
+        std::shared_ptr<ModifiesSolver> modifies_solver(new ModifiesSolver(_ast));
+
         _solver_table["modifies"] = std::shared_ptr<QuerySolver>(
-            new SimpleSolverGenerator<ModifiesSolver>(new ModifiesSolver(_ast)));
+            new SimpleSolverGenerator<ModifiesSolver>(modifies_solver));
 
         _solver_table["uses"] = std::shared_ptr<QuerySolver>(
             new SimpleSolverGenerator<UsesSolver>(new UsesSolver(_ast)));
@@ -135,10 +137,10 @@ class SimplePqlFrontEnd {
             new SimpleSolverGenerator<INextSolver>(new INextSolver(_ast, next_solver)));
 
         _solver_table["affects"] = std::shared_ptr<QuerySolver>(
-            new SimpleSolverGenerator<AffectsSolver>(new AffectsSolver(next_solver)));
+            new SimpleSolverGenerator<AffectsSolver>(new AffectsSolver(next_solver, modifies_solver)));
 
         _solver_table["iaffects"] = std::shared_ptr<QuerySolver>(
-            new SimpleSolverGenerator<IAffectsSolver>(new IAffectsSolver(next_solver)));
+            new SimpleSolverGenerator<IAffectsSolver>(new IAffectsSolver(next_solver, modifies_solver)));
     }
 
     void populate_predicates() {
