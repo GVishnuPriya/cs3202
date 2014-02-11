@@ -47,9 +47,35 @@ class IndexModifiesVisitorTraits {
 ModifiesSolver::ModifiesSolver(const SimpleRoot& ast) : 
     _ast(ast) 
 {
-   for(SimpleRoot::iterator it = _ast.begin(); it != _ast.end(); ++it) {
-       index_modifies<ProcAst>(*it);
-   } 
+    for(SimpleRoot::iterator it = _ast.begin(); it != _ast.end(); ++it) {
+        index_modifies<ProcAst>(*it);
+    }
+
+    SimpleVariable current_var;
+    ConditionSet *current_condition_set;
+
+    for(auto pair : _modifying_index_set) {
+        SimpleVariable var = pair.first;
+        StatementAst *statement = pair.second;
+        if(var != current_var) {
+            current_var = var;
+            current_condition_set = &_modifying_condition_index[var];
+        }
+
+        current_condition_set->insert(new SimpleStatementCondition(statement));
+    }
+
+    StatementAst *current_statement = NULL;
+    VariableSet *current_variable_set;
+    for(auto pair : _modified_by_index_set) {
+        StatementAst *statement = pair.first;
+        SimpleVariable var = pair.second;
+        if(statement != current_statement) {
+            current_statement = statement;
+            current_variable_set = &_modified_by_statement_index[statement];
+        }
+        current_variable_set->insert(var);
+    }
 }
 
 VariableSet ModifiesSolver::solve_modified_vars(StatementAst *statement) {
@@ -82,7 +108,7 @@ template <>
 bool ModifiesSolver::validate<ProcAst, SimpleVariable>(
         ProcAst *ast, SimpleVariable *var)
 {
-    return _modifying_condition_index[*var].has_element(new SimpleProcCondition(ast));
+    return _modified_by_proc_index[ast].count(*var) > 0;
 }
 
 /*
@@ -95,7 +121,7 @@ ConditionSet ModifiesSolver::solve_right<StatementAst>(StatementAst *ast) {
 
 template <>
 ConditionSet ModifiesSolver::solve_right<ProcAst>(ProcAst *ast) {
-    return _modified_by_condition_index[new SimpleProcCondition(ast)];
+    return variable_set_to_condition_set(_modified_by_proc_index[ast]);
 }
 
 /*
@@ -103,15 +129,11 @@ ConditionSet ModifiesSolver::solve_right<ProcAst>(ProcAst *ast) {
  */
 
 void ModifiesSolver::index_statement(StatementAst *statement, const SimpleVariable& variable) {
-    _modifying_statement_index[variable].insert(statement);
-    _modified_by_statement_index[statement].insert(variable);
+    _modifying_index_set.insert(std::pair<SimpleVariable, StatementAst*>(variable, statement));
+    _modified_by_index_set.insert(std::pair<StatementAst*, SimpleVariable>(statement, variable));
 
-    index_condition(new SimpleStatementCondition(statement), variable);
-}
-
-void ModifiesSolver::index_condition(ConditionPtr condition, const SimpleVariable& variable) {
-    _modifying_condition_index[variable].insert(condition);
-    _modified_by_condition_index[condition].insert(new SimpleVariableCondition(variable));
+    //_modifying_statement_index[variable].insert(statement);
+    //_modified_by_statement_index[statement].insert(variable);
 }
 
 void ModifiesSolver::index_container_statement(StatementAst *statement, const VariableSet& variables) {
@@ -119,12 +141,6 @@ void ModifiesSolver::index_container_statement(StatementAst *statement, const Va
 
     for(auto it = variables.begin(); it != variables.end(); ++it) {
         index_statement(statement, *it);
-    }
-}
-
-void ModifiesSolver::index_container_condition(ConditionPtr condition, const VariableSet& variables) {
-    for(auto it = variables.begin(); it != variables.end(); ++it) {
-        index_condition(condition, *it);
     }
 }
 
@@ -144,7 +160,12 @@ template <>
 VariableSet ModifiesSolver::index_modifies<ProcAst>(ProcAst *proc) {
     VariableSet result = index_statement_list(proc->get_statement());
 
-    index_container_condition(new SimpleProcCondition(proc), result);
+    _modified_by_proc_index[proc] = result;
+    
+    ConditionPtr proc_condition(new SimpleProcCondition(proc));
+    for(auto it=result.begin(); it!=result.end(); ++it) {
+        _modifying_condition_index[*it].insert(proc_condition);
+    }
 
     return result;
 }

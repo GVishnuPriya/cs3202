@@ -20,6 +20,7 @@
 
 #include <map>
 #include <set>
+#include <utility>
 #include "simple/ast.h"
 #include "simple/condition.h"
 #include "simple/condition_set.h"
@@ -59,13 +60,14 @@ class ModifiesSolver : public ModifiesQuerySolver {
     std::map<SimpleVariable, ConditionSet> _modifying_condition_index;
 
     std::map<StatementAst*, VariableSet> _modified_by_statement_index;
-    std::map<ConditionPtr, ConditionSet> _modified_by_condition_index;
+    std::map<ProcAst*, VariableSet> _modified_by_proc_index;
+
+    std::set< std::pair<SimpleVariable, StatementAst*> > _modifying_index_set;
+    std::set< std::pair<StatementAst*, SimpleVariable> > _modified_by_index_set;
 
     VariableSet index_statement_list(StatementAst *statement);
     void index_statement(StatementAst *statement, const SimpleVariable& variable);
-    void index_condition(ConditionPtr condition, const SimpleVariable& variable);
     void index_container_statement(StatementAst *statement, const VariableSet& variables);
-    void index_container_condition(ConditionPtr condition, const VariableSet& variables);
 };
 
 /*
