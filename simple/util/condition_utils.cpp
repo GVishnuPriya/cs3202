@@ -17,9 +17,10 @@
  */
 
 #include <sstream>
+#include "simple/util/expr.h"
+#include "simple/util/ast_utils.h"
 #include "simple/util/condition_utils.h"
 #include "simple/util/condition_visitor_generator.h"
-#include "simple/util/ast_utils.h"
 
 namespace simple {
 namespace util {
@@ -73,9 +74,7 @@ class ConditionPrinter : public ConditionVisitor {
     }
 
     void visit_pattern_condition(PatternCondition *condition) {
-        _result = "(PatternCondition ";
-        _result += std::to_string((long long) condition->get_expr_ast());
-        _result += ")";
+        _result = expr_to_string(condition->get_expr_ast());
     }
 
     std::string return_result() {

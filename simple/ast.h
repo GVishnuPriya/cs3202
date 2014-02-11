@@ -78,6 +78,10 @@ class SimpleVariable {
         return _name > other._name;
     }
 
+    operator std::string() {
+        return _name;
+    }
+
     ~SimpleVariable() { }
 
   private:
