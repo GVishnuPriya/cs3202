@@ -23,6 +23,7 @@
 #include <algorithm>
 
 #include "impl/solvers/affects.h"
+#include "impl/solvers/iaffects.h"
 #include "impl/solvers/follows.h"
 #include "impl/solvers/ifollows.h"
 #include "impl/solvers/parent.h"
@@ -135,6 +136,9 @@ class SimplePqlFrontEnd {
 
         _solver_table["affects"] = std::shared_ptr<QuerySolver>(
             new SimpleSolverGenerator<AffectsSolver>(new AffectsSolver(next_solver)));
+
+        _solver_table["iaffects"] = std::shared_ptr<QuerySolver>(
+            new SimpleSolverGenerator<IAffectsSolver>(new IAffectsSolver(next_solver)));
     }
 
     void populate_predicates() {

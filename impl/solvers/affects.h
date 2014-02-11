@@ -16,6 +16,12 @@ class AffectsSolver {
   public:
     AffectsSolver(std::shared_ptr<NextQuerySolver> next_solver);
 
+    virtual StatementSet solve_affected_by_var_assignment(
+        SimpleVariable var, AssignmentAst *statement);
+
+    virtual StatementSet solve_affecting_with_var_assignment(
+        SimpleVariable var, AssignmentAst *statement);
+
     template <typename Condition>
     StatementSet solve_affected_statements(Condition *statement);
 
@@ -43,7 +49,7 @@ class AffectsSolver {
     template <typename Condition>
     StatementSet solve_affecting_with_var(SimpleVariable var, Condition *statement);
     
-  private:
+  protected:
     std::shared_ptr<NextQuerySolver> _next_solver;
 
     std::map< StatementAst*, StatementSet > _affected_statements_cache;

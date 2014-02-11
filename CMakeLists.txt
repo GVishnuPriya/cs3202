@@ -25,6 +25,7 @@ set(SOURCE
   impl/processor.cpp 
   impl/selector.cpp 
   impl/solvers/affects.cpp 
+  impl/solvers/iaffects.cpp 
   impl/solvers/follows.cpp 
   impl/solvers/ifollows.cpp 
   impl/solvers/parent.cpp 

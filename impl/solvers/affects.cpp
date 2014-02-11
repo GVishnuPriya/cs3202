@@ -66,6 +66,38 @@ AffectsSolver::AffectsSolver(std::shared_ptr<NextQuerySolver> next_solver) :
     _next_solver(next_solver)
 { }
 
+StatementSet AffectsSolver::solve_affected_by_var_assignment(
+        SimpleVariable var, AssignmentAst *statement)
+{
+    SimpleVariable modified_var = *statement->get_variable();
+    VariableSet used_vars = get_expr_vars(statement->get_expr());
+
+    StatementSet result;
+    if(modified_var != var) {
+        result = solve_next_affected_by_var(var, statement);
+    }
+
+    if(used_vars.count(var) > 0) {
+        result.insert(statement);
+    }
+
+    return result;
+}
+
+StatementSet AffectsSolver::solve_affecting_with_var_assignment(
+    SimpleVariable var, AssignmentAst *statement)
+{
+    SimpleVariable modified_var = *statement->get_variable();
+
+    if(modified_var == var) {
+        StatementSet result;
+        result.insert(statement);
+        return result;
+    } else {
+        return solve_prev_affecting_with_var(var, statement);
+    }
+}
+
 template <>
 StatementSet AffectsSolver::solve_affected_statements<StatementAst>(StatementAst *statement) {
     if(_affected_statements_cache.count(statement) > 0) return _affected_statements_cache[statement];
@@ -123,19 +155,7 @@ template <>
 StatementSet AffectsSolver::solve_affected_by_var<AssignmentAst>(
     SimpleVariable var, AssignmentAst *statement) 
 {
-    SimpleVariable modified_var = *statement->get_variable();
-    VariableSet used_vars = get_expr_vars(statement->get_expr());
-
-    StatementSet result;
-    if(modified_var != var) {
-        result = solve_next_affected_by_var(var, statement);
-    }
-
-    if(used_vars.count(var) > 0) {
-        result.insert(statement);
-    }
-
-    return result;
+    return solve_affected_by_var_assignment(var, statement);
 }
 
 template <>
@@ -222,15 +242,7 @@ template <>
 StatementSet AffectsSolver::solve_affecting_with_var<AssignmentAst>(
     SimpleVariable var, AssignmentAst *statement) 
 {
-    SimpleVariable modified_var = *statement->get_variable();
-
-    if(modified_var == var) {
-        StatementSet result;
-        result.insert(statement);
-        return result;
-    } else {
-        return solve_prev_affecting_with_var(var, statement);
-    }
+    return solve_affecting_with_var_assignment(var, statement);
 }
 
 template <>
