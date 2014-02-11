@@ -18,109 +18,17 @@
 
 #pragma once
 
-#include <map>
-#include <set>
-#include "simple/ast.h"
-#include "simple/condition.h"
-#include "simple/condition_set.h"
-#include "simple/solver.h"
-#include "simple/util/statement_visitor_generator.h"
+#include "impl/solvers/assign.h"
 
 namespace simple {
 namespace impl {
 
 using namespace simple;
 
-class ModifiesSolver {
+class ModifiesSolver : public AssignmentSolver {
   public:
     ModifiesSolver(const SimpleRoot& ast);
-
-    template <typename Condition1, typename Condition2>
-    bool validate(Condition1 *condition1, Condition2 *condition2);
-
-    template <typename Condition>
-    ConditionSet solve_right(Condition *condition);
-
-    template <typename Condition>
-    ConditionSet solve_left(Condition *condition);
-
-    template <typename Condition>
-    VariableSet index_modifies(Condition *condition);
-
-    ~ModifiesSolver() { }
-
-  private:
-    SimpleRoot _ast;
-
-    std::map<SimpleVariable, ConditionSet> _modifying_condition_index;
-
-    std::map<StatementAst*, VariableSet> _modified_by_statement_index;
-    std::map<ProcAst*, VariableSet> _modified_by_proc_index;
-
-    VariableSet index_statement_list(StatementAst *statement);
-    void index_statement(StatementAst *statement, const SimpleVariable& variable);
-    void index_container_statement(StatementAst *statement, const VariableSet& variables);
 };
-
-/*
- * Template declarations
- */
-
-template <typename Condition1, typename Condition2>
-bool ModifiesSolver::validate(Condition1 *condition1, Condition2 *condition2) {
-    return false;
-}
-
-template <typename Condition>
-ConditionSet ModifiesSolver::solve_right(Condition *condition) {
-    return ConditionSet(); // empty set
-}
-
-template <typename Condition>
-ConditionSet ModifiesSolver::solve_left(Condition *condition) {
-    return ConditionSet(); // empty set
-}
-
-template <typename Condition>
-VariableSet ModifiesSolver::index_modifies(Condition *condition) {
-    return ConditionSet();
-}
-
-template <>
-bool ModifiesSolver::validate<StatementAst, SimpleVariable>(
-        StatementAst *ast, SimpleVariable *var);
-
-template <>
-bool ModifiesSolver::validate<ProcAst, SimpleVariable>(
-        ProcAst *ast, SimpleVariable *var);
-
-template <>
-ConditionSet ModifiesSolver::solve_right<StatementAst>(StatementAst *ast);
-
-template <>
-ConditionSet ModifiesSolver::solve_right<ProcAst>(ProcAst *ast);
-
-template <>
-ConditionSet ModifiesSolver::solve_left<SimpleVariable>(SimpleVariable *variable);
-
-template <>
-VariableSet ModifiesSolver::index_modifies<ProcAst>(ProcAst *proc);
-
-template <>
-VariableSet ModifiesSolver::index_modifies<AssignmentAst>(AssignmentAst *assign);
-
-template <>
-VariableSet ModifiesSolver::index_modifies<WhileAst>(WhileAst *ast);
-
-template <>
-VariableSet ModifiesSolver::index_modifies<IfAst>(IfAst *ast);
-
-template <>
-VariableSet ModifiesSolver::index_modifies<CallAst>(CallAst *ast);
-
-template <>
-VariableSet ModifiesSolver::index_modifies<StatementAst>(StatementAst *statement);
-
 
 } // namespace impl
 } // namespace simple
