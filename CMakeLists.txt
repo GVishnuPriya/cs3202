@@ -2,6 +2,8 @@ cmake_minimum_required (VERSION 2.6)
 
 project (Simple3201 CXX)
 
+set(CMAKE_BUILD_TYPE Debug)
+
 if(UNIX)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=gnu++0x -pthread")
 endif()

@@ -31,7 +31,7 @@ namespace impl {
 
 using namespace simple;
 
-class ModifiesSolver : public ModifiesQuerySolver {
+class ModifiesSolver {
   public:
     ModifiesSolver(const SimpleRoot& ast);
 
@@ -44,9 +44,6 @@ class ModifiesSolver : public ModifiesQuerySolver {
     template <typename Condition>
     ConditionSet solve_left(Condition *condition);
 
-    VariableSet solve_modified_vars(StatementAst *statement);
-    StatementSet solve_modifying_statements(const SimpleVariable& variable);
-
     template <typename Condition>
     VariableSet index_modifies(Condition *condition);
 
@@ -55,17 +52,14 @@ class ModifiesSolver : public ModifiesQuerySolver {
   private:
     SimpleRoot _ast;
 
-    std::map<SimpleVariable, StatementSet> _modifying_statement_index;
     std::map<SimpleVariable, ConditionSet> _modifying_condition_index;
 
     std::map<StatementAst*, VariableSet> _modified_by_statement_index;
-    std::map<ConditionPtr, ConditionSet> _modified_by_condition_index;
+    std::map<ProcAst*, VariableSet> _modified_by_proc_index;
 
     VariableSet index_statement_list(StatementAst *statement);
     void index_statement(StatementAst *statement, const SimpleVariable& variable);
-    void index_condition(ConditionPtr condition, const SimpleVariable& variable);
     void index_container_statement(StatementAst *statement, const VariableSet& variables);
-    void index_container_condition(ConditionPtr condition, const VariableSet& variables);
 };
 
 /*

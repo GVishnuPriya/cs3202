@@ -126,7 +126,7 @@ class SimplePqlFrontEnd {
             new SimpleSolverGenerator<UsesSolver>(new UsesSolver(_ast)));
 
         std::shared_ptr<NextSolver> next_solver(new NextSolver(_ast));
-        
+
         _solver_table["next"] = std::shared_ptr<QuerySolver>(
             new SimpleSolverGenerator<NextSolver>(next_solver));
 

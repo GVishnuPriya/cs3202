@@ -48,6 +48,9 @@ class AffectsSolver {
 
     std::map< std::pair<SimpleVariable, StatementAst*>, StatementSet> 
     _affected_by_var_cache;
+
+    std::map< std::pair<SimpleVariable, StatementAst*>, StatementSet> 
+    _affecting_with_var_cache;
 };
 
 template <typename Condition>
