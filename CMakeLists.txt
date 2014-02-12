@@ -45,6 +45,8 @@ set(SOURCE
   spa/ast.cpp
   spa/cfg.cpp
   spa/follows.cpp
+  spa/modifies.cpp
+  spa/parent.cpp
   spa/pkb.cpp
   spa/statement.cpp
   spa/uses.cpp

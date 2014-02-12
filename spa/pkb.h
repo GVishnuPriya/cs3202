@@ -7,7 +7,9 @@
 #include "spa/ast.h"
 #include "spa/statement.h"
 #include "spa/follows.h"
+#include "spa/parent.h"
 #include "spa/uses.h"
+#include "spa/modifies.h"
 #include "spa/cfg.h"
 
 namespace spa {
@@ -21,8 +23,12 @@ class PKB {
     AST get_ast();
 
     Follows* get_follows();
+    
+    Parent* get_parent();
 
     Uses* get_uses();
+  
+    Modifies* get_modifies();
 
     CFG* get_cfg();
 
@@ -33,7 +39,9 @@ class PKB {
     StatementTable _statement_table;
     AST _spa_ast;
     Follows _follows;
+    Parent _parent;
     Uses _uses;
+    Modifies _modifies;
     CFG _cfg;
 };
 
