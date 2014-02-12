@@ -14,7 +14,7 @@ class CFG {
   public:
     CFG(SolverPtr next_solver, StatementTable *statement_table);
 
-    bool validate_next(StatementLine s1, StatementLine s2);
+    bool is_next(StatementLine s1, StatementLine s2);
 
     StatementResults get_next(StatementLine s1);
 

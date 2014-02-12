@@ -14,7 +14,7 @@ class Uses {
   public:
     Uses(SolverPtr uses_solver, StatementTable *statement_table);
 
-    bool validate_uses(StatementLine s, Var v);
+    bool is_uses(StatementLine s, Var v);
 
     VarResults get_used_vars(StatementLine s);
 

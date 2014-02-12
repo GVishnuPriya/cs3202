@@ -78,7 +78,7 @@ class SimpleVariable {
         return _name > other._name;
     }
 
-    operator std::string() {
+    operator std::string() const {
         return _name;
     }
 

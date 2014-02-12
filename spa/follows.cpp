@@ -10,7 +10,7 @@ Follows::Follows(SolverPtr follows_solver, StatementTable *statement_table) :
   _follows_solver(follows_solver), _statement_table(statement_table)
 { }
 
-bool Follows::validate_follows(StatementLine s1, StatementLine s2) {
+bool Follows::is_follows(StatementLine s1, StatementLine s2) {
     SimpleStatementCondition c1(
         _statement_table->get_statement(s1));
 

@@ -10,7 +10,7 @@ CFG::CFG(SolverPtr next_solver, StatementTable *statement_table) :
   _next_solver(next_solver), _statement_table(statement_table)
 { }
 
-bool CFG::validate_next(StatementLine s1, StatementLine s2) {
+bool CFG::is_next(StatementLine s1, StatementLine s2) {
     SimpleStatementCondition c1(
         _statement_table->get_statement(s1));
 

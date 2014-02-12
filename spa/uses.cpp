@@ -10,7 +10,7 @@ Uses::Uses(SolverPtr uses_solver, StatementTable *statement_table) :
   _uses_solver(uses_solver), _statement_table(statement_table)
 { }
 
-bool Uses::validate_uses(StatementLine s, Var v) {
+bool Uses::is_uses(StatementLine s, Var v) {
     SimpleStatementCondition c1(
         _statement_table->get_statement(s));
 

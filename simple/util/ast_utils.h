@@ -20,6 +20,7 @@
 
 #include "simple/ast.h"
 #include "impl/ast.h"
+#include "simple/util/statement_visitor_generator.h"
 
 namespace simple {
 namespace util {
@@ -45,6 +46,42 @@ bool is_same_expr(Ast1 *ast1, Ast2 *ast2) {
 template <typename Ast1, typename Ast2>
 bool is_less_than_expr(Ast1 *ast1, Ast2 *ast2) {
     return false;
+}
+
+template <typename SourceStatement, typename TargetStatement>
+struct StatementCaster {
+    static TargetStatement* statement_cast(SourceStatement *statement) {
+        return NULL;
+    }
+};
+
+template <typename Statement>
+struct StatementCaster<Statement, Statement> {
+    static Statement* statement_cast(Statement *statement) {
+        return statement;
+    }
+};
+
+template <typename TargetStatement>
+struct StatementCastVisitorTraits {
+  public:
+    typedef TargetStatement* ResultType;
+    typedef int ContextType;
+
+    template <typename SourceStatement>
+    static TargetStatement* visit(StatementAst *self, SourceStatement *statement, int *ctx) {
+        return StatementCaster<SourceStatement, TargetStatement>::
+            statement_cast(statement);
+    }
+};
+template <typename Statement>
+Statement* statement_cast(StatementAst *statement) {
+    StatementVisitorGenerator< StatementAst,
+        StatementCastVisitorTraits<Statement> >
+        visitor(statement);
+
+    statement->accept_statement_visitor(&visitor);
+    return visitor.return_result();
 }
 
 inline void set_proc(SimpleStatementAst *ast, SimpleProcAst *proc) {

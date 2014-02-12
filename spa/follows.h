@@ -15,7 +15,7 @@ class Follows {
   public:
     Follows(SolverPtr follows_solver, StatementTable *statement_table);
 
-    bool validate_follows(StatementLine s1, StatementLine s2);
+    bool is_follows(StatementLine s1, StatementLine s2);
 
     StatementResults get_follows(StatementLine s1);
 
