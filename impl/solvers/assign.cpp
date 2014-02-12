@@ -105,8 +105,8 @@ void AssignmentSolver::index_statement_variables(StatementAst *statement, const 
 
     ConditionPtr statement_condition(new SimpleStatementCondition(statement));
 
-    for(auto var : variables) {
-        _right_condition_index[var].insert(statement_condition);
+    for(auto it = variables.begin(); it != variables.end(); ++it) {
+        _right_condition_index[*it].insert(statement_condition);
     }
 }
 
@@ -129,8 +129,8 @@ VariableSet AssignmentSolver::index_variables<ProcAst>(ProcAst *proc) {
     _left_proc_index[proc] = result;
 
     ConditionPtr proc_condition(new SimpleProcCondition(proc));
-    for(auto var : result) {
-        _right_condition_index[var].insert(new SimpleProcCondition(proc));
+    for(auto it = result.begin(); it != result.end(); ++it) {
+        _right_condition_index[*it].insert(new SimpleProcCondition(proc));
     }
 
     return result;

@@ -43,8 +43,8 @@ StatementSet IAffectsSolver::solve_affecting_with_var_assignment(
         VariableSet used_vars = get_expr_vars(statement->get_expr());
         StatementSet result;
 
-        for(SimpleVariable used_var : used_vars) {
-            union_set(result, solve_prev_affecting_with_var(used_var, statement));
+        for(auto it = used_vars.begin(); it != used_vars.end(); ++it) {
+            union_set(result, solve_prev_affecting_with_var(*it, statement));
         }
 
         result.insert(statement);

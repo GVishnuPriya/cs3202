@@ -20,6 +20,7 @@ Release/
 *.opensdf
 *.v11.suo
 *.suo
+*.sdf
 *.vcxproj.user
 *.dir
 flatfile.txt

@@ -73,8 +73,11 @@
     <ClCompile Include="..\impl\predicate.cpp" />
     <ClCompile Include="..\impl\processor.cpp" />
     <ClCompile Include="..\impl\selector.cpp" />
+    <ClCompile Include="..\impl\solvers\affects.cpp" />
+    <ClCompile Include="..\impl\solvers\assign.cpp" />
     <ClCompile Include="..\impl\solvers\call.cpp" />
     <ClCompile Include="..\impl\solvers\follows.cpp" />
+    <ClCompile Include="..\impl\solvers\iaffects.cpp" />
     <ClCompile Include="..\impl\solvers\icall.cpp" />
     <ClCompile Include="..\impl\solvers\ifollows.cpp" />
     <ClCompile Include="..\impl\solvers\inext.cpp" />
@@ -84,6 +87,7 @@
     <ClCompile Include="..\impl\solvers\parent.cpp" />
     <ClCompile Include="..\impl\solvers\same_name.cpp" />
     <ClCompile Include="..\impl\solvers\uses.cpp" />
+    <ClCompile Include="..\impl\solver_table.cpp" />
     <ClCompile Include="..\simple\ast.cpp" />
     <ClCompile Include="..\simple\condition_set.cpp" />
     <ClCompile Include="..\simple\query.cpp" />
@@ -91,6 +95,7 @@
     <ClCompile Include="..\simple\tuple.cpp" />
     <ClCompile Include="..\simple\util\ast_utils.cpp" />
     <ClCompile Include="..\simple\util\condition_utils.cpp" />
+    <ClCompile Include="..\simple\util\expr.cpp" />
     <ClCompile Include="..\simple\util\query_utils.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -108,8 +113,11 @@
     <ClInclude Include="..\impl\processor.h" />
     <ClInclude Include="..\impl\query.h" />
     <ClInclude Include="..\impl\selector.h" />
+    <ClInclude Include="..\impl\solvers\affects.h" />
+    <ClInclude Include="..\impl\solvers\assign.h" />
     <ClInclude Include="..\impl\solvers\call.h" />
     <ClInclude Include="..\impl\solvers\follows.h" />
+    <ClInclude Include="..\impl\solvers\iaffects.h" />
     <ClInclude Include="..\impl\solvers\icall.h" />
     <ClInclude Include="..\impl\solvers\ifollows.h" />
     <ClInclude Include="..\impl\solvers\inext.h" />
@@ -132,7 +140,10 @@
     <ClInclude Include="..\simple\util\ast_utils.h" />
     <ClInclude Include="..\simple\util\condition_utils.h" />
     <ClInclude Include="..\simple\util\condition_visitor_generator.h" />
+    <ClInclude Include="..\simple\util\expr.h" />
+    <ClInclude Include="..\simple\util\expr_visitor_generator.h" />
     <ClInclude Include="..\simple\util\query_utils.h" />
+    <ClInclude Include="..\simple\util\set_convert.h" />
     <ClInclude Include="..\simple\util\set_utils.h" />
     <ClInclude Include="..\simple\util\solver_generator.h" />
     <ClInclude Include="..\simple\util\statement_visitor_generator.h" />

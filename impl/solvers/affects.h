@@ -130,5 +130,16 @@ template <>
 StatementSet AffectsSolver::solve_affecting_with_var<CallAst>(
     SimpleVariable var, CallAst *statement);
 
+
+template <>
+ConditionSet AffectsSolver::solve_right<StatementAst>(StatementAst *affected);
+
+template <>
+ConditionSet AffectsSolver::solve_left<StatementAst>(StatementAst *affecting);
+
+template <>
+bool AffectsSolver::validate<StatementAst, StatementAst>(
+    StatementAst *affecting, StatementAst *affected);
+
 }
 }
