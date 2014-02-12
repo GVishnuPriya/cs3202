@@ -1,12 +1,14 @@
 
+#include "impl/solver_table.h"
 #include "spa/pkb.h"
 
 namespace spa {
 
 using namespace simple;
+using namespace simple::impl;
 
-PKB::PKB(SimpleRoot ast, LineTable line_table, SolverTable solver_table) :
-  _ast(ast), _line_table(line_table), _solver_table(solver_table),
+PKB::PKB(SimpleRoot ast, LineTable line_table) :
+  _ast(ast), _line_table(line_table), _solver_table(create_solver_table(_ast)),
   _statement_table(line_table),
   _follows(_solver_table["follows"], &_statement_table),
   _uses(_solver_table["uses"], &_statement_table),

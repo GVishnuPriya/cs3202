@@ -22,21 +22,6 @@
 #include <string>
 #include <algorithm>
 
-#include "impl/solvers/affects.h"
-#include "impl/solvers/iaffects.h"
-#include "impl/solvers/follows.h"
-#include "impl/solvers/ifollows.h"
-#include "impl/solvers/parent.h"
-#include "impl/solvers/iparent.h"
-#include "impl/solvers/call.h"
-#include "impl/solvers/icall.h"
-#include "impl/solvers/modifies.h"
-#include "impl/solvers/uses.h"
-#include "impl/solvers/next.h"
-#include "impl/solvers/inext.h"
-#include "impl/solvers/same_name.h"
-
-#include "simple/util/solver_generator.h"
 #include "simple/util/query_utils.h"
 #include "simple/util/condition_utils.h"
 
@@ -48,6 +33,7 @@
 #include "impl/selector.h"
 #include "impl/predicate.h"
 #include "impl/processor.h"
+#include "impl/solver_table.h"
 
 namespace simple {
 namespace impl {
@@ -62,7 +48,9 @@ class SimplePqlFrontEnd {
     SimplePqlFrontEnd(Iterator begin, Iterator end)
     {
         parse_source(begin, end);
-        populate_solvers();
+        
+        _solver_table = create_solver_table(_ast);
+
         populate_predicates();
     }
 
@@ -86,7 +74,6 @@ class SimplePqlFrontEnd {
             processor.solve_clause(it->get());
         }
 
-        //return std::vector<std::string>();
         return format_result(&query, linker.get());
     }
   
@@ -99,48 +86,6 @@ class SimplePqlFrontEnd {
 
         _ast = parser.parse_program();
         _line_table = parser.get_statement_line_table();
-    }
-
-    void populate_solvers() {
-        _solver_table["follows"] = std::shared_ptr<QuerySolver>(
-            new SimpleSolverGenerator<FollowSolver>(new FollowSolver(_ast)));
-
-        _solver_table["ifollows"] = std::shared_ptr<QuerySolver>(
-            new SimpleSolverGenerator<IFollowSolver>(new IFollowSolver(_ast)));
-
-        _solver_table["parent"] = std::shared_ptr<QuerySolver>(
-            new SimpleSolverGenerator<ParentSolver>(new ParentSolver(_ast)));
-
-        _solver_table["iparent"] = std::shared_ptr<QuerySolver>(
-            new SimpleSolverGenerator<IParentSolver>(new IParentSolver(_ast)));
-
-        _solver_table["calls"] = std::shared_ptr<QuerySolver>(
-            new SimpleSolverGenerator<CallSolver>(new CallSolver(_ast)));
-
-        _solver_table["icalls"] = std::shared_ptr<QuerySolver>(
-            new SimpleSolverGenerator<ICallSolver>(new ICallSolver(_ast)));
-
-        std::shared_ptr<ModifiesSolver> modifies_solver(new ModifiesSolver(_ast));
-
-        _solver_table["modifies"] = std::shared_ptr<QuerySolver>(
-            new SimpleSolverGenerator<ModifiesSolver>(modifies_solver));
-
-        _solver_table["uses"] = std::shared_ptr<QuerySolver>(
-            new SimpleSolverGenerator<UsesSolver>(new UsesSolver(_ast)));
-
-        std::shared_ptr<NextSolver> next_solver(new NextSolver(_ast));
-
-        _solver_table["next"] = std::shared_ptr<QuerySolver>(
-            new SimpleSolverGenerator<NextSolver>(next_solver));
-
-        _solver_table["inext"] = std::shared_ptr<QuerySolver>(
-            new SimpleSolverGenerator<INextSolver>(new INextSolver(_ast, next_solver)));
-
-        _solver_table["affects"] = std::shared_ptr<QuerySolver>(
-            new SimpleSolverGenerator<AffectsSolver>(new AffectsSolver(next_solver, modifies_solver)));
-
-        _solver_table["iaffects"] = std::shared_ptr<QuerySolver>(
-            new SimpleSolverGenerator<IAffectsSolver>(new IAffectsSolver(next_solver, modifies_solver)));
     }
 
     void populate_predicates() {

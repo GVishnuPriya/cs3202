@@ -15,7 +15,7 @@ using namespace simple;
 
 class PKB {
   public:
-    PKB(SimpleRoot ast, LineTable line_table, SolverTable solver_table);
+    PKB(SimpleRoot ast, LineTable line_table);
 
     Follows* get_follows();
 
