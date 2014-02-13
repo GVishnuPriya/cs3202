@@ -15,11 +15,20 @@ AST::AST(SimpleRoot ast, StatementTable *statement_table) :
     }
 }
 
-StatementLine AST::get_proc_body(Proc proc_name) {
+StatementAst* AST::get_statement(StatementLine line) {
+    return _statement_table->get_statement(line);
+}
+
+ProcAst* AST::get_proc(Proc proc_name) {
     ProcAst *proc = _ast.get_proc(proc_name);
+
     if(!proc) throw std::runtime_error("Procedure not found");
 
-    return proc->get_statement()->get_statement_line();
+    return proc;
+}
+
+StatementLine AST::get_proc_body(Proc proc_name) {
+    return get_proc(proc_name)->get_statement()->get_statement_line();
 }
 
 ProcResults AST::get_all_procs() {
@@ -27,13 +36,11 @@ ProcResults AST::get_all_procs() {
 }
 
 Proc AST::get_proc_from_statement(StatementLine statement) {
-    return _statement_table->get_statement(statement)
-        ->get_proc()->get_name();
+    return get_statement(statement)->get_proc()->get_name();
 }
 
 StatementLine AST::get_parent(StatementLine statement) {
-    return _statement_table->get_statement(statement)
-        ->get_parent()->get_statement_line();
+    return get_statement(statement)->get_parent()->get_statement_line();
 }
 
 class StatementTypeVisitor : public StatementVisitor {
@@ -71,30 +78,30 @@ bool AST::is_container_statement(StatementAst *statement) {
 }
 
 StatementType AST::get_statement_type(StatementLine line) {
-    return get_statement_type(_statement_table->get_statement(line));
+    return get_statement_type(get_statement(line));
 }
 
 bool AST::is_container_statement(StatementLine statement) {
-    return is_container_statement(_statement_table->get_statement(statement));
+    return is_container_statement(get_statement(statement));
 }
 
 
 StatementLine AST::get_then_branch(StatementLine statement) {
-    IfAst *ast = statement_cast<IfAst>(_statement_table->get_statement(statement));
+    IfAst *ast = statement_cast<IfAst>(get_statement(statement));
     if(!ast) throw new std::runtime_error("Statement is not If statement");
 
     return ast->get_then_branch()->get_statement_line();
 }
 
 StatementLine AST::get_else_branch(StatementLine statement) {
-    IfAst *ast = statement_cast<IfAst>(_statement_table->get_statement(statement));
+    IfAst *ast = statement_cast<IfAst>(get_statement(statement));
     if(!ast) throw new std::runtime_error("Statement is not If statement");
 
     return ast->get_else_branch()->get_statement_line();
 }
 
 StatementLine AST::get_while_body(StatementLine statement) {
-    WhileAst *ast = statement_cast<WhileAst>(_statement_table->get_statement(statement));
+    WhileAst *ast = statement_cast<WhileAst>(get_statement(statement));
     if(!ast) throw new std::runtime_error("Statement is not While statement");
 
     return ast->get_body()->get_statement_line();

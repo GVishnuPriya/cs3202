@@ -23,6 +23,9 @@ class AST {
   public:
     AST(SimpleRoot ast, StatementTable *statement_table);
 
+    StatementAst* get_statement(StatementLine line);
+
+    ProcAst* get_proc(Proc proc_name);
     StatementLine get_proc_body(Proc proc_name);
 
     ProcResults get_all_procs();

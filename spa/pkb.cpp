@@ -13,9 +13,13 @@ PKB::PKB(SimpleRoot ast, LineTable line_table) :
   _follows(_solver_table["follows"], &_statement_table),
   _parent(_solver_table["parent"], &_statement_table),
   _uses(_solver_table["uses"], &_statement_table),
-  _modifies(_solver_table["modifies"], &_statement_table),
+  _modifies(_solver_table["modifies"], &_spa_ast),
   _cfg(_solver_table["next"], &_statement_table)
 { }
+
+AST* PKB::get_ast(){
+    return &_spa_ast;
+}
 
 Follows* PKB::get_follows() {
     return &_follows;

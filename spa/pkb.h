@@ -20,7 +20,7 @@ class PKB {
   public:
     PKB(SimpleRoot ast, LineTable line_table);
 
-    AST get_ast();
+    AST* get_ast();
 
     Follows* get_follows();
     
