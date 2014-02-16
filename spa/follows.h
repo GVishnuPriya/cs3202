@@ -19,7 +19,7 @@ class Follows {
 
     StatementResults get_follows(StatementLine s1);
 
-    StatementResults get_preceeding(StatementLine s2);
+    StatementResults get_preceding(StatementLine s2);
 
   private:
     SolverPtr _follows_solver;

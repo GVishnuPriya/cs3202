@@ -10,9 +10,9 @@ namespace spa {
 
 using namespace simple;
 
-class CFG {
+class Next {
   public:
-    CFG(SolverPtr next_solver, StatementTable *statement_table);
+    Next(SolverPtr next_solver, StatementTable *statement_table);
 
     bool is_next(StatementLine s1, StatementLine s2);
 

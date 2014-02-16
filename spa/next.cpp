@@ -1,16 +1,16 @@
 
-#include "spa/cfg.h"
+#include "spa/next.h"
 
 namespace spa {
 
 using namespace simple;
 using namespace simple::impl;
 
-CFG::CFG(SolverPtr next_solver, StatementTable *statement_table) :
+Next::Next(SolverPtr next_solver, StatementTable *statement_table) :
   _next_solver(next_solver), _statement_table(statement_table)
 { }
 
-bool CFG::is_next(StatementLine s1, StatementLine s2) {
+bool Next::is_next(StatementLine s1, StatementLine s2) {
     SimpleStatementCondition c1(
         _statement_table->get_statement(s1));
 
@@ -20,7 +20,7 @@ bool CFG::is_next(StatementLine s1, StatementLine s2) {
     return _next_solver->validate(&c1, &c2);
 }
 
-StatementResults CFG::get_next(StatementLine s1) {
+StatementResults Next::get_next(StatementLine s1) {
     SimpleStatementCondition c1(
         _statement_table->get_statement(s1));
     
@@ -28,7 +28,7 @@ StatementResults CFG::get_next(StatementLine s1) {
     return condition_to_statement_results(result);
 }
 
-StatementResults CFG::get_prev(StatementLine s2) {
+StatementResults Next::get_prev(StatementLine s2) {
     SimpleStatementCondition c2(
         _statement_table->get_statement(s2));
     

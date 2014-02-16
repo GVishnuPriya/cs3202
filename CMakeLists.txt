@@ -42,10 +42,17 @@ set(SOURCE
   impl/parser/token.cpp 
   impl/parser/parser.cpp 
   impl/parser/pql_parser.cpp 
+  spa/affects_star.cpp
+  spa/affects.cpp
   spa/ast.cpp
-  spa/cfg.cpp
+  spa/calls.cpp
+  spa/calls_star.cpp
+  spa/follows_star.cpp
   spa/follows.cpp
   spa/modifies.cpp
+  spa/next_star.cpp
+  spa/next.cpp
+  spa/parent_star.cpp
   spa/parent.cpp
   spa/pkb.cpp
   spa/statement.cpp

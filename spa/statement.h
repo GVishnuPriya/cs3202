@@ -29,5 +29,7 @@ class StatementTable {
 StatementResults condition_to_statement_results(const ConditionSet& conditions);
 
 VarResults condition_to_variable_results(const ConditionSet& conditions);
+  
+ProcResults condition_to_proc_results(const ConditionSet& conditions);
 
 }

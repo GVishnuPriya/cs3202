@@ -53,4 +53,20 @@ VarResults condition_to_variable_results(const ConditionSet& conditions) {
     return result;
 }
 
+ProcResults condition_to_proc_results(const ConditionSet& conditions) {
+    ProcResults result;
+
+    for(ConditionPtr condition : conditions) {
+        ProcCondition *proc_condition = 
+            condition_cast<ProcCondition>(condition);
+
+        if(proc_condition != NULL) {
+            result.insert(proc_condition->get_proc_ast()
+                ->get_name());
+        }
+    }
+
+    return result;
+}
+  
 }

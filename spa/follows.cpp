@@ -28,7 +28,7 @@ StatementResults Follows::get_follows(StatementLine s1) {
     return condition_to_statement_results(result);
 }
 
-StatementResults Follows::get_preceeding(StatementLine s2) {
+StatementResults Follows::get_preceding(StatementLine s2) {
     SimpleStatementCondition c2(
         _statement_table->get_statement(s2));
     
