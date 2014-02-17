@@ -79,7 +79,7 @@ void SimplePqlParser::parse_predicate() {
         pred = get_predicate("var");
     } else if(keyword == "call") {
         pred = get_predicate("call");
-    } else if (keyword == "const") {
+    } else if (keyword == "const" || keyword == "constant") {
         pred = get_predicate("const");
     } else {
         pred = get_predicate(keyword);

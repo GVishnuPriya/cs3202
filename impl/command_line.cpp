@@ -55,11 +55,19 @@ int main(int argc, const char* argv[]) {
         return 0;
     }
 
-    std::string line;
+    std::string line, next_line;
     cout << "simple> ";
 
     while(getline(cin, line)) {
         try {
+
+			// keep reading lines until a Select clause is detected
+			while (line.find("Select") == std::string::npos)
+			{
+				getline(cin, next_line);
+				line = line + " " + next_line;
+			}
+
             std::vector<std::string> result = spa->evaluate(line);
 
             auto it = result.begin();
