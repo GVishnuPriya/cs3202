@@ -97,22 +97,6 @@
     <ClCompile Include="..\simple\util\condition_utils.cpp" />
     <ClCompile Include="..\simple\util\expr.cpp" />
     <ClCompile Include="..\simple\util\query_utils.cpp" />
-    <ClCompile Include="..\spa\affects.cpp" />
-    <ClCompile Include="..\spa\affects_star.cpp" />
-    <ClCompile Include="..\spa\ast.cpp" />
-    <ClCompile Include="..\spa\calls.cpp" />
-    <ClCompile Include="..\spa\calls_star.cpp" />
-    <ClCompile Include="..\spa\follows.cpp" />
-    <ClCompile Include="..\spa\follows_star.cpp" />
-    <ClCompile Include="..\spa\modifies.cpp" />
-    <ClCompile Include="..\spa\next.cpp" />
-    <ClCompile Include="..\spa\next_star.cpp" />
-    <ClCompile Include="..\spa\parent.cpp" />
-    <ClCompile Include="..\spa\parent_star.cpp" />
-    <ClCompile Include="..\spa\pkb.cpp" />
-    <ClCompile Include="..\spa\statement.cpp" />
-    <ClCompile Include="..\spa\uses.cpp" />
-    <ClCompile Include="..\spa\var_table.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\impl\ast.h" />
@@ -163,23 +147,6 @@
     <ClInclude Include="..\simple\util\set_utils.h" />
     <ClInclude Include="..\simple\util\solver_generator.h" />
     <ClInclude Include="..\simple\util\statement_visitor_generator.h" />
-    <ClInclude Include="..\spa\affects.h" />
-    <ClInclude Include="..\spa\affects_star.h" />
-    <ClInclude Include="..\spa\ast.h" />
-    <ClInclude Include="..\spa\calls.h" />
-    <ClInclude Include="..\spa\calls_star.h" />
-    <ClInclude Include="..\spa\follows.h" />
-    <ClInclude Include="..\spa\follows_star.h" />
-    <ClInclude Include="..\spa\modifies.h" />
-    <ClInclude Include="..\spa\next.h" />
-    <ClInclude Include="..\spa\next_star.h" />
-    <ClInclude Include="..\spa\parent.h" />
-    <ClInclude Include="..\spa\parent_star.h" />
-    <ClInclude Include="..\spa\pkb.h" />
-    <ClInclude Include="..\spa\statement.h" />
-    <ClInclude Include="..\spa\types.h" />
-    <ClInclude Include="..\spa\uses.h" />
-    <ClInclude Include="..\spa\var_table.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
