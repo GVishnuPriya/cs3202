@@ -43,6 +43,12 @@
     <Filter Include="Header Files\impl\solvers">
       <UniqueIdentifier>{1985912b-744c-4a57-881c-c8ba0ba1f1dc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\spa">
+      <UniqueIdentifier>{2ccbac46-29a1-4be1-ac75-83675af02958}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\spa">
+      <UniqueIdentifier>{dd62c6b8-cf7c-4f25-9501-004573f36b23}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\impl\parser\parser.cpp">
@@ -140,6 +146,54 @@
     </ClCompile>
     <ClCompile Include="..\impl\solvers\uses.cpp">
       <Filter>Source Files\impl\solvers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spa\affects.cpp">
+      <Filter>Source Files\spa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spa\affects_star.cpp">
+      <Filter>Source Files\spa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spa\ast.cpp">
+      <Filter>Source Files\spa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spa\calls.cpp">
+      <Filter>Source Files\spa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spa\calls_star.cpp">
+      <Filter>Source Files\spa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spa\follows.cpp">
+      <Filter>Source Files\spa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spa\follows_star.cpp">
+      <Filter>Source Files\spa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spa\modifies.cpp">
+      <Filter>Source Files\spa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spa\next.cpp">
+      <Filter>Source Files\spa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spa\next_star.cpp">
+      <Filter>Source Files\spa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spa\parent.cpp">
+      <Filter>Source Files\spa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spa\parent_star.cpp">
+      <Filter>Source Files\spa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spa\pkb.cpp">
+      <Filter>Source Files\spa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spa\statement.cpp">
+      <Filter>Source Files\spa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spa\uses.cpp">
+      <Filter>Source Files\spa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spa\var_table.cpp">
+      <Filter>Source Files\spa</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -286,6 +340,57 @@
     </ClInclude>
     <ClInclude Include="..\simple\util\statement_visitor_generator.h">
       <Filter>Header Files\simple\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\spa\affects.h">
+      <Filter>Header Files\spa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\spa\affects_star.h">
+      <Filter>Header Files\spa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\spa\ast.h">
+      <Filter>Header Files\spa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\spa\calls.h">
+      <Filter>Header Files\spa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\spa\calls_star.h">
+      <Filter>Header Files\spa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\spa\follows.h">
+      <Filter>Header Files\spa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\spa\follows_star.h">
+      <Filter>Header Files\spa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\spa\modifies.h">
+      <Filter>Header Files\spa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\spa\next.h">
+      <Filter>Header Files\spa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\spa\next_star.h">
+      <Filter>Header Files\spa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\spa\parent.h">
+      <Filter>Header Files\spa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\spa\parent_star.h">
+      <Filter>Header Files\spa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\spa\pkb.h">
+      <Filter>Header Files\spa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\spa\statement.h">
+      <Filter>Header Files\spa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\spa\types.h">
+      <Filter>Header Files\spa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\spa\uses.h">
+      <Filter>Header Files\spa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\spa\var_table.h">
+      <Filter>Header Files\spa</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
