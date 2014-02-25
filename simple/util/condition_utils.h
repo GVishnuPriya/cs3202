@@ -26,6 +26,16 @@
 namespace simple {
 namespace util {
 
+enum ConditionType {
+    StatementCT,
+    ProcCT,
+    VariableCT,
+    ConstantCT,
+    PatternCT
+};
+
+ConditionType get_condition_type(SimpleCondition *condition);
+
 std::string condition_to_string(SimpleCondition *condition);
 
 template <typename Condition>

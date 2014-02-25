@@ -83,5 +83,38 @@ double_dispatch_expr(ExprAst *expr1, ExprAst *expr2) {
     return visitor.return_result();
 }
 
+template <typename DispatchTraits>
+class DispatchExprVisitor : public ExprVisitor {
+  public:
+    typedef typename DispatchTraits::ResultType ResultType;
+
+    void visit_const(ConstAst *ast) {
+        _result = DispatchTraits::template visit<ConstAst>(ast);
+    }
+
+    void visit_variable(VariableAst *ast) {
+        _result = DispatchTraits::template visit<VariableAst>(ast);
+    }
+
+    void visit_binary_op(BinaryOpAst *ast) {
+        _result = DispatchTraits::template visit<BinaryOpAst>(ast);
+    }
+
+    ResultType return_result() {
+        return _result;
+    }
+
+  private:
+    ResultType _result;
+};
+
+template <typename DispatchTraits>
+typename DispatchTraits::ResultType
+single_dispatch_expr(ExprAst *expr) {
+    DispatchExprVisitor<DispatchTraits> visitor;
+    expr->accept_expr_visitor(&visitor);
+    return visitor.return_result();
+}
+
 }
 }

@@ -43,38 +43,13 @@ StatementLine AST::get_parent(StatementLine statement) {
     return get_statement(statement)->get_parent()->get_statement_line();
 }
 
-class StatementTypeVisitor : public StatementVisitor {
-  public:
-    StatementTypeVisitor() { }
-
-    void visit_if(IfAst*) {
-        result = If;
-    }
-
-    void visit_while(WhileAst*) {
-        result = While;
-    }
-
-    void visit_assignment(AssignmentAst*) {
-        result = Assign;
-    }
-
-    void visit_call(CallAst*) {
-        result = Call;
-    }
-
-    StatementType result;
-};
-
 StatementType AST::get_statement_type(StatementAst *statement) {
-    StatementTypeVisitor visitor;
-    statement->accept_statement_visitor(&visitor);
-    return visitor.result;
+    return simple::util::get_statement_type(statement);
 }
 
 bool AST::is_container_statement(StatementAst *statement) {
     StatementType type = get_statement_type(statement);
-    return type == If || type == While;
+    return type == IfST || type == WhileST;
 }
 
 StatementType AST::get_statement_type(StatementLine line) {

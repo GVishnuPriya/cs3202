@@ -4,6 +4,7 @@
 #include <map>
 #include <stdexcept>
 #include "simple/ast.h"
+#include "simple/types.h"
 #include "simple/util/ast_utils.h"
 #include "spa/statement.h"
 
@@ -11,13 +12,6 @@ namespace spa {
 
 using namespace simple;
 using namespace simple::util;
-
-enum StatementType {
-    Assign,
-    Call,
-    While,
-    If
-};
 
 class AST {
   public:
