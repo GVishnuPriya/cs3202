@@ -90,6 +90,7 @@
     <ClCompile Include="..\test\test_solver.cpp" />
     <ClCompile Include="..\test\test_tokenizer.cpp" />
     <ClCompile Include="..\test\test_uses.cpp" />
+    <ClCompile Include="test_modifies.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="libspa.vcxproj">
