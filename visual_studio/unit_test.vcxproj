@@ -97,6 +97,11 @@
       <Project>{6bdba65e-9dc1-4d00-932b-b329f191900e}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\test\fixture.h" />
+    <ClInclude Include="..\test\gtest\gtest.h" />
+    <ClInclude Include="..\test\mock.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

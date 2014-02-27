@@ -19,6 +19,9 @@
     <Filter Include="Source Files\Unit Testing">
       <UniqueIdentifier>{100feab0-4e44-427f-ba18-7a86c1759798}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\gtest">
+      <UniqueIdentifier>{c7140e80-2e81-44dc-a7e8-1d3625e3a2c9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\test\test_ast.cpp">
@@ -93,5 +96,16 @@
     <ClCompile Include="test_modifies.cpp">
       <Filter>Source Files\Unit Testing</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\test\fixture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\test\mock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\test\gtest\gtest.h">
+      <Filter>Header Files\gtest</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

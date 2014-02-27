@@ -99,6 +99,7 @@ StatementSet AffectsSolver::solve_affecting_with_var_assignment(
     }
 }
 
+
 template <>
 StatementSet AffectsSolver::solve_affected_statements<StatementAst>(StatementAst *statement) {
     if(_affected_statements_cache.count(statement) > 0) return _affected_statements_cache[statement];
@@ -115,12 +116,27 @@ StatementSet AffectsSolver::solve_affected_statements<StatementAst>(StatementAst
     return result;
 }
 
+/*
+ * From an generic assignment statementAST, and to dispatch the assignmentAST to other specific method,
+ * 1. whileAST -> Dispatch again,
+ * 2. assignmentAST -> Get the uses varset in the assignment statement
+ *							if used, then put it inside the varset
+ *					  -> Get the modifies varset also
+							if the affecting var is modified, we simply return the var set.
+							if the affecting var is not modified, call solve_next_affected
+ * 3. Call -> check if the variable contained in the modified table in that procedure
+				-> Yes -> return empty set
+				-> No -> move on to next statement
+ */
 template <>
 StatementSet AffectsSolver::solve_affected_statements<AssignmentAst>(AssignmentAst *statement) {
     SimpleVariable modified_var = *statement->get_variable();
     return solve_next_affected_by_var(modified_var, statement);
 }
 
+/*
+ * Solve the set of statement that is next after that statementAST
+ */
 StatementSet AffectsSolver::solve_next_affected_by_var(SimpleVariable var, StatementAst *statement) {
     StatementSet next = _next_solver->solve_next_statement(statement);
     
