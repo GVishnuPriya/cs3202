@@ -90,11 +90,17 @@
     <ClCompile Include="..\test\test_solver.cpp" />
     <ClCompile Include="..\test\test_tokenizer.cpp" />
     <ClCompile Include="..\test\test_uses.cpp" />
+    <ClCompile Include="test_modifies.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="libspa.vcxproj">
       <Project>{6bdba65e-9dc1-4d00-932b-b329f191900e}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\test\fixture.h" />
+    <ClInclude Include="..\test\gtest\gtest.h" />
+    <ClInclude Include="..\test\mock.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

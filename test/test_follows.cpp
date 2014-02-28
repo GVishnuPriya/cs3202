@@ -31,7 +31,7 @@ using namespace simple::util;
 TEST(FollowsTest, TrivialTest) {
     /*
      * proc test {
-     *   a = 0;
+     *   a = 0; // before
      *   if i {
      *     x = 1;
      *     y = 2;

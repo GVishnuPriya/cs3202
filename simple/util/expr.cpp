@@ -1,10 +1,35 @@
 
 #include <sstream>
 #include "simple/util/expr.h"
-#include "simple/util/expr_visitor_generator.h"
 
 namespace simple{
 namespace util {
+
+class ExprTypeVisitor : public ExprVisitor {    
+  public:
+    ExprTypeVisitor() { }
+
+    void visit_const(ConstAst* ) { 
+        result = ExprType::ConstantET;
+    }
+
+    void visit_variable(VariableAst* ast) {
+        result = ExprType::VariableET;
+    }
+    
+    void visit_binary_op(BinaryOpAst* ast) {
+        result = ExprType::BinaryOpET;
+    }
+
+    ExprType result;
+};
+
+ExprType get_expr_type(ExprAst *expr) {
+    ExprTypeVisitor visitor;
+    expr->accept_expr_visitor(&visitor);
+
+    return visitor.result;
+}
 
 class GetExprVarsVisitor : public ExprVisitor {    
   public:
@@ -90,8 +115,8 @@ bool solve_same_expr<BinaryOpAst, BinaryOpAst>(
     BinaryOpAst *expr1, BinaryOpAst *expr2)
 {
     if(expr1->get_op() != expr2->get_op()) return false;
-    if(!same_expr(expr1->get_lhs(), expr2->get_lhs())) return false;
-    return same_expr(expr1->get_rhs(), expr2->get_rhs());
+    if(!is_same_expr(expr1->get_lhs(), expr2->get_lhs())) return false;
+    return is_same_expr(expr1->get_rhs(), expr2->get_rhs());
 }
 
 struct SameExprDispatchTraits {
@@ -104,7 +129,7 @@ struct SameExprDispatchTraits {
     }
 };
 
-bool same_expr(ExprAst *expr1, ExprAst *expr2) {
+bool is_same_expr(ExprAst *expr1, ExprAst *expr2) {
     return double_dispatch_expr<SameExprDispatchTraits>(expr1, expr2);
 }
 

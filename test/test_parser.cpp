@@ -19,6 +19,7 @@
 #include <list>
 #include <memory>
 #include "gtest/gtest.h"
+#include "simple/util/expr.h"
 #include "simple/util/ast_utils.h"
 #include "impl/parser/tokenizer.h"
 #include "impl/parser/parser.h"
@@ -72,7 +73,7 @@ TEST(ParserTest, TestAssignmentParser1) {
     EXPECT_EQ(assign->get_variable()->get_name(), std::string("x"));
     
     SimpleConstAst value(1);
-    EXPECT_TRUE((is_same_expr<ExprAst, ExprAst>(assign->get_expr(), &value)));
+    EXPECT_TRUE((is_same_expr(assign->get_expr(), &value)));
 
     parser.current_token_as<EOFToken>();
 }
@@ -100,7 +101,7 @@ TEST(ParserTest, TestAssignmentParser2) {
     SimpleBinaryOpAst *two_times_z = new SimpleBinaryOpAst('*', 
             new SimpleConstAst(2), new SimpleVariableAst("z"));
     SimpleBinaryOpAst expected_expr('+', new SimpleVariableAst("y"), two_times_z);
-    EXPECT_TRUE((is_same_expr<ExprAst, ExprAst>(assign->get_expr(), &expected_expr)));
+    EXPECT_TRUE((is_same_expr(assign->get_expr(), &expected_expr)));
 
     parser.current_token_as<EOFToken>();
 }
@@ -123,12 +124,12 @@ TEST(ParserTest, ExprParser1) {
     SimpleBinaryOpAst *y_times_z = new SimpleBinaryOpAst('*', 
             new SimpleVariableAst("y"), new SimpleVariableAst("z"));
     SimpleBinaryOpAst expected_expr('+', new SimpleVariableAst("x"), y_times_z);
-    EXPECT_TRUE((is_same_expr<ExprAst, ExprAst>(expr.get(), &expected_expr)));
+    EXPECT_TRUE((is_same_expr(expr.get(), &expected_expr)));
 
     SimpleBinaryOpAst *x_plus_y = new SimpleBinaryOpAst('+', 
             new SimpleVariableAst("x"), new SimpleVariableAst("y"));
     SimpleBinaryOpAst wrong_expr('*', x_plus_y, new SimpleVariableAst("z"));
-    EXPECT_FALSE((is_same_expr<ExprAst, ExprAst>(expr.get(), &wrong_expr)));
+    EXPECT_FALSE((is_same_expr(expr.get(), &wrong_expr)));
 
     parser.current_token_as<EOFToken>();
 }
@@ -153,12 +154,12 @@ TEST(ParserTest, ExprParser2) {
     SimpleBinaryOpAst *x_plus_y = new SimpleBinaryOpAst('+', 
             new SimpleVariableAst("x"), new SimpleVariableAst("y"));
     SimpleBinaryOpAst expected_expr('*', x_plus_y, new SimpleVariableAst("z"));
-    EXPECT_TRUE((is_same_expr<ExprAst, ExprAst>(expr.get(), &expected_expr)));
+    EXPECT_TRUE((is_same_expr(expr.get(), &expected_expr)));
 
     SimpleBinaryOpAst *y_times_z = new SimpleBinaryOpAst('*', 
             new SimpleVariableAst("y"), new SimpleVariableAst("z"));
     SimpleBinaryOpAst wrong_expr('+', new SimpleVariableAst("x"), y_times_z);
-    EXPECT_FALSE((is_same_expr<ExprAst, ExprAst>(expr.get(), &wrong_expr)));
+    EXPECT_FALSE((is_same_expr(expr.get(), &wrong_expr)));
 
     parser.current_token_as<EOFToken>();
 }

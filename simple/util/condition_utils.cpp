@@ -24,6 +24,40 @@
 namespace simple {
 namespace util {
 
+class ConditionTypeVisitor : public ConditionVisitor {
+  public:
+    ConditionTypeVisitor() { }
+
+    void visit_statement_condition(StatementCondition*) {
+        result = ConditionType::StatementCT;
+    }
+
+    void visit_proc_condition(ProcCondition*) {
+        result = ConditionType::ProcCT;
+    }
+
+    void visit_variable_condition(VariableCondition*) {
+        result = ConditionType::VariableCT;
+    }
+
+    void visit_constant_condition(ConstantCondition*) {
+        result = ConditionType::ConstantCT;
+    }
+
+    void visit_pattern_condition(PatternCondition*) {
+        result = ConditionType::PatternCT;
+    }
+
+    ConditionType result;
+};
+
+ConditionType get_condition_type(SimpleCondition *condition) {
+    ConditionTypeVisitor visitor;
+
+    condition->accept_condition_visitor(&visitor);
+    return visitor.result;
+}
+
 class SameConditionVisitorTraits {
   public:
     typedef bool ResultType;
