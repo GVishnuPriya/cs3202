@@ -16,85 +16,91 @@
     <Filter Include="Source Files\gtest">
       <UniqueIdentifier>{e6ae75c0-e0bd-4ad4-9cd9-4d44c2b79e44}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Unit Testing">
-      <UniqueIdentifier>{100feab0-4e44-427f-ba18-7a86c1759798}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\gtest">
       <UniqueIdentifier>{c7140e80-2e81-44dc-a7e8-1d3625e3a2c9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Soares Test">
+      <UniqueIdentifier>{a407a24d-27cf-4068-b251-2fb5d04b96f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Francis Test">
+      <UniqueIdentifier>{100feab0-4e44-427f-ba18-7a86c1759798}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Francis test">
+      <UniqueIdentifier>{dfc844ba-5334-43da-b2d6-61007b14c20f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\test\test_ast.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\test\test_call.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\test\test_condition.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\test\test_follows.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\test\test_frontend.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\test\test_icall.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\test\test_ifollows.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\test\test_inext.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\test\test_iparent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\test\test_linker.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\test\test_main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\test\test_modifies.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\test\test_next.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\test\test_parent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\test\test_parser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\test\test_pql_parser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\test\test_predicate.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\test\test_processor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\test\test_query.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\test\test_solver.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\test\test_tokenizer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\test\test_uses.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\test\gtest\gtest-all.cpp">
       <Filter>Source Files\gtest</Filter>
     </ClCompile>
-    <ClCompile Include="test_modifies.cpp">
-      <Filter>Source Files\Unit Testing</Filter>
+    <ClCompile Include="..\test\test_ast.cpp">
+      <Filter>Source Files\Soares Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\test_uses.cpp">
+      <Filter>Source Files\Soares Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\test_call.cpp">
+      <Filter>Source Files\Soares Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\test_condition.cpp">
+      <Filter>Source Files\Soares Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\test_follows.cpp">
+      <Filter>Source Files\Soares Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\test_frontend.cpp">
+      <Filter>Source Files\Soares Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\test_icall.cpp">
+      <Filter>Source Files\Soares Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\test_ifollows.cpp">
+      <Filter>Source Files\Soares Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\test_inext.cpp">
+      <Filter>Source Files\Soares Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\test_iparent.cpp">
+      <Filter>Source Files\Soares Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\test_linker.cpp">
+      <Filter>Source Files\Soares Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\test_main.cpp">
+      <Filter>Source Files\Soares Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\test_modifies.cpp">
+      <Filter>Source Files\Soares Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\test_next.cpp">
+      <Filter>Source Files\Soares Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\test_parent.cpp">
+      <Filter>Source Files\Soares Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\test_parser.cpp">
+      <Filter>Source Files\Soares Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\test_pql_parser.cpp">
+      <Filter>Source Files\Soares Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\test_predicate.cpp">
+      <Filter>Source Files\Soares Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\test_processor.cpp">
+      <Filter>Source Files\Soares Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\test_query.cpp">
+      <Filter>Source Files\Soares Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\test_solver.cpp">
+      <Filter>Source Files\Soares Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\test_tokenizer.cpp">
+      <Filter>Source Files\Soares Test</Filter>
+    </ClCompile>
+    <ClCompile Include="test_uses.cpp">
+      <Filter>Source Files\Francis Test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -106,6 +112,9 @@
     </ClInclude>
     <ClInclude Include="..\test\gtest\gtest.h">
       <Filter>Header Files\gtest</Filter>
+    </ClInclude>
+    <ClInclude Include="test_uses.h">
+      <Filter>Header Files\Francis test</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
