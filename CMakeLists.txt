@@ -93,4 +93,5 @@ add_executable(unit_tests
   test/test_query.cpp 
   test/test_tokenizer.cpp 
   test/test_types.cpp 
+  test/spa/test_uses.cpp 
   )

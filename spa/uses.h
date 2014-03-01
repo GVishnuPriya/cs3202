@@ -22,7 +22,7 @@ class Uses {
     VarResults get_used_vars(Proc p);
 
     StatementResults get_using_statements(Var v);
-    ProcResults get_using_procs(Var v);
+    //ProcResults get_using_procs(Var v);
 
   private:
     SolverPtr _uses_solver;
