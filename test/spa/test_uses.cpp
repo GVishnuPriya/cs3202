@@ -498,21 +498,129 @@ TEST (UsesTest, MultipleVariables_WhileNestedIfInside) {
 	StatementResults statement_set_g = uses.get_using_statements("g");
 	EXPECT_EQ(expected_statement_g, statement_set_g);
 }
-#if 0
+
 TEST (UsesTest, MultipleVariables_IfNestedWhileInside) {
 	/*
 	 * Meant to build this SIMPLE program
 	 * procedure First {
-	 * 1.	if x then {
-	 * 2.		while x {
-	 * 3.			x = x + 1;}
+	 * 1.	if a then {
+	 * 2.		while b {
+	 * 3.			c = d - 1;}
 	 *		else{
-	 * 4.		while y {
-	 * 5.			x = x + y;}
+	 * 4.		while e {
+	 * 5.			f = 1;}
 	 *		}
 	 */
-}
 
+	SimpleProcAst *procedure = new SimpleProcAst("First");
+	SimpleVariable varA("a");
+	SimpleVariable varB("b");
+	SimpleVariable varC("c");
+	SimpleVariable varD("d");
+	SimpleVariable varE("e");
+	SimpleVariable varF("f");
+
+	SimpleIfAst *if_stmt = new SimpleIfAst();
+	if_stmt->set_line(1);
+	if_stmt->set_variable(varA);
+	set_proc(if_stmt, procedure);
+
+	SimpleWhileAst *while_stmt_2 = new SimpleWhileAst();
+	while_stmt_2->set_line(2);
+	while_stmt_2->set_variable(varB);
+	set_then_branch(while_stmt_2, if_stmt);
+
+	SimpleAssignmentAst *stmt_3 = new SimpleAssignmentAst(3);
+	SimpleBinaryOpAst *expression_3 = new SimpleBinaryOpAst('-', 
+		new SimpleVariableAst("d"), new SimpleConstAst(1));
+	stmt_3->set_variable(varC);
+	stmt_3->set_expr(expression_3);
+	set_while_body(stmt_3, while_stmt_2);
+
+	SimpleWhileAst *while_stmt_4 = new SimpleWhileAst();
+	while_stmt_2->set_line(4);
+	while_stmt_2->set_variable(varE);
+	set_else_branch(while_stmt_4, if_stmt);
+
+	SimpleAssignmentAst *stmt_5 = new SimpleAssignmentAst(5);
+	stmt_5->set_variable(varF);
+	stmt_5->set_expr(new SimpleConstAst(1));
+	set_while_body(stmt_5, while_stmt_4);
+
+	SimpleRoot root(procedure);
+
+	LineTable line_table;
+	line_table[1] = if_stmt;
+	line_table[2] = while_stmt_2;
+	line_table[3] = stmt_3;
+	line_table[4] = while_stmt_4;
+	line_table[5] = stmt_5;
+
+	StatementTable *statement_table = new StatementTable(line_table);
+	AST *ast = new AST(root, statement_table);
+
+	SolverPtr uses_solver(new SimpleSolverGenerator<UsesSolver>(
+		new UsesSolver(ast->get_root())));
+ 	Uses uses(uses_solver, ast);
+
+ 	//Validate if
+ 	EXPECT_TRUE(uses.validate_uses(1, "a"));
+ 	EXPECT_TRUE(uses.validate_uses(1, "b"));
+ 	EXPECT_TRUE(uses.validate_uses(1, "d"));
+ 	EXPECT_TRUE(uses.validate_uses(1, "e"));
+ 	
+ 	VarResults expected_variable_set_1;
+ 	expected_variable_set_1.insert("a");
+ 	expected_variable_set_1.insert("b");
+ 	expected_variable_set_1.insert("d");
+ 	expected_variable_set_1.insert("e");
+ 	
+ 	VarResults variable_set_1 = uses.get_used_vars(1);
+ 	EXPECT_EQ(expected_variable_set_1, variable_set_1);
+
+ 	//Validate while at statement 2
+	EXPECT_TRUE(uses.validate_uses(2, "b"));
+ 	EXPECT_TRUE(uses.validate_uses(2, "d"));
+
+	VarResults expected_variable_set_2;
+	expected_variable_set_2.insert("b");
+ 	expected_variable_set_2.insert("d");
+
+ 	VarResults variable_set_2= uses.get_used_vars(2);
+ 	EXPECT_EQ(expected_variable_set_2, variable_set_2);
+
+ 	//Validate statement 3
+  	EXPECT_TRUE(uses.validate_uses(3, "d"));
+ 	
+ 	VarResults expected_variable_set_3;
+ 	expected_variable_set_3.insert("d");
+
+	VarResults variable_set_3= uses.get_used_vars(3);
+ 	EXPECT_EQ(expected_variable_set_3, variable_set_3);
+
+ 	//Validate while at statement 4
+  	EXPECT_TRUE(uses.validate_uses(4, "e"));
+ 	
+ 	VarResults expected_variable_set_4;
+ 	expected_variable_set_4.insert("e");
+
+	VarResults variable_set_4= uses.get_used_vars(4);
+ 	EXPECT_EQ(expected_variable_set_4, variable_set_4);	
+
+ 	//Validate statement 5
+ 	VarResults expected_variable_set_5;
+
+	VarResults variable_set_5= uses.get_used_vars(5);
+ 	EXPECT_EQ(expected_variable_set_5, variable_set_5);	
+
+ 	//Program wide
+ 	EXPECT_TRUE(uses.validate_uses("First", "a"));
+ 	EXPECT_TRUE(uses.validate_uses("First", "b"));
+ 	EXPECT_TRUE(uses.validate_uses("First", "d"));
+ 	EXPECT_TRUE(uses.validate_uses("First", "e"));
+ 	//TO BE COMPLETED
+}
+#if 0
 TEST (UsesTest, MultipleVariables_MultipleProcedure_SingleVariable) {
 	/*
 	 * Meant to build this SIMPLE program
