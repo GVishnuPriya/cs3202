@@ -40,6 +40,8 @@ class AST {
     
     StatementLine get_while_body(StatementLine statement);
 
+    SimpleRoot get_root();
+
   private:
     SimpleRoot _ast;
     StatementTable *_statement_table;

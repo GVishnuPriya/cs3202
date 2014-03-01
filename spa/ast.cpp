@@ -82,4 +82,9 @@ StatementLine AST::get_while_body(StatementLine statement) {
     return ast->get_body()->get_statement_line();
 }
 
+SimpleRoot AST::get_root() {
+    return _ast;
+}
+
+
 }
