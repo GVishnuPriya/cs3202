@@ -58,7 +58,7 @@ TEST (UsesTest, Single_Varible) {
 	//EXPECT_EQ("First", *proc_iter);
 }
 
-#if 0
+
 TEST (UsesTest, Multiple_Variables_Use_1) {
 	/*
 	 * Meant to build this SIMPLE program
@@ -66,56 +66,32 @@ TEST (UsesTest, Multiple_Variables_Use_1) {
 	 * x = 1;
 	 * y = x + 1;}
 	 */
+	AST *ast = uses_fixture_2();    
 
-	SimpleProcAst *procedure = new SimpleProcAst("First");
-	SimpleVariable varX("x");
-	SimpleVariable varY("y");
+	SolverPtr uses_solver(new SimpleSolverGenerator<UsesSolver>(
+		new UsesSolver(ast->get_root())));
+ 	Uses uses(uses_solver, ast);
 
-	//1st statement
-	SimpleAssignmentAst *stmt_1 = new SimpleAssignmentAst();
-	stmt_1->set_variable(varX);
-	stmt_1->set_expr(new SimpleConstAst(1));
-	stmt_1->set_line(1);
-	set_proc(stmt_1, procedure);
-	procedure->set_first_statement(stmt_1);
+	EXPECT_TRUE(uses.validate_uses("First", "x"));
+	EXPECT_TRUE(uses.validate_uses(2,"x"));
 
-	//2nd statement
-	SimpleAssignmentAst *stmt_2 = new SimpleAssignmentAst();
-	stmt_2->set_variable(varY);
-	SimpleBinaryOpAst *expression = new SimpleBinaryOpAst('+', varX, new SimpleConstAst(1));
-	stmt_2->set_expr(expression);
-	stmt_2->set_line(2);
-	stmt_2->set_prev(stmt_1);
-	stmt_2->set_proc(procedure);
+	VarResults variable_set = uses.get_used_vars(2);
+	VarResults::iterator iter = variable_set.begin();
+	EXPECT_EQ("x",*iter);
 
-	stmt_1->set_next(stmt_2);
-	SimpleRoot root(procedure);	//Set this procedure as the first procedure
+	variable_set = uses.get_used_vars("First");
+	iter = variable_set.begin();
+	EXPECT_EQ("x",*iter);
 
-	//FIXME: Check with Soares what to put inside
-	UsesSolver solver(); 
-	AST *ast = new AST(root, NULL);
+	StatementResults statement_set = uses.get_using_statements("x");
+	StatementResults::iterator stmt_iter = statement_set.begin();
+	EXPECT_EQ(2,*stmt_iter);
 
-	//Uses *test_uses = new Uses(solver,ast);
-	spa::Uses test_uses(solver,ast);
-
-	EXPECT_TRUE(test_uses->validate_uses(procedure, varX));
-	EXPECT_TRUE(test_uses->validate_uses(2,varX));
-
-	set<Var> variable_set = test_uses->get_used_vars(2);
-	set<Var> iter = variable_set.begin();
-	EXPECT_EQ(var,*iter);
-
-	set<Var> variable_set = test_uses->get_used_vars(procedure);
-	set<Var> iter = variable_set.begin();
-	EXPECT_EQ(var,*iter);
-
-	std::set<int> statement_set = test_uses.get_using_statements(varX);
-	std::set<int>::iterator iter = statement_set.begin();
-	EXPECT_EQ(2,*iter);
-
-	std::set<Proc> procedure_set = test_uses.get_using_procs(varX);
-	std::set<Proc>::iterator iter = procedure_set.begin();
-	EXPECT_EQ(procedure, *iter);
+	/* Wait for Pauline to implement
+	ProcResults procedure_set = uses.get_using_procs("x");
+	ProcResults::iterator proc_iter = procedure_set.begin();
+	EXPECT_EQ("First", *proc_iter);
+	*/
 }
 
 TEST (UsesTest, MultipleVariables_MultipleUsesInTermOfVariablesAndStatement) {
@@ -126,98 +102,65 @@ TEST (UsesTest, MultipleVariables_MultipleUsesInTermOfVariablesAndStatement) {
 	 * y = x + 1;
 	 * x = y + x;}
 	 */
+	AST *ast = uses_fixture_3();
 
-	SimpleProcAst *procedure = new SimpleProcAst("First");
-	SimpleVariable varX("x");
-	SimpleVariable varY("y");
-
-	//1st statement
-	SimpleAssignmentAst *stmt_1 = new SimpleAssignmentAst();
-	stmt_1->set_variable(varX);
-	stmt_1->set_expr(new SimpleConstAst(1));
-	stmt_1->set_line(1);
-	stmt_1->set_proc(procedure);
-	procedure->set_first_statement(stmt_1);
-
-	//2nd statement
-	SimpleAssignmentAst *stmt_2 = new SimpleAssignmentAst();
-	stmt_2->set_variable(varY);
-	SimpleBinaryOpAst *expression_2 = new SimpleBinaryOpAst('+', varX, new SimpleConstAst(1));
-	stmt_2->set_expr(expression_2);
-	stmt_2->set_line(2);
-	stmt_2->set_prev(stmt_1);
-	stmt_2->set_proc(procedure);
-
-	stmt_1->set_next(stmt_2);
-	//3rd statement
-	SimpleAssignmentAst *stmt_3 = new SimpleAssignmentAst();
-	stmt_3->set_variable(varX);
-	SimpleBinaryOpAst *expression_3 = new SimpleBinaryOpAst('+', varX, varY);
-	stmt_3->set_expr(expression_3);
-	stmt_3->set_line(3);
-	stmt_3->set_prev(stmt_2);
-	stmt_3->set_proc(procedure);
-
-	stmt_2->set_next(stmt_3);
-
-	//FIXME: Check with Soares what to put inside
-	UsesSolver solver(); 
-	AST *ast = new AST(root, NULL);
-
-	//Uses *test_uses = new Uses(solver,ast);
-	spa::Uses test_uses(solver,ast);
+	SolverPtr uses_solver(new SimpleSolverGenerator<UsesSolver>(
+		new UsesSolver(ast->get_root())));
+ 	Uses uses(uses_solver, ast);
 
 	//Validate statement 2
-	EXPECT_TRUE(test_uses->validate_uses(procedure, varX));
-	EXPECT_TRUE(test_uses->validate_uses(2,varX));
+	EXPECT_TRUE(uses.validate_uses("First", "x"));
+	EXPECT_TRUE(uses.validate_uses(2,"x"));
 
-	std::set<Var> variable_set = test_uses->get_used_vars(2);
-	std::set<Var>::iterator iter = variable_set.begin();
-	EXPECT_EQ(varX,*iter);
+	VarResults variable_set = uses.get_used_vars(2);
+	VarResults::iterator var_iter = variable_set.begin();
+	EXPECT_EQ("x",*var_iter);
 
 	//Validate statement 3
-	EXPECT_TRUE(test_uses->validate_uses(procedure, varY));
-	EXPECT_TRUE(test_uses->validate_uses(3,varX));
-	EXPECT_TRUE(test_uses->validate_uses(3,varY));
+	EXPECT_TRUE(uses.validate_uses("First", "y"));
+	EXPECT_TRUE(uses.validate_uses(3,"x"));
+	EXPECT_TRUE(uses.validate_uses(3,"y"));
 
-	std::set<Var> variable_set = test_uses->get_used_vars(3);
-	std::set<Var>::iterator iter = variable_set.begin();
-	EXPECT_EQ(varX,*iter);
-	++iter;
-	EXPECT_EQ(varY,*iter);
+	variable_set = uses.get_used_vars(3);
+	var_iter = variable_set.begin();
+	EXPECT_EQ("x",*var_iter);
+	++var_iter;
+	EXPECT_EQ("y",*var_iter);
 
 	//Program wide
-	std::set<Var> variable_set = test_uses->get_used_vars(procedure);
-	std::set<Var>::iterator iter = variable_set.begin();
-	EXPECT_EQ(varX,*iter);
-	++iter;
-	EXPECT_EQ(varY,*iter);
+	variable_set = uses.get_used_vars("First");
+	var_iter = variable_set.begin();
+	EXPECT_EQ("x",*var_iter);
+	++var_iter;
+	EXPECT_EQ("y",*var_iter);
 
-	std::set<int> statement_set = test_uses.get_using_statements(varX);
-	std::set<int>::iterator iter = statement_set.begin();
-	EXPECT_EQ(2,*iter);
-	++iter;
-	EXPECT_EQ(3, *iter);
+	StatementResults statement_set = uses.get_using_statements("x");
+	StatementResults::iterator stmt_iter = statement_set.begin();
+	EXPECT_EQ(2,*stmt_iter);
+	++stmt_iter;
+	EXPECT_EQ(3, *stmt_iter);
 
-	std::set<int> statement_set = test_uses.get_using_statements(varY);
-	std::set<int>::iterator iter = statement_set.begin();
-	EXPECT_EQ(3,*iter);
+	statement_set = uses.get_using_statements("y");
+	stmt_iter = statement_set.begin();
+	EXPECT_EQ(3,*stmt_iter);
 
-	std::set<Proc> procedure_set = test_uses.get_using_procs(varX);
+	/* Wait for Pauline to implement
+	std::set<Proc> procedure_set = uses.get_using_procs("x");
+	std::set<Proc>::iterator procedure_iter = procedure_set.begin();
+	EXPECT_EQ("First", *procedure_iter);
+
+	std::set<Proc> procedure_set = uses.get_using_procs(varY);
 	std::set<Proc>::iterator iter = procedure_set.begin();
-	EXPECT_EQ(procedure, *iter);
-
-	std::set<Proc> procedure_set = test_uses.get_using_procs(varY);
-	std::set<Proc>::iterator iter = procedure_set.begin();
-	EXPECT_EQ(procedure, *iter);
+	EXPECT_EQ("First", *iter);
+	*/
 }
 
 TEST (UsesTest, MultipleVariables_WhileStatement) {
 	/*
 	 * Meant to build this SIMPLE program
 	 * procedure First {
-	 * while x {
-	 *	x = x + y; }}
+	 * 1. while x {
+	 * 2. 	x = x + y; }}
 	 */
 
 	SimpleProcAst *procedure = new SimpleProcAst("First");
@@ -227,52 +170,60 @@ TEST (UsesTest, MultipleVariables_WhileStatement) {
 	SimpleWhileAst *while_stmt = new SimpleWhileAst();
 	while_stmt->set_variable(varX);
 	while_stmt->set_line(1);
-	while_stmt->set_proc(procedure);
-
-	//Check with Soares if while is consider a statement or not
-	//FIXME: Currently, while is a valid statement number
+	set_proc(while_stmt, procedure);
+	
 	SimpleAssignmentAst *stmt_2 = new SimpleAssignmentAst(2);
-	SimpleBinaryOpAst *expression = new SimpleBinaryOpAst('+', varX, varY);
+	SimpleBinaryOpAst *expression = new SimpleBinaryOpAst('+', 
+		new SimpleVariableAst("x"), new SimpleVariableAst("y"));
 	stmt_2->set_variable(varX);
 	stmt_2->set_expr(expression);
-	stmt_2->set_proc(procedure);
-	
-	procedure->set_first_statement(while_stmt);
-	while_stmt->set_body(stmt_2);
+	set_while_body(stmt_2, while_stmt);
 
-	//FIXME: Check with Soares what to put inside
-	UsesSolver solver(); 
-	AST *ast = new AST(root, NULL);
-	spa::Uses test_uses(solver,ast);
+	SimpleRoot root(procedure);	//Set this procedure as the first procedure
+
+	LineTable line_table;
+    line_table[1] = while_stmt;
+    line_table[2] = stmt_2;
+
+    StatementTable *statement_table = new StatementTable(line_table);
+	AST *ast = new AST(root, statement_table);
+
+	SolverPtr uses_solver(new SimpleSolverGenerator<UsesSolver>(
+		new UsesSolver(ast->get_root())));
+ 	Uses uses(uses_solver, ast);
 
 	//Validate while
-	EXPECT_TRUE(test_uses->validate_uses(1, varX));
-	
+	EXPECT_TRUE(uses.validate_uses(1, "x"));
 
 	//Validate statement 2
-	EXPECT_TRUE(test_uses->validate_uses(2, varX));
-	EXPECT_TRUE(test_uses->validate_uses(2, varY));
+	EXPECT_TRUE(uses.validate_uses(2, "x"));
+	EXPECT_TRUE(uses.validate_uses(2, "y"));
 
-	std::set<Var> variable_set = test_uses->get_used_vars(2);
-	std::set<Var>::iterator iter = variable_set.begin();
-	EXPECT_EQ(varX,*iter);
-	++iter;
-	EXPECT_EQ(varY,*iter);
+	VarResults variable_set = uses.get_used_vars(2);
+	VarResults::iterator variable_iter = variable_set.begin();
+	EXPECT_EQ("x",*variable_iter);
+	++variable_iter;
+	EXPECT_EQ("y",*variable_iter);
 	
 	//Program wide validation
-	EXPECT_TRUE(test_uses->validate_uses((procedure, varX)));
-	EXPECT_TRUE(test_uses->validate_uses((procedure, varY)));
+	EXPECT_TRUE(uses.validate_uses("First", "x"));
+	EXPECT_TRUE(uses.validate_uses("First", "y"));
 
-	std::set<int> statement_set = test_uses.get_using_statements(varX);
-	std::set<int>::iterator iter = statement_set.begin();
-	EXPECT_EQ(1,*iter);
-	++iter;
-	EXPECT_EQ(2, *iter);
+	StatementResults expected_statement_x;
+	expected_statement_x.insert(1);
+	expected_statement_x.insert(2);
 
-	std::set<int> statement_set = test_uses.get_using_statements(varY);
-	std::set<int>::iterator iter = statement_set.begin();
-	EXPECT_EQ(2,*iter);
+	StatementResults statement_set_x = uses.get_using_statements("x");
+	EXPECT_EQ(expected_statement_x, statement_set_x);
 
+	StatementResults expected_statement_y;
+	expected_statement_y.insert(1);
+	expected_statement_y.insert(2);
+
+	StatementResults statement_set_y = uses.get_using_statements("y");
+	EXPECT_EQ(expected_statement_y, statement_set_y);
+	
+	/* Wait for Pauline to implement
 	std::set<Proc> procedure_set = test_uses.get_using_procs(varX);
 	std::set<Proc>::iterator iter = procedure_set.begin();
 	EXPECT_EQ(procedure, *iter);
@@ -280,32 +231,274 @@ TEST (UsesTest, MultipleVariables_WhileStatement) {
 	std::set<Proc> procedure_set = test_uses.get_using_procs(varY);
 	std::set<Proc>::iterator iter = procedure_set.begin();
 	EXPECT_EQ(procedure, *iter);
+	*/
 }
 
 TEST (UsesTest, MultipleVariables_IfStatement) {
 	/*
 	 * Meant to build this SIMPLE program
 	 * procedure First {
-	 * if x then{
-	 *	x = x + y; }
-	 * else{
-	 *  x = x + 1;}}
+	 * 1. if x then{
+	 * 2.	x = x + y; }
+	 * 	  else{
+	 * 3.	x = x + 1;}}
 	 */
+
+	SimpleProcAst *procedure = new SimpleProcAst("First");
+	SimpleVariable varX("x");
+	SimpleVariable varY("y");
+
+	SimpleIfAst *if_stmt = new SimpleIfAst();
+	if_stmt->set_variable(varX);
+	if_stmt->set_line(1);
+	set_proc(if_stmt, procedure);
+
+	SimpleAssignmentAst *stmt_2 = new SimpleAssignmentAst(2);
+	SimpleBinaryOpAst *expression_2 = new SimpleBinaryOpAst('+', 
+		new SimpleVariableAst("x"), new SimpleVariableAst("y"));
+	stmt_2->set_variable(varX);
+	stmt_2->set_expr(expression_2);
+	set_then_branch(stmt_2, if_stmt);
+
+	SimpleAssignmentAst *stmt_3 = new SimpleAssignmentAst(3);
+	SimpleBinaryOpAst *expression_3 = new SimpleBinaryOpAst('+', 
+		new SimpleVariableAst("x"), new SimpleConstAst(1));
+	stmt_3->set_variable(varX);
+	stmt_3->set_expr(expression_3);
+	set_else_branch(stmt_3, if_stmt);
+
+	SimpleRoot root(procedure);	//Set this procedure as the first procedure
+
+	LineTable line_table;
+    line_table[1] = if_stmt;
+    line_table[2] = stmt_2;
+    line_table[3] = stmt_3;
+
+    StatementTable *statement_table = new StatementTable(line_table);
+	AST *ast = new AST(root, statement_table);
+
+	SolverPtr uses_solver(new SimpleSolverGenerator<UsesSolver>(
+		new UsesSolver(ast->get_root())));
+ 	Uses uses(uses_solver, ast);
+
+ 	//Validate if
+	EXPECT_TRUE(uses.validate_uses(1, "x"));
+
+	//Validate statement 2
+	EXPECT_TRUE(uses.validate_uses(1, "x"));
+	EXPECT_TRUE(uses.validate_uses(1, "y"));
+
+	//Program wide validation
+	EXPECT_TRUE(uses.validate_uses("First", "x"));
+	EXPECT_TRUE(uses.validate_uses("First", "y"));
+
+	StatementResults expected_statement_x;
+	expected_statement_x.insert(1);
+	expected_statement_x.insert(2);
+	expected_statement_x.insert(3);
+
+	StatementResults statement_set_x = uses.get_using_statements("x");
+	EXPECT_EQ(expected_statement_x, statement_set_x);
+
+	StatementResults expected_statement_y;
+	expected_statement_y.insert(1);
+	expected_statement_y.insert(2);
+	
+	StatementResults statement_set_y = uses.get_using_statements("y");
+	EXPECT_EQ(expected_statement_y, statement_set_y);
+
+	/* Wait for Pauline to implement
+	ProcResults procedure_set = uses.get_using_procs("x");
+	ProcResults::iterator procedure_iter = procedure_set.begin();
+	EXPECT_EQ("First", *procedure_iter);
+
+	procedure_set = test_uses.get_using_procs("y");
+	procedure_iter = procedure_set.begin();
+	EXPECT_EQ("First", *procedure_iter);
+	*/
 }
 
 TEST (UsesTest, MultipleVariables_WhileNestedIfInside) {
 	/*
 	 * Meant to build this SIMPLE program
 	 * procedure First {
-	 * 1.	while y {
-	 * 2.		if x then{
-	 * 3.			x = x + y; }
+	 * 1.	while a {
+	 * 2.		if b then{
+	 * 3.			c = d + e; }
 	 *			else{
-	 * 4.			x = x + 1;}
+	 * 4.			f = g + 1;}
 	 *		}
 	 */
-}
 
+	SimpleProcAst *procedure = new SimpleProcAst("First");
+	SimpleVariable varA("a");
+	SimpleVariable varB("b");
+	SimpleVariable varC("c");
+	SimpleVariable varD("d");
+	SimpleVariable varE("e");
+	SimpleVariable varF("f");
+	SimpleVariable varG("g");
+
+	SimpleWhileAst *while_stmt = new SimpleWhileAst();
+	while_stmt->set_line(1);
+	while_stmt->set_variable(varA);
+	set_proc(while_stmt, procedure);
+
+	SimpleIfAst *if_stmt = new SimpleIfAst();
+	if_stmt->set_line(2);
+	if_stmt->set_variable(varB);
+	set_while_body(if_stmt, while_stmt);
+
+	SimpleAssignmentAst *stmt_3 = new SimpleAssignmentAst(3);
+	SimpleBinaryOpAst *expression_3 = new SimpleBinaryOpAst('+', 
+		new SimpleVariableAst("d"), new SimpleVariableAst("e"));
+	stmt_3->set_variable(varC);
+	stmt_3->set_expr(expression_3);
+	set_then_branch(stmt_3, if_stmt);
+
+	SimpleAssignmentAst *stmt_4 = new SimpleAssignmentAst(4);
+	SimpleBinaryOpAst *expression_4 = new SimpleBinaryOpAst('+', 
+		new SimpleVariableAst("g"), new SimpleConstAst(1));
+	stmt_4->set_variable(varF);
+	stmt_4->set_expr(expression_4);
+	set_else_branch(stmt_4, if_stmt);
+
+	SimpleRoot root(procedure);	//Set this procedure as the first procedure
+
+	LineTable line_table;
+    line_table[1] = while_stmt;
+    line_table[2] = if_stmt;
+    line_table[3] = stmt_3;
+    line_table[4] = stmt_4;
+
+    StatementTable *statement_table = new StatementTable(line_table);
+	AST *ast = new AST(root, statement_table);
+
+	SolverPtr uses_solver(new SimpleSolverGenerator<UsesSolver>(
+		new UsesSolver(ast->get_root())));
+ 	Uses uses(uses_solver, ast);
+
+ 	//Validate while
+ 	EXPECT_TRUE(uses.validate_uses(1, "a"));
+ 	EXPECT_TRUE(uses.validate_uses(1, "b"));
+ 	EXPECT_TRUE(uses.validate_uses(1, "d"));
+ 	EXPECT_TRUE(uses.validate_uses(1, "e"));
+ 	EXPECT_TRUE(uses.validate_uses(1, "g"));
+
+ 	VarResults expected_variable_set_1;
+ 	expected_variable_set_1.insert("a");
+ 	expected_variable_set_1.insert("b");
+ 	expected_variable_set_1.insert("d");
+ 	expected_variable_set_1.insert("e");
+ 	expected_variable_set_1.insert("g");
+
+ 	VarResults variable_set_1 = uses.get_used_vars(1);
+ 	EXPECT_EQ(expected_variable_set_1, variable_set_1);
+
+ 	//Validate if
+ 	EXPECT_TRUE(uses.validate_uses(2, "b"));
+ 	EXPECT_TRUE(uses.validate_uses(2, "d"));
+ 	EXPECT_TRUE(uses.validate_uses(2, "e"));
+
+	VarResults expected_variable_set_2;
+	expected_variable_set_2.insert("b");
+ 	expected_variable_set_2.insert("d");
+ 	expected_variable_set_2.insert("e");
+ 	expected_variable_set_2.insert("g");
+
+ 	VarResults variable_set_2= uses.get_used_vars(2);
+ 	EXPECT_EQ(expected_variable_set_2, variable_set_2);
+
+ 	//Validate statement 3
+ 	EXPECT_TRUE(uses.validate_uses(3, "d"));
+ 	EXPECT_TRUE(uses.validate_uses(3, "e"));
+ 	
+ 	VarResults expected_variable_set_3;
+ 	expected_variable_set_3.insert("d");
+ 	expected_variable_set_3.insert("e");
+
+	VarResults variable_set_3= uses.get_used_vars(3);
+ 	EXPECT_EQ(expected_variable_set_3, variable_set_3);
+
+	//Validate statement 4
+ 	EXPECT_TRUE(uses.validate_uses(4, "g"));
+ 	
+ 	VarResults expected_variable_set_4;
+ 	expected_variable_set_4.insert("g");
+
+	VarResults variable_set_4= uses.get_used_vars(4);
+ 	EXPECT_EQ(expected_variable_set_4, variable_set_4);
+
+ 	//Program wide
+ 	EXPECT_TRUE(uses.validate_uses("First", "a"));
+ 	EXPECT_TRUE(uses.validate_uses("First", "b"));
+ 	EXPECT_TRUE(uses.validate_uses("First", "d"));
+ 	EXPECT_TRUE(uses.validate_uses("First", "e"));
+ 	EXPECT_TRUE(uses.validate_uses("First", "g"));
+
+ 	VarResults expected_variable_set_proc;
+ 	expected_variable_set_proc.insert("a");
+ 	expected_variable_set_proc.insert("b");
+ 	expected_variable_set_proc.insert("d");
+ 	expected_variable_set_proc.insert("e");
+ 	expected_variable_set_proc.insert("g");
+
+	VarResults variable_set_proc = uses.get_used_vars("First");
+	EXPECT_EQ(expected_variable_set_proc, variable_set_proc);
+
+	//Variable a
+	StatementResults expected_statement_a;
+	expected_statement_a.insert(1);
+
+	StatementResults statement_set_a = uses.get_using_statements("a");
+	EXPECT_EQ(expected_statement_a, statement_set_a);
+
+	//Variable b
+	StatementResults expected_statement_b;
+	expected_statement_b.insert(1);
+	expected_statement_b.insert(2);
+
+	StatementResults statement_set_b = uses.get_using_statements("b");
+	EXPECT_EQ(expected_statement_b, statement_set_b);
+
+	//Variable c
+	StatementResults expected_statement_c;
+	StatementResults statement_set_c = uses.get_using_statements("c");
+	EXPECT_EQ(expected_statement_c, statement_set_c);
+
+	//Variable d
+	StatementResults expected_statement_d;
+	expected_statement_d.insert(1);
+	expected_statement_d.insert(2);
+	expected_statement_d.insert(3);
+
+	StatementResults statement_set_d = uses.get_using_statements("d");
+	EXPECT_EQ(expected_statement_d, statement_set_d);
+
+	//Variable e
+	StatementResults expected_statement_e;
+	expected_statement_e.insert(1);
+	expected_statement_e.insert(2);
+	expected_statement_e.insert(3);
+
+	StatementResults statement_set_e = uses.get_using_statements("e");
+	EXPECT_EQ(expected_statement_e, statement_set_e);
+
+	//Variable f
+	StatementResults expected_statement_f;	
+	StatementResults statement_set_f = uses.get_using_statements("f");
+	EXPECT_EQ(expected_statement_f, statement_set_f);
+
+	//Variable g
+	StatementResults expected_statement_g;
+	expected_statement_g.insert(1);
+	expected_statement_g.insert(2);
+	expected_statement_g.insert(4);
+
+	StatementResults statement_set_g = uses.get_using_statements("g");
+	EXPECT_EQ(expected_statement_g, statement_set_g);
+}
+#if 0
 TEST (UsesTest, MultipleVariables_IfNestedWhileInside) {
 	/*
 	 * Meant to build this SIMPLE program
