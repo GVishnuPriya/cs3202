@@ -32,17 +32,19 @@ namespace impl {
 
 using namespace simple;
 
-class AssignStatementSolver {
+class VariableExtractor {
   public:
-    virtual VariableSet solve_assignment(AssignmentAst *assign) = 0;
+    virtual VariableSet extract_assignment(AssignmentAst *assign) = 0;
+    virtual VariableSet extract_while(WhileAst *ast) = 0;
+    virtual VariableSet extract_if(IfAst *ast) = 0;
 
-    virtual ~AssignStatementSolver() { }
+    virtual ~VariableExtractor() { }
 };
 
 class AssignmentSolver {
   public:
     AssignmentSolver(const SimpleRoot& ast, 
-        std::shared_ptr<AssignStatementSolver> assign_solver);
+        std::shared_ptr<VariableExtractor> variable_extractor);
 
     VariableSet get_right_vars_from_statement(StatementAst *statement);
     VariableSet get_right_vars_from_proc(ProcAst *proc);
@@ -63,7 +65,7 @@ class AssignmentSolver {
 
   private:
     SimpleRoot _ast;
-    std::shared_ptr<AssignStatementSolver> _assign_solver;
+    std::shared_ptr<VariableExtractor> _variable_extractor;
 
     std::map<SimpleVariable, ConditionSet> _right_condition_index;
 

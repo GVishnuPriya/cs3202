@@ -531,15 +531,17 @@ TEST (UsesTest, MultipleVariables_IfNestedWhileInside) {
 	set_then_branch(while_stmt_2, if_stmt);
 
 	SimpleAssignmentAst *stmt_3 = new SimpleAssignmentAst(3);
+
 	SimpleBinaryOpAst *expression_3 = new SimpleBinaryOpAst('-', 
 		new SimpleVariableAst("d"), new SimpleConstAst(1));
 	stmt_3->set_variable(varC);
 	stmt_3->set_expr(expression_3);
+	
 	set_while_body(stmt_3, while_stmt_2);
 
 	SimpleWhileAst *while_stmt_4 = new SimpleWhileAst();
-	while_stmt_2->set_line(4);
-	while_stmt_2->set_variable(varE);
+	while_stmt_4->set_line(4);
+	while_stmt_4->set_variable(varE);
 	set_else_branch(while_stmt_4, if_stmt);
 
 	SimpleAssignmentAst *stmt_5 = new SimpleAssignmentAst(5);
