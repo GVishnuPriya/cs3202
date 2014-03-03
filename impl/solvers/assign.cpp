@@ -42,8 +42,8 @@ class IndexVariablesVisitorTraits {
 };
 
 AssignmentSolver::AssignmentSolver(const SimpleRoot& ast, 
-    std::shared_ptr<AssignStatementSolver> assign_solver) : 
-    _ast(ast), _assign_solver(assign_solver)
+    std::shared_ptr<VariableExtractor> variable_extractor) : 
+    _ast(ast), _variable_extractor(variable_extractor)
 {
     for(SimpleRoot::iterator it = _ast.begin(); it != _ast.end(); ++it) {
         index_variables<ProcAst>(*it);
@@ -138,7 +138,7 @@ VariableSet AssignmentSolver::index_variables<ProcAst>(ProcAst *proc) {
 
 template <>
 VariableSet AssignmentSolver::index_variables<AssignmentAst>(AssignmentAst *assign) {
-    VariableSet result = _assign_solver->solve_assignment(assign);
+    VariableSet result = _variable_extractor->extract_assignment(assign);
     index_statement_variables(assign, result);
 
     return result;
@@ -147,6 +147,7 @@ VariableSet AssignmentSolver::index_variables<AssignmentAst>(AssignmentAst *assi
 template <>
 VariableSet AssignmentSolver::index_variables<WhileAst>(WhileAst *ast) {
     VariableSet result = index_statement_list(ast->get_body());
+    union_set(result, _variable_extractor->extract_while(ast));
 
     index_statement_variables(ast, result);
 
@@ -159,6 +160,8 @@ VariableSet AssignmentSolver::index_variables<IfAst>(IfAst *ast) {
     VariableSet else_result = index_statement_list(ast->get_else_branch());
 
     union_set(result, else_result);
+    union_set(result, _variable_extractor->extract_if(ast));
+    
     index_statement_variables(ast, result);
 
     return result;

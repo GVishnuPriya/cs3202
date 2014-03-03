@@ -25,17 +25,31 @@ namespace impl {
 using namespace simple;
 using namespace simple::util;
 
-class UsesAssignSolver : public AssignStatementSolver {
+class UsesVariableExtractor : public VariableExtractor {
   public:
-    UsesAssignSolver() { }
-
-    VariableSet solve_assignment(AssignmentAst *assign) {
+    UsesVariableExtractor() { }
+    
+    VariableSet extract_assignment(AssignmentAst *assign) {
         return get_expr_vars(assign->get_expr());
+    }
+    
+    VariableSet extract_while(WhileAst *ast) {
+        VariableSet result;
+        result.insert(*ast->get_variable());
+        
+        return result;
+    }
+
+    VariableSet extract_if(IfAst *ast) {
+        VariableSet result;
+        result.insert(*ast->get_variable());
+        
+        return result;
     }
 };
 
 UsesSolver::UsesSolver(const SimpleRoot& ast) : 
-    AssignmentSolver(ast, std::shared_ptr<AssignStatementSolver>(new UsesAssignSolver()))
+    AssignmentSolver(ast, std::shared_ptr<VariableExtractor>(new UsesVariableExtractor()))
 { }
 
 VariableSet UsesSolver::get_vars_used_by_statement(StatementAst *statement) {
