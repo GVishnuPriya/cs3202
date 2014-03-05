@@ -13,17 +13,6 @@ using namespace simple;
 using namespace simple::impl;
 using namespace simple::util;
 
-//void 
-//	TestUses::setUp(){
-//}
-//
-//void 
-//	TestUses::tearDown(){
-//}
-//
-//// Registers the fixture into the 'registry'
-//CPPUNIT_TEST_SUITE_REGISTRATION( TestUses ); // Note 4 
-
 TEST (UsesTest, Single_Varible) {
 	/*
 	 * Meant to build this SIMPLE program
