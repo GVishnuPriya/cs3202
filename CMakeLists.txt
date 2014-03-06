@@ -93,5 +93,12 @@ add_executable(unit_tests
   test/test_query.cpp 
   test/test_tokenizer.cpp 
   test/test_types.cpp 
-  test/spa/test_uses.cpp 
+  test/spa/test_uses.cpp
   )
+
+add_executable(system_test
+  test/test_main.cpp
+  test/gtest/gtest-all.cpp
+  ${SOURCE}
+  test/system-test/system_modifies.cpp
+)
