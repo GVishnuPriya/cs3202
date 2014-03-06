@@ -23,20 +23,28 @@ namespace impl {
 
 using namespace simple;
 
-class ModifiesAssignSolver : public AssignStatementSolver {
+class ModifiesVariableExtractor : public VariableExtractor {
   public:
-    ModifiesAssignSolver() { }
+    ModifiesVariableExtractor() { }
 
-    VariableSet solve_assignment(AssignmentAst *assign) {
+    VariableSet extract_assignment(AssignmentAst *assign) {
         VariableSet result;
         result.insert(*assign->get_variable());
         
         return result;
     }
+    
+    VariableSet extract_while(WhileAst *ast) {
+        return VariableSet();
+    }
+
+    VariableSet extract_if(IfAst *ast) {
+        return VariableSet();
+    }
 };
 
 ModifiesSolver::ModifiesSolver(const SimpleRoot& ast) : 
-    AssignmentSolver(ast, std::shared_ptr<AssignStatementSolver>(new ModifiesAssignSolver()))
+    AssignmentSolver(ast, std::shared_ptr<VariableExtractor>(new ModifiesVariableExtractor()))
 { }
 
 VariableSet ModifiesSolver::get_vars_modified_by_statement(StatementAst *statement) {
