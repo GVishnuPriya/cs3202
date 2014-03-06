@@ -1,37 +1,37 @@
 procedure First {
-01.	a = 7;
-02.	if a then {
-03.		a = a + 0;
-04.		b = 2;
-05.		b = c;
-06.		c = b;
-07.		while b {
-08.			c = d - 1;
-09.			c = g + 7;
-10.			d = c;
-11.			b = c;
-12.			if b then {
-13.				j = 1;
-14.				c = j;}
+	a = 7;
+	if a then {
+		a = a + 0;
+		b = 2;
+		b = c;
+		c = b;
+		while b {
+			c = d - 1;
+			c = g + 7;
+			d = c;
+			b = c;
+			if b then {
+				j = 1;
+				c = j;}
 			else{
-15.				c = a;
-16.				j = c;}}}
+				c = a;
+				j = c;}}}
 	else{
-17.		while e {
-18.			f = 1;}
-19.		if g then {
-20.			h = c;
-21.			c = a;
-22.			b = c;}
+		while e {
+			f = 1;}
+		if g then {
+			h = c;
+			c = a;
+			b = c;}
 		else{
-23.			a = 0;}}}
+			a = 0;}}}
 
 procedure Second{
-24.	z = 0;
-25.	call First;}
+	z = 0;
+	call First;}
 
 procedure b{
-26.	call Second;
+	call Second;
 
 	if c then{
 		call Second;}

@@ -14,7 +14,8 @@ class SystemModifiesTest : public testing::Test {
              // accessed from sub-classes.
  SimpleProgramAnalyzer *spa = create_simple_program_analyzer();
  std::vector<std::string> expected;
- 
+ std::vector<std::string> result;
+
   // virtual void SetUp() will be called before each test is run.  You
   // should define it if you need to initialize the varaibles.
   // Otherwise, this can be skipped.
@@ -31,13 +32,32 @@ class SystemModifiesTest : public testing::Test {
   // }
 };
 
-TEST_F(SystemModifiesTest, Negative) {
-	std::string query ("stmt s;\nSelect s such that Modifies(s, \"a\")");
-	
+TEST_F(SystemModifiesTest, SimpleProcedure) {
+	std::string query ("procedure p;Select p");
+
 	try {
-		std::vector<std::string> result = spa->evaluate(query);
+		result = spa->evaluate(query);
 	}
 	catch(std::runtime_error& e) {
 		cout << "Error evaluating query. " << e.what() << endl;
 	}
+
+	expected.push_back("First");
+	expected.push_back("Second");
+	expected.push_back("b");
+
+	EXPECT_EQ(expected, result);
+}
+
+TEST_F(SystemModifiesTest, SimpleAssignStatementNum) {
+	std::string query ("assign a;\nSelect a.stmt#");
+
+	try {
+		result = spa->evaluate(query);
+	}
+	catch(std::runtime_error& e) {
+		cout << "Error evaluating query. " << e.what() << endl;
+	}
+
+	EXPECT_EQ(expected, result);
 }
