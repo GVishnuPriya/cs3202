@@ -101,4 +101,5 @@ add_executable(system_test
   test/gtest/gtest-all.cpp
   ${SOURCE}
   test/system-test/system_modifies.cpp
+  test/system-test/system_basic.cpp
 )

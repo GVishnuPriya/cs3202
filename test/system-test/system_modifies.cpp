@@ -32,8 +32,8 @@ class SystemModifiesTest : public testing::Test {
   // }
 };
 
-TEST_F(SystemModifiesTest, SimpleProcedure) {
-	std::string query ("procedure p;Select p");
+/*TEST_F(SystemModifiesTest, SAMPLE) {
+	std::string query ("procedure p;\nSelect p");
 
 	try {
 		result = spa->evaluate(query);
@@ -47,17 +47,4 @@ TEST_F(SystemModifiesTest, SimpleProcedure) {
 	expected.push_back("b");
 
 	EXPECT_EQ(expected, result);
-}
-
-TEST_F(SystemModifiesTest, SimpleAssignStatementNum) {
-	std::string query ("assign a;\nSelect a.stmt#");
-
-	try {
-		result = spa->evaluate(query);
-	}
-	catch(std::runtime_error& e) {
-		cout << "Error evaluating query. " << e.what() << endl;
-	}
-
-	EXPECT_EQ(expected, result);
-}
+}*/
