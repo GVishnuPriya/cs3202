@@ -31,7 +31,7 @@ using namespace simple;
 class ExprSolver {
   public:
 
-    ExprSolver(SimpleRoot ast) : _ast (ast) {}
+    ExprSolver(SimpleRoot ast);
 
 	/*
 	Pattern a(v,p) = Expr(a,p) & Modifies(a,v)
@@ -40,24 +40,8 @@ class ExprSolver {
 
 	bool ExprSolver::validate(AssignmentAst *assign_ast, ExprAst *pattern);
 
-  ConditionSet solve_left(ExprAst *pattern) {
-    ConditionSet result;
-    std::string key = expr_to_string(pattern);
-    std::set<AssignmentAst*> assign_stmts = _pattern_index[key];
-    
-    for (auto it = assign_stmts.begin(); it != assign_stmts.end(); ++it) {
-      
-      result.insert(new SimpleStatementCondition(*it));
-      
-    }
-    
-    return result;
-  }
-  ConditionSet solve_right(AssignmentAst *assign_ast) {
-    ConditionSet result;
-    result.insert(new SimplePatternCondition(assign_ast->get_expr()));
-    return result;
-  }
+  ConditionSet solve_left(ExprAst *pattern);
+  ConditionSet solve_right(AssignmentAst *assign_ast);
   
 	bool same_expr(ExprAst *expr1, ExprAst *expr2);
 	bool same_expr_bin_op(BinaryOpAst *expr1, ExprAst *expr2);
@@ -66,15 +50,12 @@ class ExprSolver {
   
   
   // helper methods to index for solve-left
-  void index_proc();
-  void index_stmtlist();
-  void index_stmt();
-  void index_while();
-  void index_if();
-  void index_assign(AssignmentAst *assign_ast) {
-    std::string key = expr_to_string(assign_ast->get_expr());
-    _pattern_index[key].insert(assign_ast);
-  }
+	void index_proc(ProcAst *proc);
+  void index_statement_list(StatementAst *statement);
+  void index_statement(StatementAst *statement) ;
+  void index_while(WhileAst *while_ast);
+  void index_if(IfAst *if_ast);
+  void index_assign(AssignmentAst *assign_ast);
 
 private:
 	SimpleRoot _ast;

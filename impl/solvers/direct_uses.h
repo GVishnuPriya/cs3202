@@ -28,41 +28,33 @@ namespace impl {
 
 using namespace simple;
 
-class IExprSolver {
+class DirectUsesSolver {
   public:
 
-    IExprSolver(SimpleRoot ast);
+	DirectUsesSolver(SimpleRoot ast);
 
 	/*
-	Pattern a(v,_p_) = IExpr(a,p) & Modifies(a,v)
-
+	DirectUses checks for control variables of container statements.
+	Pattern w(v,_) = DirectUses(w,v) 
+	Pattern i(v,_,_) = DirectUses(i,v)
 	*/
 
-	bool IExprSolver::validate(AssignmentAst *assign_ast, ExprAst *pattern);
-
-	ConditionSet solve_left(ExprAst *pattern);
-  ConditionSet solve_right(AssignmentAst *assign_ast);
-  
-	bool sub_expr(ExprAst *expr1, ExprAst *expr2);
-	bool sub_expr_bin_op(BinaryOpAst *expr1, ExprAst *expr2);
-  
+	bool validate(StatementAst *statement, SimpleVariable *var);
+	
+	ConditionSet solve_left(SimpleVariable *var);
+	
+	ConditionSet solve_right(StatementAst *statement);
+	
+	// index for solve-left
 	void index_proc(ProcAst *proc);
-  void index_statement_list(StatementAst *statement);
-  void index_statement(StatementAst *statement) ;
-  void index_while(WhileAst *while_ast);
-  void index_if(IfAst *if_ast);
-  void index_assign(AssignmentAst *assign_ast);
+	void index_statement_list(StatementAst *statement);
+	void index_statement(StatementAst *statement);
+	void index_while(WhileAst *while_ast);
+	void index_if(IfAst *if_ast);
   
-  std::set<ExprAst*> get_sub_exprs(ExprAst *expr);
-  
-  
-
 private:
 	SimpleRoot _ast;
-    
-  // map string to set of assign statement for solve-left
-  std::map<std::string, std::set<AssignmentAst*> > _pattern_index;
-  
+	std::map<SimpleVariable, ConditionSet> _right_condition_index;
 
 };
 } // namespace impl
