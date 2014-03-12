@@ -25,9 +25,9 @@ StatementAst* StatementTable::get_statement(StatementLine line) {
 StatementResults condition_to_statement_results(const ConditionSet& conditions) {
     StatementResults result;
 
-    for(ConditionPtr condition : conditions) {
+    for(auto it = conditions.begin(); it != conditions.end(); ++it) {
         StatementCondition *statement_condition = 
-            condition_cast<StatementCondition>(condition);
+            condition_cast<StatementCondition>(*it);
 
         if(statement_condition != NULL) {
             result.insert(statement_condition->get_statement_ast()
@@ -41,9 +41,9 @@ StatementResults condition_to_statement_results(const ConditionSet& conditions) 
 VarResults condition_to_variable_results(const ConditionSet& conditions) {
     VarResults result;
 
-    for(ConditionPtr condition : conditions) {
+for(auto it = conditions.begin(); it != conditions.end(); ++it) {
         VariableCondition *var_condition = 
-            condition_cast<VariableCondition>(condition);
+            condition_cast<VariableCondition>(*it);
 
         if(var_condition != NULL) {
             result.insert(*var_condition->get_variable());
@@ -56,9 +56,9 @@ VarResults condition_to_variable_results(const ConditionSet& conditions) {
 ProcResults condition_to_proc_results(const ConditionSet& conditions) {
     ProcResults result;
 
-    for(ConditionPtr condition : conditions) {
+for(auto it = conditions.begin(); it != conditions.end(); ++it) {
         ProcCondition *proc_condition = 
-            condition_cast<ProcCondition>(condition);
+            condition_cast<ProcCondition>(*it);
 
         if(proc_condition != NULL) {
             result.insert(proc_condition->get_proc_ast()

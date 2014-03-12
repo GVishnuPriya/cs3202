@@ -11,7 +11,7 @@ using namespace simple;
 
 class VarTable {
   public:
-    typedef typename VariableSet::iterator VarIterator;
+    typedef VariableSet::iterator VarIterator;
 
     VarTable(VariableSet variables);
 

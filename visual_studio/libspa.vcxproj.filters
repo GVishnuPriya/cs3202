@@ -147,49 +147,49 @@
     <ClCompile Include="..\impl\solvers\uses.cpp">
       <Filter>Source Files\impl\solvers</Filter>
     </ClCompile>
-    <ClCompile Include="..\spa\affects.cpp">
-      <Filter>Source Files\spa</Filter>
-    </ClCompile>
-    <ClCompile Include="..\spa\affects_star.cpp">
-      <Filter>Source Files\spa</Filter>
-    </ClCompile>
-    <ClCompile Include="..\spa\ast.cpp">
-      <Filter>Source Files\spa</Filter>
-    </ClCompile>
-    <ClCompile Include="..\spa\calls.cpp">
-      <Filter>Source Files\spa</Filter>
-    </ClCompile>
-    <ClCompile Include="..\spa\calls_star.cpp">
-      <Filter>Source Files\spa</Filter>
-    </ClCompile>
-    <ClCompile Include="..\spa\follows.cpp">
-      <Filter>Source Files\spa</Filter>
-    </ClCompile>
-    <ClCompile Include="..\spa\follows_star.cpp">
-      <Filter>Source Files\spa</Filter>
-    </ClCompile>
-    <ClCompile Include="..\spa\modifies.cpp">
-      <Filter>Source Files\spa</Filter>
-    </ClCompile>
-    <ClCompile Include="..\spa\next.cpp">
-      <Filter>Source Files\spa</Filter>
-    </ClCompile>
-    <ClCompile Include="..\spa\next_star.cpp">
-      <Filter>Source Files\spa</Filter>
-    </ClCompile>
-    <ClCompile Include="..\spa\parent.cpp">
-      <Filter>Source Files\spa</Filter>
-    </ClCompile>
-    <ClCompile Include="..\spa\parent_star.cpp">
-      <Filter>Source Files\spa</Filter>
-    </ClCompile>
-    <ClCompile Include="..\spa\pkb.cpp">
+    <ClCompile Include="..\spa\uses.cpp">
       <Filter>Source Files\spa</Filter>
     </ClCompile>
     <ClCompile Include="..\spa\statement.cpp">
       <Filter>Source Files\spa</Filter>
     </ClCompile>
-    <ClCompile Include="..\spa\uses.cpp">
+    <ClCompile Include="..\spa\pkb.cpp">
+      <Filter>Source Files\spa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spa\parent_star.cpp">
+      <Filter>Source Files\spa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spa\parent.cpp">
+      <Filter>Source Files\spa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spa\next_star.cpp">
+      <Filter>Source Files\spa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spa\next.cpp">
+      <Filter>Source Files\spa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spa\modifies.cpp">
+      <Filter>Source Files\spa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spa\follows_star.cpp">
+      <Filter>Source Files\spa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spa\follows.cpp">
+      <Filter>Source Files\spa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spa\calls_star.cpp">
+      <Filter>Source Files\spa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spa\calls.cpp">
+      <Filter>Source Files\spa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spa\ast.cpp">
+      <Filter>Source Files\spa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spa\affects_star.cpp">
+      <Filter>Source Files\spa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spa\affects.cpp">
       <Filter>Source Files\spa</Filter>
     </ClCompile>
     <ClCompile Include="..\spa\var_table.cpp">

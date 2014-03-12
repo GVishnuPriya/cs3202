@@ -10,8 +10,8 @@ using namespace simple::util;
 AST::AST(SimpleRoot ast, StatementTable *statement_table) :
     _ast(ast), _statement_table(statement_table)
 {
-    for(ProcAst *proc : _ast) {
-        _procs.insert(proc->get_name());
+    for(auto it = ast.begin() ; it != ast.end(); ++it) {
+        _procs.insert((*it)->get_name());
     }
 }
 

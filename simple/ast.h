@@ -161,7 +161,7 @@ class SimpleRoot {
 
     SimpleRoot& operator =(const SimpleRoot& other);
 
-    ~SimpleRoot();
+    ~SimpleRoot() { }
 
     class iterator {
       public:

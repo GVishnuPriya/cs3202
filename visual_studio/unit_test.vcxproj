@@ -68,6 +68,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\test\gtest\gtest-all.cpp" />
+    <ClCompile Include="..\test\spa\test_uses.cpp" />
     <ClCompile Include="..\test\test_ast.cpp" />
     <ClCompile Include="..\test\test_call.cpp" />
     <ClCompile Include="..\test\test_condition.cpp" />
@@ -90,18 +91,17 @@
     <ClCompile Include="..\test\test_solver.cpp" />
     <ClCompile Include="..\test\test_tokenizer.cpp" />
     <ClCompile Include="..\test\test_uses.cpp" />
-    <ClCompile Include="test_uses.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="libspa.vcxproj">
-      <Project>{6bdba65e-9dc1-4d00-932b-b329f191900e}</Project>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\test\fixture.h" />
     <ClInclude Include="..\test\gtest\gtest.h" />
     <ClInclude Include="..\test\mock.h" />
     <ClInclude Include="test_uses.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="libspa.vcxproj">
+      <Project>{6bdba65e-9dc1-4d00-932b-b329f191900e}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

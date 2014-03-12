@@ -99,7 +99,7 @@
     <ClCompile Include="..\test\test_tokenizer.cpp">
       <Filter>Source Files\Soares Test</Filter>
     </ClCompile>
-    <ClCompile Include="test_uses.cpp">
+    <ClCompile Include="..\test\spa\test_uses.cpp">
       <Filter>Source Files\Francis Test</Filter>
     </ClCompile>
   </ItemGroup>

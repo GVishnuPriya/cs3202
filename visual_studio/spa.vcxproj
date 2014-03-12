@@ -97,11 +97,6 @@
     <ClCompile Include="..\spa\var_table.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="libspa.vcxproj">
-      <Project>{6bdba65e-9dc1-4d00-932b-b329f191900e}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\spa\affects.h" />
     <ClInclude Include="..\spa\affects_star.h" />
     <ClInclude Include="..\spa\ast.h" />
@@ -119,6 +114,11 @@
     <ClInclude Include="..\spa\types.h" />
     <ClInclude Include="..\spa\uses.h" />
     <ClInclude Include="..\spa\var_table.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="libspa.vcxproj">
+      <Project>{6bdba65e-9dc1-4d00-932b-b329f191900e}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
