@@ -13,12 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\unit_test">
-      <UniqueIdentifier>{0a2e3b1a-3249-4ac1-97da-e14e9448622c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\unit_test\spa">
-      <UniqueIdentifier>{82def2ba-60b4-4305-a951-2f13828b61bc}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\autotest\AbstractWrapper.h">
@@ -34,9 +28,6 @@
   <ItemGroup>
     <ClCompile Include="..\autotest\TestWrapper.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="uses_test.cpp">
-      <Filter>Source Files\unit_test\spa</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

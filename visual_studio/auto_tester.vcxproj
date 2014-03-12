@@ -86,7 +86,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\autotest\TestWrapper.cpp" />
-    <ClCompile Include="uses_test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="libspa.vcxproj">

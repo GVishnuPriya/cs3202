@@ -65,8 +65,6 @@ void SimpleRoot::insert_proc(ProcAst *proc) {
     (*_procs.get())[proc->get_name()].reset(proc);
 }
 
-SimpleRoot::~SimpleRoot() { }
-
 SimpleRoot::iterator::iterator(_iterator it) : _it(it) { }
 
 SimpleRoot::iterator& SimpleRoot::iterator::operator ++() {
