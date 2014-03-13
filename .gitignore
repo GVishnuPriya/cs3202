@@ -23,6 +23,7 @@ Release/
 *.sdf
 *.vcxproj.user
 *.dir
+*.obj
 flatfile.txt
 Win32/
 ipch/

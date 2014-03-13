@@ -27,19 +27,19 @@ class StatementTypeVisitor : public StatementVisitor {
     StatementTypeVisitor() { }
 
     void visit_if(IfAst*) {
-        result = StatementType::IfST;
+        result = IfST;
     }
 
     void visit_while(WhileAst*) {
-        result = StatementType::WhileST;
+        result = WhileST;
     }
 
     void visit_assignment(AssignmentAst*) {
-        result = StatementType::AssignST;
+        result = AssignST;
     }
 
     void visit_call(CallAst*) {
-        result = StatementType::CallST;
+        result = CallST;
     }
 
     StatementType result;

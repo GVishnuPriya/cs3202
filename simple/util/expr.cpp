@@ -10,15 +10,15 @@ class ExprTypeVisitor : public ExprVisitor {
     ExprTypeVisitor() { }
 
     void visit_const(ConstAst* ) { 
-        result = ExprType::ConstantET;
+        result = ConstantET;
     }
 
     void visit_variable(VariableAst* ast) {
-        result = ExprType::VariableET;
+        result = VariableET;
     }
     
     void visit_binary_op(BinaryOpAst* ast) {
-        result = ExprType::BinaryOpET;
+        result = BinaryOpET;
     }
 
     ExprType result;

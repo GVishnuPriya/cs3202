@@ -29,23 +29,23 @@ class ConditionTypeVisitor : public ConditionVisitor {
     ConditionTypeVisitor() { }
 
     void visit_statement_condition(StatementCondition*) {
-        result = ConditionType::StatementCT;
+        result = StatementCT;
     }
 
     void visit_proc_condition(ProcCondition*) {
-        result = ConditionType::ProcCT;
+        result = ProcCT;
     }
 
     void visit_variable_condition(VariableCondition*) {
-        result = ConditionType::VariableCT;
+        result = VariableCT;
     }
 
     void visit_constant_condition(ConstantCondition*) {
-        result = ConditionType::ConstantCT;
+        result = ConstantCT;
     }
 
     void visit_pattern_condition(PatternCondition*) {
-        result = ConditionType::PatternCT;
+        result = PatternCT;
     }
 
     ConditionType result;
