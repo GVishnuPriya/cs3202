@@ -17,10 +17,10 @@
  */
 
 #include "impl/solvers/expr.h"
-#include "simple/util/ast_utils.h"
-#include "simple/util/condition_utils.h"
 #include "simple/util/expr.h"
-
+#include "simple/util/ast_utils.h"
+#include "simple/util/set_convert.h"
+#include "simple/util/condition_utils.h"
 
 namespace simple {
 namespace impl {
@@ -29,124 +29,115 @@ using namespace simple;
 using namespace simple::util;
 
 ExprSolver::ExprSolver(SimpleRoot ast) : _ast(ast) {
-	
-	for (auto it = _ast.begin(); it!= _ast.end(); ++it) {
-		index_proc(*it);
-	}
-}
-
-
-bool ExprSolver::validate(AssignmentAst *assign_ast, ExprAst *pattern) {
-
-	return same_expr(assign_ast->get_expr(),pattern);
-
-}
-
-ConditionSet ExprSolver::solve_left(ExprAst *pattern) {
-	ConditionSet result;
-    std::string key = expr_to_string(pattern);
-    std::set<AssignmentAst*> assign_stmts = _pattern_index[key];
-    
-    for (auto it = assign_stmts.begin(); it != assign_stmts.end(); ++it) {
-      
-      result.insert(new SimpleStatementCondition(*it));
-      
+    for (auto it = _ast.begin(); it!= _ast.end(); ++it) {
+        index_proc(*it);
     }
-    
-    return result;
 }
 
-ConditionSet ExprSolver::solve_right(AssignmentAst *assign_ast) {
+template <>
+ConditionSet ExprSolver::solve_right<StatementAst>(StatementAst *statement) {
+    ExprSet expr_result = solve_right_statement_expr(statement);
     ConditionSet result;
-    result.insert(new SimplePatternCondition(assign_ast->get_expr()));
+
+    for(auto it=expr_result.begin(); it != expr_result.end(); ++it) {
+        result.insert(new SimplePatternCondition(clone_expr(*it)));
+    }
+
     return result;
 }
 
-bool ExprSolver::same_expr(ExprAst* expr1, ExprAst * expr2) {
-
-	switch (get_expr_type(expr1)) {
-	case BinaryOpET:
-		return same_expr_bin_op(expr_cast<BinaryOpAst>(expr1),expr2);
-	case VariableET:
-		return same_expr_var(expr_cast<VariableAst>(expr1),expr2);
-	case ConstantET:
-		return same_expr_const(expr_cast<ConstAst>(expr1),expr2);
-	}
-
+template <>
+ConditionSet ExprSolver::solve_left<ExprAst>(ExprAst *expr) {
+    StatementSet result = solve_left_statement(expr);
+    return statement_set_to_condition_set(result);
 }
 
-bool ExprSolver::same_expr_bin_op(BinaryOpAst *expr1, ExprAst *expr2) {
-
-	switch (get_expr_type(expr2)) {
-	case BinaryOpET:
-		return (expr1->get_op() == expr_cast<BinaryOpAst>(expr2)->get_op()
-			&& same_expr(expr1->get_lhs(),expr_cast<BinaryOpAst>(expr2)->get_lhs())
-			&& same_expr(expr1->get_rhs(),expr_cast<BinaryOpAst>(expr2)->get_rhs()));
-	default:
-		return false;
-	}
-
+template <>
+bool ExprSolver::validate<StatementAst, ExprAst>(
+        StatementAst *statement, ExprAst *expr)
+{
+    return validate_statement_expr(statement, expr);
 }
 
-bool ExprSolver::same_expr_var(VariableAst *expr1, ExprAst *expr2) {
-
-	switch (get_expr_type(expr2)) {
-	case VariableET:
-		return (expr1->get_variable() == expr_cast<VariableAst>(expr2)->get_variable());
-	default:
-		return false;
-	}
-
+bool ExprSolver::validate_statement_expr(StatementAst *statement, ExprAst *pattern) {
+    AssignmentAst *assign = statement_cast<AssignmentAst>(statement);
+    
+    if(assign) {
+        return validate_assign_expr(assign, pattern);
+    } else {
+        return false;
+    }
 }
 
-bool ExprSolver::same_expr_const(ConstAst *expr1, ExprAst *expr2) {
-
-	switch (get_expr_type(expr2)) {
-	case ConstantET:
-		return (expr1->get_constant() == expr_cast<ConstAst>(expr2)->get_constant());
-	default:
-		return false;
-	}
-
+bool ExprSolver::validate_assign_expr(AssignmentAst *assign_ast, ExprAst *pattern) {
+    return same_expr(assign_ast->get_expr(),pattern);
 }
 
+StatementSet ExprSolver::solve_left_statement(ExprAst *pattern) {
+    std::string key = expr_to_string(pattern);
+    return _pattern_index[key];
+}
+
+ExprSet ExprSolver::solve_right_statement_expr(StatementAst *statement) {
+    AssignmentAst *assign = statement_cast<AssignmentAst>(statement);
+
+    if(assign) {
+        return solve_right_assign_expr(assign);
+    } else {
+        return ExprSet();
+    }
+}
+
+ExprSet ExprSolver::solve_right_assign_expr(AssignmentAst *assign_ast) {
+    ExprSet result;
+    result.insert(assign_ast->get_expr());
+    return result;
+}
 
 void ExprSolver::index_proc(ProcAst *proc) {
-	index_statement_list(get_statement());
+    index_statement_list(proc->get_statement());
 }
+
 void ExprSolver::index_statement_list(StatementAst *statement) {
-	while(statement!=NULL) {
-		index_statement(statement);
-		statement = statement->next();
-	}
+    while(statement!=NULL) {
+        index_statement(statement);
+        statement = statement->next();
+    }
 }
+
 void ExprSolver::index_statement(StatementAst *statement) {
-	switch(get_statement_type(statement)) {
-		case AssignST:
-			index_assign(statement_cast<AssignmentAst>(statement));
-			break;
-		case WhileST:
-			index_while(statement_cast<WhileAst>(statement));
-			break;
-		case IfST:
-			index_if(statement_cast<IfAst>(statement));
-			break;
-	}
+    switch(get_statement_type(statement)) {
+        case AssignST:
+            index_assign(statement_cast<AssignmentAst>(statement));
+            break;
+
+        case WhileST:
+            index_while(statement_cast<WhileAst>(statement));
+            break;
+
+        case IfST:
+            index_if(statement_cast<IfAst>(statement));
+            break;
+
+        default:
+            // noop
+            break;
+    }
 }
+
 void ExprSolver::index_while(WhileAst *while_ast) {
-	index_statement_list(while_ast->get_body());
+    index_statement_list(while_ast->get_body());
 }
+
 void ExprSolver::index_if(IfAst *if_ast) {
-	index_statement_list(if_ast->get_then_branch());
-	index_statement_list(if_ast->get_else_branch());
+    index_statement_list(if_ast->get_then_branch());
+    index_statement_list(if_ast->get_else_branch());
 }
+
 void ExprSolver::index_assign(AssignmentAst *assign_ast) {
-	std::string key = expr_to_string(assign_ast->get_expr());
-	_pattern_index[key].insert(assign_ast);
+    std::string key = expr_to_string(assign_ast->get_expr());
+    _pattern_index[key].insert(assign_ast);
 }
-
-
-
 
 }
 }

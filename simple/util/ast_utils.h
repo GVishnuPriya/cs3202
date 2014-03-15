@@ -37,11 +37,6 @@ enum StatementType {
 
 StatementType get_statement_type(StatementAst *statement);
 
-template <typename Ast>
-bool is_statement_type(StatementAst *ast) {
-    return false; // stub
-}
-
 template <typename Ast1, typename Ast2>
 bool is_same_statement(Ast1 *ast1, Ast2 *ast2) {
     return false;
@@ -73,6 +68,7 @@ struct StatementCastVisitorTraits {
             statement_cast(statement);
     }
 };
+
 template <typename Statement>
 Statement* statement_cast(StatementAst *statement) {
     StatementVisitorGenerator< StatementAst,
@@ -81,6 +77,11 @@ Statement* statement_cast(StatementAst *statement) {
 
     statement->accept_statement_visitor(&visitor);
     return visitor.return_result();
+}
+
+template <typename Statement>
+bool is_statement_type(StatementAst *statement) {
+    return false;
 }
 
 inline void set_proc(SimpleStatementAst *ast, SimpleProcAst *proc) {
@@ -131,7 +132,6 @@ template <>
 bool is_same_statement<IfAst, IfAst>(IfAst *condition1, IfAst *condition2);
 
 bool is_same_statement_list(StatementAst *statement1, StatementAst *statement2);
-
 
 } // namespace util 
 } // namespace simple

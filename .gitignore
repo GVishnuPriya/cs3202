@@ -3,6 +3,7 @@ build/*
 dist/*
 Makefile
 unit_tests
+system_test
 main
 libspa.a
 config.log

@@ -344,6 +344,10 @@ class SimpleConstAst : public ConstAst {
     SimpleConstant* get_constant() {
         return &_value;
     }
+
+    int get_value() {
+        return _value;
+    }
     
     void accept_expr_visitor(ExprVisitor *visitor) {
         visitor->visit_const(this);

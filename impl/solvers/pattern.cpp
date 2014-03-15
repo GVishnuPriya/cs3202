@@ -165,7 +165,7 @@ bool PatternSolver::same_expr_const(ConstAst *expr1, ExprAst *expr2) {
 
 	switch (get_expr_type(expr2)) {
 	case ConstantET:
-		return (expr1->get_constant() == expr_cast<ConstAst>(expr2)->get_constant());
+		return (expr1->get_value() == expr_cast<ConstAst>(expr2)->get_value());
 	default:
 		return false;
 	}

@@ -123,36 +123,11 @@ template <>
 StatementSet NextSolver::solve_next<StatementAst>(StatementAst *ast) {
     if(_next_cache.count(ast) > 0) return _next_cache[ast];
 
-    StatementSet result;
-    
     StatementVisitorGenerator<NextSolver,
         SolveNextVisitorTraits> visitor(this);
     ast->accept_statement_visitor(&visitor);
 
-    /*
-     * If the statement ast has a container statement and is
-     * in the last of the list
-     */
-    if(ast->get_parent() && !ast->next()) {
-        if(is_statement_type<IfAst>(ast->get_parent())) {
-            /*
-             * If the statement is the last statement in an if clause,
-             * then the next statement is the one following the 
-             * if statement.
-             */
-            result.insert(ast->get_parent()->next());
-
-        } else if(is_statement_type<WhileAst>(ast->get_parent())) {
-            /*
-             * If the statement is the last statement in a while clause,
-             * the the next statement is to back to the while clause 
-             * itself.
-             */
-            result.insert(ast->get_parent());
-        }
-    }
-
-    union_set(result, visitor.return_result());
+    StatementSet result = visitor.return_result();
 
     _next_cache[ast] = result;
     return result;

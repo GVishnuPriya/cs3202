@@ -62,7 +62,7 @@ int main(int argc, const char* argv[]) {
         try {
 
 			// keep reading lines until a Select clause is detected
-			while (line.find("Select") == std::string::npos)
+			while (line.find("select") == std::string::npos)
 			{
         cout << "> ";
 				getline(cin, next_line);

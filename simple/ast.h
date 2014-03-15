@@ -369,6 +369,7 @@ class ConstAst : public ExprAst {
      * such as double or string.
      */
     virtual SimpleConstant* get_constant() = 0;
+    virtual int get_value() = 0;
 
     virtual ~ConstAst() { }
 };

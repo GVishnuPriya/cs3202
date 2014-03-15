@@ -5,6 +5,52 @@
 namespace simple{
 namespace util {
 
+bool same_expr_bin_op(BinaryOpAst *expr1, ExprAst *expr2);
+bool same_expr_var(VariableAst *expr1, ExprAst *expr2);
+bool same_expr_const(ConstAst *expr1, ExprAst *expr2);
+
+bool same_expr(ExprAst* expr1, ExprAst * expr2) {
+    switch (get_expr_type(expr1)) {
+        case BinaryOpET:
+            return same_expr_bin_op(expr_cast<BinaryOpAst>(expr1),expr2);
+        case VariableET:
+            return same_expr_var(expr_cast<VariableAst>(expr1),expr2);
+        case ConstantET:
+            return same_expr_const(expr_cast<ConstAst>(expr1),expr2);
+        default:
+            return false;
+    }
+}
+
+bool same_expr_bin_op(BinaryOpAst *expr1, ExprAst *expr2) {
+    switch (get_expr_type(expr2)) {
+        case BinaryOpET:
+            return (expr1->get_op() == expr_cast<BinaryOpAst>(expr2)->get_op()
+                && same_expr(expr1->get_lhs(),expr_cast<BinaryOpAst>(expr2)->get_lhs())
+                && same_expr(expr1->get_rhs(),expr_cast<BinaryOpAst>(expr2)->get_rhs()));
+        default:
+            return false;
+    }
+}
+
+bool same_expr_var(VariableAst *expr1, ExprAst *expr2) {
+    switch (get_expr_type(expr2)) {
+        case VariableET:
+            return (expr1->get_variable() == expr_cast<VariableAst>(expr2)->get_variable());
+        default:
+            return false;
+    }
+}
+
+bool same_expr_const(ConstAst *expr1, ExprAst *expr2) {
+    switch (get_expr_type(expr2)) {
+        case ConstantET:
+            return (expr1->get_value() == expr_cast<ConstAst>(expr2)->get_value());
+        default:
+            return false;
+    }
+}
+
 class ExprTypeVisitor : public ExprVisitor {    
   public:
     ExprTypeVisitor() { }
@@ -63,7 +109,7 @@ class ExprToStringVisitor : public ExprVisitor {
 
     void visit_const(ConstAst* ast) {
         std::stringstream ss;
-        ss << ast->get_constant();
+        ss << ast->get_value();
         result = ss.str();
     }
 
@@ -91,6 +137,10 @@ std::string expr_to_string(ExprAst *ast) {
     return visitor.result;
 }
 
+ExprAst* clone_expr(ExprAst *expr) {
+    return expr->clone();
+}
+
 template <typename Expr1, typename Expr2>
 bool solve_same_expr(Expr1 *expr1, Expr2 *expr2) {
     return false;
@@ -107,7 +157,7 @@ template <>
 bool solve_same_expr<ConstAst, ConstAst>(
     ConstAst *expr1, ConstAst *expr2)
 {
-    return *expr1->get_constant() == *expr2->get_constant();
+    return expr1->get_value() == expr2->get_value();
 }
 
 template <>

@@ -30,6 +30,7 @@ using namespace simple::util;
 
 typedef std::set<StatementAst*>     StatementSet;
 typedef std::set<SimpleVariable>    VariableSet;
+typedef std::set<ExprAst*>          ExprSet;
 
 class ConditionPtr {
   public:

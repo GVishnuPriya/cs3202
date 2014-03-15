@@ -28,12 +28,14 @@ set(SOURCE
   impl/solvers/affects.cpp 
   impl/solvers/iaffects.cpp 
   impl/solvers/assign.cpp 
+  impl/solvers/expr.cpp 
   impl/solvers/follows.cpp 
   impl/solvers/ifollows.cpp 
   impl/solvers/parent.cpp 
   impl/solvers/iparent.cpp 
   impl/solvers/modifies.cpp 
   impl/solvers/next.cpp 
+  impl/solvers/next_cached.cpp 
   impl/solvers/inext.cpp 
   impl/solvers/call.cpp 
   impl/solvers/icall.cpp 
@@ -75,6 +77,7 @@ add_executable(unit_tests
   test/test_solver.cpp 
   test/test_call.cpp 
   test/test_icall.cpp 
+  test/test_expr.cpp 
   test/test_follows.cpp 
   test/test_ifollows.cpp 
   test/test_parent.cpp 
