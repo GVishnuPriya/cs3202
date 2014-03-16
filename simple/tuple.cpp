@@ -16,6 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <sstream>
 #include "simple/tuple.h"
 #include "simple/util/condition_utils.h"
 
@@ -23,23 +24,34 @@ namespace simple {
 
 using simple::util::condition_to_string;
 
-::std::ostream& operator<<(::std::ostream& os, const ConditionTuplePtr& tuple) {
-    os << "(Tuple ";
-    os << condition_to_string(tuple->get_condition());
-    if(tuple->next()) {
-        os << tuple->next();
+std::string tuple_to_string(ConditionTuplePtr tuple) {
+    std::stringstream ss;
+    ss << condition_to_string(tuple->get_condition());
+    ConditionTuplePtr next = tuple->next();
+    
+    if(next) {
+        ss << " ";
+        ss << tuple_to_string(next);
     }
-    os << ")";
 
+    return ss.str();
+}
+
+::std::ostream& operator<<(::std::ostream& os, const ConditionTuplePtr& tuple) {
+    os << tuple_to_string(tuple);
+    
     return os;
 }
 
 ::std::ostream& operator<<(::std::ostream& os, const TupleList& tuple) {
-    os << "(TupleList (";
-    for(TupleList::iterator it = tuple.begin(); it != tuple.end(); ++it) {
-        os << *it;
+    os << "(TupleList [";
+    
+    for(auto it = tuple.begin(); it != tuple.end(); ++it) {
+        os << tuple_to_string(*it);
+        os << ",";
     }
-    os << ")";
+
+    os << "])";
 
     return os;
 }

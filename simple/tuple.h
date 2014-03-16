@@ -53,6 +53,7 @@ class ConditionTuplePtr : public std::shared_ptr<ConditionTuple> {
 
 typedef std::set<ConditionTuplePtr> TupleList;
 
+std::string tuple_to_string(ConditionTuplePtr tuple);
 ::std::ostream& operator<<(::std::ostream& os, const ConditionTuplePtr& tuple);
 ::std::ostream& operator<<(::std::ostream& os, const TupleList& tuple);
 

@@ -16,7 +16,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <sstream>
 #include "impl/selector.h"
 #include "simple/util/condition_utils.h"
 
@@ -68,19 +67,6 @@ std::vector<std::string> format_selector<PqlBooleanSelector>(
     }
 
     return result;
-}
-
-std::string tuple_to_string(ConditionTuplePtr tuple) {
-    std::stringstream ss;
-    ss << condition_to_string(tuple->get_condition());
-    ConditionTuplePtr next = tuple->next();
-    
-    if(next) {
-        ss << " ";
-        ss << tuple_to_string(next);
-    }
-
-    return ss.str();
 }
 
 template <>

@@ -17,6 +17,7 @@
  */
 
 #include "impl/processor.h"
+#include "simple/util/set_utils.h"
 
 namespace simple {
 namespace impl {
@@ -88,17 +89,16 @@ void QueryProcessor::solve_clause<PqlVariableTerm, PqlVariableTerm>(
 
         std::vector<ConditionPair> links;
 
-        for(ConditionSet::iterator cit1 = conditions1.begin();
-                cit1 != conditions1.end(); ++cit1)
-        {
-            for(ConditionSet::iterator cit2 = conditions2.begin();
-                    cit2 != conditions2.end(); ++cit2)
-            {
-                if(solver->validate(*cit1, *cit2)) {
-                    links.push_back(ConditionPair(*cit1, *cit2));
-                }
+        for(auto it = conditions1.begin(); it != conditions1.end(); ++it) {
+            ConditionPtr left = *it;
+            ConditionSet right_result = solver->solve_right(left);
+            right_result.intersect_with(conditions2);
+
+            for(auto it2=right_result.begin(); it2 != right_result.end(); ++it2) {
+                links.push_back(ConditionPair(left, *it2));
             }
         }
+
         _linker->update_links(qvar1, qvar2, links);
     }
 
