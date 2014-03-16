@@ -12,7 +12,7 @@ using std::endl;
 class SystemModifiesTest : public testing::Test {
  protected:  // You should make the members protected s.t. they can be
              // accessed from sub-classes.
- SimpleProgramAnalyzer *spa = create_simple_program_analyzer();
+ SimpleProgramAnalyzer *spa;
  std::vector<std::string> expected;
  std::vector<std::string> result;
 
@@ -21,6 +21,7 @@ class SystemModifiesTest : public testing::Test {
   // Otherwise, this can be skipped.
  virtual void SetUp() {
  	std::string source_file ("modifies.simple");
+  spa = create_simple_program_analyzer();
  	spa->parse(source_file);
  }
 
