@@ -160,7 +160,7 @@ template <>
 bool is_same_condition<PatternCondition, PatternCondition>(
         PatternCondition *condition1, PatternCondition *condition2)
 {
-    return is_same_expr(condition1->get_expr_ast(), condition2->get_expr_ast());
+    return same_expr(condition1->get_expr_ast(), condition2->get_expr_ast());
 }
 
 
@@ -245,7 +245,7 @@ template <>
 bool is_less_than_condition<PatternCondition, PatternCondition>(
         PatternCondition *condition1, PatternCondition *condition2)
 {
-    return is_less_than_expr(condition1->get_expr_ast(), condition2->get_expr_ast());
+    return expr_to_string(condition1->get_expr_ast()) < expr_to_string(condition2->get_expr_ast());
 }
 
 

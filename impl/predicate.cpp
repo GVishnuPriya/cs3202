@@ -17,9 +17,12 @@
  */
 
 #include "impl/predicate.h"
+#include "simple/util/expr.h"
 
 namespace simple {
 namespace impl {
+
+using namespace simple::util;
 
 template <typename Predicate>
 PredicateGenerator<Predicate>::PredicateGenerator(SimpleRoot ast, Predicate *pred) : 
@@ -65,10 +68,6 @@ void PredicateGenerator<Predicate>::visit_assignment(AssignmentAst *assign) {
         _global_set.insert(new SimpleVariableCondition(*assign->get_variable()));
     }
 
-    if(_pred->template evaluate<ExprAst>(assign->get_expr())) {
-        _global_set.insert(new SimplePatternCondition(assign->get_expr()->clone()));
-    }
-
     assign->get_expr()->accept_expr_visitor(this);
 }
 
@@ -107,7 +106,16 @@ void PredicateGenerator<Predicate>::visit_call(CallAst *call) {
 }
 
 template <typename Predicate>
+void PredicateGenerator<Predicate>::evaluate_expr(ExprAst *expr) {
+    if(_pred->template evaluate<ExprAst>(expr)) {
+        _global_set.insert(new SimplePatternCondition(clone_expr(expr)));
+    }
+}
+
+template <typename Predicate>
 void PredicateGenerator<Predicate>::visit_variable(VariableAst *var) {
+    evaluate_expr(var);
+
     if(_pred->template evaluate<SimpleVariable>(var->get_variable())) {
         _global_set.insert(new SimpleVariableCondition(*var->get_variable()));
     }
@@ -115,6 +123,8 @@ void PredicateGenerator<Predicate>::visit_variable(VariableAst *var) {
 
 template <typename Predicate>
 void PredicateGenerator<Predicate>::visit_const(ConstAst *constant) {
+    evaluate_expr(constant);
+
     if(_pred->template evaluate<SimpleConstant>(constant->get_constant())) {
         _global_set.insert(new SimpleConstantCondition(*constant->get_constant()));
     }
@@ -122,6 +132,8 @@ void PredicateGenerator<Predicate>::visit_const(ConstAst *constant) {
 
 template <typename Predicate>
 void PredicateGenerator<Predicate>::visit_binary_op(BinaryOpAst *bin) {
+    evaluate_expr(bin);
+
     bin->get_lhs()->accept_expr_visitor(this);
     bin->get_rhs()->accept_expr_visitor(this);
 }
@@ -149,11 +161,6 @@ void PredicateGenerator<Predicate>::filter_statement_list(StatementAst *statemen
 }
 
 WildCardPredicate::WildCardPredicate() { }
-
-template <typename Condition>
-bool WildCardPredicate::evaluate(Condition *condition) {
-    return true;
-}
 
 std::string WildCardPredicate::get_name() {
     return "wildcard";

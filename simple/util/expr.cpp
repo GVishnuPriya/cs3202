@@ -36,7 +36,7 @@ bool same_expr_bin_op(BinaryOpAst *expr1, ExprAst *expr2) {
 bool same_expr_var(VariableAst *expr1, ExprAst *expr2) {
     switch (get_expr_type(expr2)) {
         case VariableET:
-            return (expr1->get_variable() == expr_cast<VariableAst>(expr2)->get_variable());
+            return (*expr1->get_variable() == *expr_cast<VariableAst>(expr2)->get_variable());
         default:
             return false;
     }

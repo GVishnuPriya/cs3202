@@ -105,6 +105,28 @@ TEST(ConditionTest, EqualityTest) {
     EXPECT_EQ(proc_condition3 < proc_condition1, &proc1 > &proc2);
     EXPECT_EQ(proc_condition1 < proc_condition3, &proc1 < &proc2);
 
+    // x+1
+    ConditionPtr pattern_condition1(new SimplePatternCondition(
+        new SimpleBinaryOpAst('+', 
+            new SimpleVariableAst("x"),
+            new SimpleConstAst(1))));
+
+    // y+2
+    ConditionPtr pattern_condition2(new SimplePatternCondition(
+        new SimpleBinaryOpAst('+', 
+            new SimpleVariableAst("y"),
+            new SimpleConstAst(2))));
+
+    std::string expr_str1 = "(x + 1)";
+    std::string expr_str2 = "(y + 2)";
+
+    EXPECT_EQ(condition_to_string(pattern_condition1), expr_str1);
+    EXPECT_EQ(condition_to_string(pattern_condition2), expr_str2);
+
+    EXPECT_TRUE(expr_str1 < expr_str2);
+    EXPECT_FALSE(pattern_condition1 == pattern_condition2);
+    EXPECT_TRUE(pattern_condition1 < pattern_condition2);
+
     /*
      * Test on different condition types
      */

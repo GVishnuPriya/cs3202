@@ -49,6 +49,8 @@ class PredicateGenerator :
     void visit_const(ConstAst *val);
     void visit_binary_op(BinaryOpAst *bin);
 
+    void evaluate_expr(ExprAst *expr);
+
     std::string get_predicate_name();
     static std::string get_name();
   private:
@@ -68,7 +70,9 @@ class WildCardPredicate {
     WildCardPredicate();
 
     template <typename Condition>
-    bool evaluate(Condition *condition);
+    bool evaluate(Condition *condition) {
+        return true;
+    }
 
     static std::string get_name();
 };
@@ -158,7 +162,7 @@ typedef PredicateGenerator<ProcPredicate>           SimpleProcPredicate;
 typedef PredicateGenerator<StatementPredicate>      SimpleStatementPredicate;
 typedef PredicateGenerator<AssignPredicate>         SimpleAssignmentPredicate;
 typedef PredicateGenerator<WhilePredicate>          SimpleWhilePredicate;
-typedef PredicateGenerator<IfPredicate>    SimpleIfPredicate;
+typedef PredicateGenerator<IfPredicate>             SimpleIfPredicate;
 typedef PredicateGenerator<CallPredicate>           SimpleCallPredicate;
 typedef PredicateGenerator<VariablePredicate>       SimpleVariablePredicate;
 typedef PredicateGenerator<ConstantPredicate>       SimpleConstantPredicate;

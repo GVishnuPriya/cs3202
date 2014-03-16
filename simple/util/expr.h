@@ -29,11 +29,6 @@ bool has_sub_expr(ExprAst *expr, ExprAst *sub_expr);
 
 ExprAst* clone_expr(ExprAst *expr);
 
-template <typename Ast1, typename Ast2>
-bool is_less_than_expr(Ast1 *ast1, Ast2 *ast2) {
-    return false;
-}
-
 template <typename SourceExpr, typename TargetExpr>
 struct ExprCaster {
     static TargetExpr* cast(SourceExpr *expr) {
