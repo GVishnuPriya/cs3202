@@ -91,6 +91,15 @@ class UsesQuerySolver {
     virtual ~UsesQuerySolver() { }
 };
 
+class CallsQuerySolver {
+  public:
+    virtual ProcSet solve_called_procs(ProcAst *calling_proc) = 0;
+    virtual ProcSet solve_calling_procs(ProcAst *called_proc) = 0;
+    virtual CallSet solve_calling_statements(ProcAst *called_proc) = 0;
+
+    virtual ~CallsQuerySolver() { }
+};
+
 typedef std::shared_ptr<QuerySolver> SolverPtr;
 typedef std::map<std::string, SolverPtr > SolverTable;
 

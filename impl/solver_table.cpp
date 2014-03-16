@@ -14,6 +14,7 @@
 #include "impl/solvers/modifies.h"
 #include "impl/solvers/uses.h"
 #include "impl/solvers/next.h"
+#include "impl/solvers/next_bip.h"
 #include "impl/solvers/inext.h"
 #include "impl/solvers/same_name.h"
 
@@ -40,8 +41,10 @@ SolverTable create_solver_table(SimpleRoot ast) {
     solver_table["iparent"] = std::shared_ptr<QuerySolver>(
         new SimpleSolverGenerator<IParentSolver>(new IParentSolver(ast)));
 
+    std::shared_ptr<CallSolver> calls_solver(new CallSolver(ast));
+
     solver_table["calls"] = std::shared_ptr<QuerySolver>(
-        new SimpleSolverGenerator<CallSolver>(new CallSolver(ast)));
+        new SimpleSolverGenerator<CallSolver>(calls_solver));
 
     solver_table["icalls"] = std::shared_ptr<QuerySolver>(
         new SimpleSolverGenerator<ICallSolver>(new ICallSolver(ast)));
@@ -64,6 +67,10 @@ SolverTable create_solver_table(SimpleRoot ast) {
 
     solver_table["next"] = std::shared_ptr<QuerySolver>(
         new SimpleSolverGenerator<NextSolver>(next_solver));
+
+    solver_table["nextbip"] = std::shared_ptr<QuerySolver>(
+        new SimpleSolverGenerator<NextBipSolver>(
+            new NextBipSolver(ast, next_solver, calls_solver)));
 
     solver_table["inext"] = std::shared_ptr<QuerySolver>(
         new SimpleSolverGenerator<INextSolver>(new INextSolver(ast, next_solver)));

@@ -19,6 +19,7 @@
 #include "impl/solvers/call.h"
 #include "impl/condition.h"
 #include "simple/util/statement_visitor_generator.h"
+#include "simple/util/set_convert.h"
 
 
 namespace simple {
@@ -39,42 +40,32 @@ CallSolver::CallSolver(SimpleRoot ast) :
 
 template <>
 ConditionSet CallSolver::solve_right<ProcAst>(ProcAst *proc) {
-    if(_calls_table.count(proc)) {
-        ConditionSet result;
-        for(std::set<ProcAst*>::iterator it = _calls_table[proc].begin();
-                it != _calls_table[proc].end(); ++it)
-        {
-            result.insert(new SimpleProcCondition(*it));
-        }
-        return result;
-    } else {
-        return ConditionSet();
-    }
+    ProcSet result = solve_called_procs(proc);
+    return proc_set_to_condition_set(result);
 }
 
 template <>
 ConditionSet CallSolver::solve_left<ProcAst>(ProcAst *proc) {
-    if(_called_table.count(proc)) {
-        ConditionSet result;
-        for(std::set<ProcAst*>::iterator it = _called_table[proc].begin();
-                it != _called_table[proc].end(); ++it)
-        {
-            result.insert(new SimpleProcCondition(*it));
-        }
-        return result;
-    } else {
-        return ConditionSet();
-    }
+    ProcSet result = solve_calling_procs(proc);
+    return proc_set_to_condition_set(result);
 }
 
 template <>
 bool CallSolver::validate<ProcAst, ProcAst>(ProcAst *proc1, ProcAst *proc2)
 {
-    if(_calls_table.count(proc1)) {
-        return _calls_table[proc1].count(proc2) > 0;
-    } else {
-        return false;
-    }
+    return solve_called_procs(proc1).count(proc2);
+}
+
+ProcSet CallSolver::solve_called_procs(ProcAst *calling_proc) {
+    return _called_table[calling_proc];
+}
+
+ProcSet CallSolver::solve_calling_procs(ProcAst *called_proc) {
+    return _calling_table[called_proc];
+}
+
+CallSet CallSolver::solve_calling_statements(ProcAst *called_proc) {
+    return _calling_statements[called_proc];
 }
 
 class IndexCallsVisitorTraits {
@@ -114,8 +105,9 @@ void CallSolver::index_calls<CallAst>(CallAst *call) {
     ProcAst *caller = call->get_proc();
     ProcAst *callee = call->get_proc_called();
 
-    _calls_table[caller].insert(callee);
-    _called_table[callee].insert(caller);
+    _called_table[caller].insert(callee);
+    _calling_table[callee].insert(caller);
+    _calling_statements[callee].insert(call);
 }
 
 template <>
@@ -141,8 +133,6 @@ void CallSolver::index_calls<IfAst>(IfAst *condition) {
         statement = statement->next();
     }
 }
-
-
 
 } // namespace impl
 } // namespace simple

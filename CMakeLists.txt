@@ -36,6 +36,7 @@ set(SOURCE
   impl/solvers/iparent.cpp 
   impl/solvers/modifies.cpp 
   impl/solvers/next.cpp 
+  impl/solvers/next_bip.cpp 
   impl/solvers/next_cached.cpp 
   impl/solvers/inext.cpp 
   impl/solvers/call.cpp 

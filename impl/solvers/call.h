@@ -30,7 +30,7 @@ namespace impl {
 using namespace simple;
 using namespace simple::impl;
 
-class CallSolver {
+class CallSolver : public CallsQuerySolver {
   public:
     CallSolver(SimpleRoot ast);
 
@@ -47,6 +47,10 @@ class CallSolver {
         return ConditionSet();
     }
 
+    ProcSet solve_called_procs(ProcAst *calling_proc);
+    ProcSet solve_calling_procs(ProcAst *called_proc);
+    CallSet solve_calling_statements(ProcAst *called_proc);
+
     template <typename Condition1, typename Condition2>
     bool validate(Condition1 *condition1, Condition2 *condition2) {
         return false;
@@ -57,12 +61,12 @@ class CallSolver {
         // no-op
     }
 
-
   private:
-    typedef std::map<ProcAst*, std::set<ProcAst*> > ProcIndex;
+    typedef std::map<ProcAst*, ProcSet > ProcIndex;
     SimpleRoot _ast;
-    ProcIndex _calls_table;
     ProcIndex _called_table;
+    ProcIndex _calling_table;
+    std::map<ProcAst*, CallSet > _calling_statements;
 };
 
 template <>

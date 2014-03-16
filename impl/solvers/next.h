@@ -55,7 +55,7 @@ class NextSolver : public NextQuerySolver {
 
     template <typename Container>
     StatementSet solve_container_next(Container *container);
-       
+    
     template <typename Ast>
     StatementSet solve_last_previous(Ast *ast);
 

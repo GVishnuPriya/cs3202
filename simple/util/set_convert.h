@@ -38,6 +38,18 @@ inline ConditionSet statement_set_to_condition_set(const StatementSet& statement
     return result;
 }
 
+inline ConditionSet proc_set_to_condition_set(const ProcSet& proc_set) {
+    ConditionSet result;
+
+    for(auto it = proc_set.begin(); 
+            it!= proc_set.end(); ++it)
+    {
+        result.insert(new SimpleProcCondition(*it));
+    }
+
+    return result;
+}
+
 inline ConditionSet variable_set_to_condition_set(const VariableSet& variable_set) {
     ConditionSet result;
 
