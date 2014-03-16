@@ -145,7 +145,10 @@ class SimplePqlTupleSelector : public PqlTupleSelector {
     void insert_qvar(const std::string& qvar_name) {
         _tuples.push_back(qvar_name);
     }
-
+    
+    void accept_pql_selector_visitor(PqlSelectorVisitor *visitor) {
+        visitor->visit_tuple(this);
+    }
   private:
     std::vector<std::string> _tuples;
 };

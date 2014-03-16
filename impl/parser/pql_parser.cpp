@@ -106,7 +106,7 @@ void SimplePqlParser::parse_main_query() {
     _query_set.selector = parse_selector();
 
     while(!(current_token_is<EOFToken>() || 
-                current_token_is<SemiColonToken>())) 
+            current_token_is<SemiColonToken>())) 
     {
         std::string keyword = current_token_as_keyword();
         next_token(); // eat keyword
@@ -236,7 +236,25 @@ void SimplePqlParser::parse_with() {
 }
 
 std::shared_ptr<PqlSelector> SimplePqlParser::parse_tuple_selector() {
-    throw ParseError("Not yet implemented tuple selector"); // not implemented
+    next_token(); // eat '<'
+    std::vector< std::string > tuples;
+
+    std::string first = current_token_as<IdentifierToken>()->get_content();
+    tuples.push_back(first);
+    next_token();
+
+    while(current_token_is<CommaToken>()) {
+        next_token(); // eat ','
+        std::string qvar = current_token_as<IdentifierToken>()->get_content();
+        tuples.push_back(qvar);
+        next_token();
+    }
+
+    current_token_as<MoreThanToken>();
+    next_token();
+
+    std::shared_ptr<PqlSelector> selector(new SimplePqlTupleSelector(tuples));
+    return selector;
 }
 
 std::string SimplePqlParser::current_token_as_keyword() {

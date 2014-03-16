@@ -134,7 +134,6 @@ bool PatternSolver::same_expr(ExprAst* expr1, ExprAst * expr2) {
 	case ConstantET:
 		return same_expr_const(expr_cast<ConstAst>(expr1),expr2);
 	}
-
 }
 
 bool PatternSolver::same_expr_bin_op(BinaryOpAst *expr1, ExprAst *expr2) {

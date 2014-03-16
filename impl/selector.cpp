@@ -16,6 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <sstream>
 #include "impl/selector.h"
 #include "simple/util/condition_utils.h"
 
@@ -69,11 +70,32 @@ std::vector<std::string> format_selector<PqlBooleanSelector>(
     return result;
 }
 
+std::string tuple_to_string(ConditionTuplePtr tuple) {
+    std::stringstream ss;
+    ss << condition_to_string(tuple->get_condition());
+    ConditionTuplePtr next = tuple->next();
+    
+    if(next) {
+        ss << " ";
+        ss << tuple_to_string(next);
+    }
+
+    return ss.str();
+}
+
 template <>
 std::vector<std::string> format_selector<PqlTupleSelector>(
     PqlTupleSelector *selector, PqlQuerySet *query, QueryLinker *linker)
 {
-    return std::vector<std::string>();
+    std::vector<std::string> selected_qvars = selector->get_tuples();
+    TupleList tuples = linker->make_tuples(selected_qvars);\
+
+    std::vector<std::string> result;
+    for(auto it=tuples.begin(); it!=tuples.end(); ++it) {
+        result.push_back(tuple_to_string(*it));
+    }
+
+    return result;
 }
 
 class ResultFormatterVisitor : public PqlSelectorVisitor {

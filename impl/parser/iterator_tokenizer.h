@@ -84,6 +84,16 @@ class IteratorTokenizer : public SimpleTokenizer {
                 return &_close_bracket_token;
 
             break;
+            case '<':
+                next_char();
+                return &_less_than_token;
+
+            break;
+            case '>':
+                next_char();
+                return &_more_than_token;
+
+            break;
             case ';':
                 next_char();
                 return &_semi_colon_token;
@@ -191,6 +201,8 @@ class IteratorTokenizer : public SimpleTokenizer {
     CloseBraceToken     _close_brace_token;
     OpenBracketToken    _open_bracket_token;
     CloseBracketToken   _close_bracket_token;
+    LessThanToken       _less_than_token;
+    MoreThanToken       _more_than_token;
     SemiColonToken      _semi_colon_token;
     CommaToken          _comma_token;
     DotToken            _dot_token;
