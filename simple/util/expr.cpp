@@ -5,9 +5,6 @@
 namespace simple{
 namespace util {
 
-bool same_expr_bin_op(BinaryOpAst *expr1, ExprAst *expr2);
-bool same_expr_var(VariableAst *expr1, ExprAst *expr2);
-bool same_expr_const(ConstAst *expr1, ExprAst *expr2);
 
 bool same_expr(ExprAst* expr1, ExprAst * expr2) {
     switch (get_expr_type(expr1)) {

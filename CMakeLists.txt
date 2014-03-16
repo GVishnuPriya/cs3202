@@ -29,6 +29,7 @@ set(SOURCE
   impl/solvers/iaffects.cpp 
   impl/solvers/assign.cpp 
   impl/solvers/expr.cpp 
+  impl/solvers/iexpr.cpp 
   impl/solvers/follows.cpp 
   impl/solvers/ifollows.cpp 
   impl/solvers/parent.cpp 

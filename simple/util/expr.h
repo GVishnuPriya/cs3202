@@ -23,6 +23,10 @@ Expr* expr_cast(ExprAst *expr);
 std::string expr_to_string(ExprAst *ast);
 
 bool same_expr(ExprAst* expr1, ExprAst * expr2);
+bool same_expr_bin_op(BinaryOpAst *expr1, ExprAst *expr2);
+bool same_expr_var(VariableAst *expr1, ExprAst *expr2);
+bool same_expr_const(ConstAst *expr1, ExprAst *expr2);
+
 bool is_same_expr(ExprAst *expr1, ExprAst *expr2);
 
 bool has_sub_expr(ExprAst *expr, ExprAst *sub_expr);

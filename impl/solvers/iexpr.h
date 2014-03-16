@@ -30,40 +30,67 @@ using namespace simple;
 
 class IExprSolver {
   public:
-
     IExprSolver(SimpleRoot ast);
 
-	/*
-	Pattern a(v,_p_) = IExpr(a,p) & Modifies(a,v)
+    /*
+     * Pattern a(v,_p_) = IExpr(a,p) & Modifies(a,v)
+     */
 
-	*/
+    bool validate_statement_expr(StatementAst *statement, ExprAst *pattern);
+    bool validate_assign_expr(AssignmentAst *assign_ast, ExprAst *pattern);
 
-	bool IExprSolver::validate(AssignmentAst *assign_ast, ExprAst *pattern);
+    StatementSet solve_left_statement(ExprAst *pattern);
 
-	ConditionSet solve_left(ExprAst *pattern);
-  ConditionSet solve_right(AssignmentAst *assign_ast);
-  
-	bool sub_expr(ExprAst *expr1, ExprAst *expr2);
-	bool sub_expr_bin_op(BinaryOpAst *expr1, ExprAst *expr2);
-  
-	void index_proc(ProcAst *proc);
-  void index_statement_list(StatementAst *statement);
-  void index_statement(StatementAst *statement) ;
-  void index_while(WhileAst *while_ast);
-  void index_if(IfAst *if_ast);
-  void index_assign(AssignmentAst *assign_ast);
-  
-  std::set<ExprAst*> get_sub_exprs(ExprAst *expr);
-  
-  
+    ExprSet solve_right_statement_expr(StatementAst *statement);
+    ExprSet solve_right_assign_expr(AssignmentAst *assign_ast);
 
-private:
-	SimpleRoot _ast;
-    
-  // map string to set of assign statement for solve-left
-  std::map<std::string, std::set<AssignmentAst*> > _pattern_index;
-  
+    void index_proc(ProcAst *proc);
+    void index_statement_list(StatementAst *statement);
+    void index_statement(StatementAst *statement) ;
+    void index_while(WhileAst *while_ast);
+    void index_if(IfAst *if_ast);
+    void index_assign(AssignmentAst *assign_ast);
 
+    template <typename Condition>
+    ConditionSet solve_right(Condition *condition);
+
+    template <typename Condition>
+    ConditionSet solve_left(Condition *condition);
+
+    template <typename Condition1, typename Condition2>
+    bool validate(Condition1 *condition1, Condition2 *condition2);
+
+  private:
+    SimpleRoot _ast;
+
+    // map string to set of assign statement for solve-left
+    std::map<std::string, StatementSet > _pattern_index;
 };
+
+template <typename Condition>
+ConditionSet IExprSolver::solve_right(Condition *condition) {
+    return ConditionSet();
+}
+
+template <typename Condition>
+ConditionSet IExprSolver::solve_left(Condition *condition) {
+    return ConditionSet();
+}
+
+template <typename Condition1, typename Condition2>
+bool IExprSolver::validate(Condition1 *condition1, Condition2 *condition2) {
+    return false;
+}
+
+template <>
+ConditionSet IExprSolver::solve_right<StatementAst>(StatementAst *ast);
+
+template <>
+ConditionSet IExprSolver::solve_left<ExprAst>(ExprAst *ast);
+
+template <>
+bool IExprSolver::validate<StatementAst, ExprAst>(
+        StatementAst *statement, ExprAst *expr);
+
 } // namespace impl
 } // namespace simple
