@@ -30,5 +30,12 @@ class ParseError : public runtime_error {
     { }
 };
 
+class IncompleteParseError : public runtime_error {
+  public:
+    IncompleteParseError(const std::string& message) : 
+      runtime_error(message)
+    { }
+};
+
 }
 }

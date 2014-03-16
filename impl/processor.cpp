@@ -89,13 +89,25 @@ void QueryProcessor::solve_clause<PqlVariableTerm, PqlVariableTerm>(
 
         std::vector<ConditionPair> links;
 
-        for(auto it = conditions1.begin(); it != conditions1.end(); ++it) {
-            ConditionPtr left = *it;
-            ConditionSet right_result = solver->solve_right(left);
-            right_result.intersect_with(conditions2);
+        if(conditions1.get_size() <= conditions2.get_size()) {
+            for(auto it = conditions1.begin(); it != conditions1.end(); ++it) {
+                ConditionPtr left = *it;
+                ConditionSet right_result = solver->solve_right(left);
+                right_result.intersect_with(conditions2);
 
-            for(auto it2=right_result.begin(); it2 != right_result.end(); ++it2) {
-                links.push_back(ConditionPair(left, *it2));
+                for(auto it2=right_result.begin(); it2 != right_result.end(); ++it2) {
+                    links.push_back(ConditionPair(left, *it2));
+                }
+            }
+        } else {
+            for(auto it = conditions2.begin(); it != conditions2.end(); ++it) {
+                ConditionPtr right = *it;
+                ConditionSet left_result = solver->solve_left(right);
+                left_result.intersect_with(conditions1);
+
+                for(auto it2=left_result.begin(); it2 != left_result.end(); ++it2) {
+                    links.push_back(ConditionPair(*it2, right));
+                }
             }
         }
 

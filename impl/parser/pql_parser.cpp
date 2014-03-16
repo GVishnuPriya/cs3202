@@ -43,7 +43,11 @@ PqlQuerySet& SimplePqlParser::get_query_set() {
 }
 
 PqlQuerySet SimplePqlParser::parse_query() {
-    while(!current_token_is<EOFToken>()) {
+    while(true) {
+        if(current_token_is<EOFToken>()) {
+            throw IncompleteParseError("EOF reached prematurely");
+        }
+
         std::string first_word = current_token_as_keyword();
 
         if(first_word == "select") {

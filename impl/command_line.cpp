@@ -23,10 +23,12 @@
 #include <algorithm>
 #include <stdexcept>
 #include "simple/spa.h"
+#include "impl/parse_error.h"
 
 using std::cout;
 using std::cin;
 using std::endl;
+using simple::parser::IncompleteParseError;
 
 bool file_exists(const std::string& filename)
 {
@@ -55,20 +57,15 @@ int main(int argc, const char* argv[]) {
         return 0;
     }
 
-    std::string line, next_line;
+    std::string line;
     cout << "simple> ";
 
-    while(getline(cin, line)) {
+    while(true) {
+        std::string input;
+        getline(cin, input);
+        line += input;
+
         try {
-
-			// keep reading lines until a Select clause is detected
-			while (line.find("select") == std::string::npos)
-			{
-        cout << "> ";
-				getline(cin, next_line);
-				line = line + " " + next_line;
-			}
-
             std::vector<std::string> result = spa->evaluate(line);
 
             auto it = result.begin();
@@ -80,11 +77,17 @@ int main(int argc, const char* argv[]) {
                 if(++it == end) break;
                 cout << ", ";
             }
+
+            cout << endl << "simple> ";
+            line = "";
+        } catch(IncompleteParseError& e) {
+            cout << "      > ";
         } catch(std::runtime_error& e) {
             cout << "Error evaluating query. " << e.what() << endl;
-        }
+            cout << endl << "simple> ";
 
-        cout << endl << "simple> ";
+            line = "";
+        }
     }
 
     return 0;
