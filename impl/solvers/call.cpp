@@ -53,7 +53,7 @@ ConditionSet CallSolver::solve_left<ProcAst>(ProcAst *proc) {
 template <>
 bool CallSolver::validate<ProcAst, ProcAst>(ProcAst *proc1, ProcAst *proc2)
 {
-    return solve_called_procs(proc1).count(proc2);
+    return solve_called_procs(proc1).count(proc2) > 0;
 }
 
 ProcSet CallSolver::solve_called_procs(ProcAst *calling_proc) {
