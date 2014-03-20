@@ -64,22 +64,22 @@ set(SOURCE
   spa/var_table.cpp
   )
 
-add_library(spa ${SOURCE})
+add_library(spa STATIC ${SOURCE})
 
 add_executable(main 
   impl/command_line.cpp 
-  ${SOURCE}
   )
+
+target_link_libraries(main spa)
 
 add_executable(batch 
   impl/batch.cpp 
-  ${SOURCE}
   )
+target_link_libraries(batch spa)
 
 add_executable(unit_tests 
   test/test_main.cpp
   test/gtest/gtest-all.cpp
-  ${SOURCE}
   test/test_ast.cpp 
   test/test_solver.cpp 
   test/test_call.cpp 
@@ -106,10 +106,13 @@ add_executable(unit_tests
   test/spa/test_uses.cpp
   )
 
+target_link_libraries(unit_tests spa)
+
 add_executable(system_test
   test/test_main.cpp
   test/gtest/gtest-all.cpp
-  ${SOURCE}
   test/system-test/system_modifies.cpp
   test/system-test/system_basic.cpp
 )
+
+target_link_libraries(system_test spa)
