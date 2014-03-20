@@ -19,7 +19,7 @@
 #include "impl/solvers/pattern.h"
 #include "simple/util/ast_utils.h"
 #include "simple/util/condition_utils.h"
-#include "simple/util/expr.h"
+#include "simple/util/expr_util.h"
 #include "impl/solvers/uses.h"
 
 

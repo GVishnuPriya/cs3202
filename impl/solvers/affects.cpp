@@ -1,5 +1,5 @@
 
-#include "simple/util/expr.h"
+#include "simple/util/expr_util.h"
 #include "simple/util/set_convert.h"
 #include "impl/solvers/affects.h"
 #include "simple/util/statement_visitor_generator.h"

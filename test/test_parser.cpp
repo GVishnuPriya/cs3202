@@ -19,7 +19,7 @@
 #include <list>
 #include <memory>
 #include "gtest/gtest.h"
-#include "simple/util/expr.h"
+#include "simple/util/expr_util.h"
 #include "simple/util/ast_utils.h"
 #include "impl/parser/tokenizer.h"
 #include "impl/parser/parser.h"

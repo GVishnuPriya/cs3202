@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "simple/util/expr.h"
+#include "simple/util/expr_util.h"
 #include "impl/solvers/uses.h"
 
 namespace simple {

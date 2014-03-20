@@ -18,7 +18,7 @@ set(SOURCE
   simple/query.cpp 
   simple/util/ast_utils.cpp 
   simple/util/condition_utils.cpp 
-  simple/util/expr.cpp
+  simple/util/expr_util.cpp
   simple/util/query_utils.cpp 
   impl/linker.cpp 
   impl/predicate.cpp 

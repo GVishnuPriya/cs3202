@@ -17,7 +17,7 @@
  */
 
 #include "impl/predicate.h"
-#include "simple/util/expr.h"
+#include "simple/util/expr_util.h"
 
 namespace simple {
 namespace impl {
