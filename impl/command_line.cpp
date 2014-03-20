@@ -80,10 +80,10 @@ int main(int argc, const char* argv[]) {
 
             cout << endl << "simple> ";
             line = "";
-        } catch(IncompleteParseError& e) {
+        } catch(IncompleteParseError&) {
             cout << "      > ";
-        } catch(std::runtime_error& e) {
-            cout << "Error evaluating query. " << e.what() << endl;
+        } catch(std::runtime_error& e2) {
+            cout << "Error evaluating query. " << e2.what() << endl;
             cout << endl << "simple> ";
 
             line = "";

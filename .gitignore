@@ -23,7 +23,6 @@ Release/
 *.v11.suo
 *.suo
 *.sdf
-*.vcxproj.user
 *.dir
 *.obj
 flatfile.txt
