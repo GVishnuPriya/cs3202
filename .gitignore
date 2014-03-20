@@ -5,6 +5,7 @@ Makefile
 unit_tests
 system_test
 main
+batch
 libspa.a
 config.log
 config.status

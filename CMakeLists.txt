@@ -71,6 +71,11 @@ add_executable(main
   ${SOURCE}
   )
 
+add_executable(batch 
+  impl/batch.cpp 
+  ${SOURCE}
+  )
+
 add_executable(unit_tests 
   test/test_main.cpp
   test/gtest/gtest-all.cpp
