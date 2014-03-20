@@ -19,6 +19,7 @@
 #pragma once
 
 #include "simple/ast.h"
+#include "simple/solver.h"
 #include "simple/condition.h"
 #include "simple/condition_set.h"
 #include "impl/condition.h"
@@ -28,7 +29,7 @@ namespace impl {
 
 using namespace simple;
 
-class ExprSolver {
+class ExprSolver : public QuerySolver {
   public:
 
     ExprSolver(SimpleRoot ast);
@@ -36,6 +37,9 @@ class ExprSolver {
     /*
      * Pattern a(v,p) = Expr(a,p) & Modifies(a,v)
      */
+    ConditionSet solve_left(SimpleCondition *right_condition);
+    ConditionSet solve_right(SimpleCondition *left_condition);
+    bool validate(SimpleCondition *left_condition, SimpleCondition *right_condition);
 
     bool validate_statement_expr(StatementAst *statement, ExprAst *pattern);
     bool validate_assign_expr(AssignmentAst *assign_ast, ExprAst *pattern);
@@ -53,46 +57,12 @@ class ExprSolver {
     void index_if(IfAst *if_ast);
     void index_assign(AssignmentAst *assign_ast);
 
-    template <typename Condition>
-    ConditionSet solve_right(Condition *condition);
-
-    template <typename Condition>
-    ConditionSet solve_left(Condition *condition);
-
-    template <typename Condition1, typename Condition2>
-    bool validate(Condition1 *condition1, Condition2 *condition2);
-
 private:
   SimpleRoot _ast;
   
   // map string to set of assign statement for solve-left
   std::map<std::string, StatementSet > _pattern_index;
 };
-
-template <typename Condition>
-ConditionSet ExprSolver::solve_right(Condition *condition) {
-    return ConditionSet();
-}
-
-template <typename Condition>
-ConditionSet ExprSolver::solve_left(Condition *condition) {
-    return ConditionSet();
-}
-
-template <typename Condition1, typename Condition2>
-bool ExprSolver::validate(Condition1 *condition1, Condition2 *condition2) {
-    return false;
-}
-
-template <>
-ConditionSet ExprSolver::solve_right<StatementAst>(StatementAst *ast);
-
-template <>
-ConditionSet ExprSolver::solve_left<ExprAst>(ExprAst *ast);
-
-template <>
-bool ExprSolver::validate<StatementAst, ExprAst>(
-        StatementAst *statement, ExprAst *expr);
 
 
 } // namespace impl

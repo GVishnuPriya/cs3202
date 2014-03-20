@@ -34,28 +34,33 @@ ExprSolver::ExprSolver(SimpleRoot ast) : _ast(ast) {
     }
 }
 
-template <>
-ConditionSet ExprSolver::solve_right<StatementAst>(StatementAst *statement) {
-    ExprSet expr_result = solve_right_statement_expr(statement);
-    ConditionSet result;
+ConditionSet ExprSolver::solve_left(SimpleCondition *right_condition) {
+    PatternCondition *condition = condition_cast<PatternCondition>(right_condition);
+    if(!condition) return ConditionSet();
 
-    for(auto it=expr_result.begin(); it != expr_result.end(); ++it) {
-        result.insert(new SimplePatternCondition(clone_expr(*it)));
-    }
-
-    return result;
-}
-
-template <>
-ConditionSet ExprSolver::solve_left<ExprAst>(ExprAst *expr) {
+    ExprAst *expr = condition->get_expr_ast();
     StatementSet result = solve_left_statement(expr);
     return statement_set_to_condition_set(result);
 }
 
-template <>
-bool ExprSolver::validate<StatementAst, ExprAst>(
-        StatementAst *statement, ExprAst *expr)
-{
+ConditionSet ExprSolver::solve_right(SimpleCondition *left_condition) {
+    StatementCondition *condition = condition_cast<StatementCondition>(left_condition);
+    if(!condition) return ConditionSet();
+
+    StatementAst *statement = condition->get_statement_ast();
+    ExprSet result = solve_right_statement_expr(statement);
+    return expr_set_to_condition_set(result);
+}
+
+bool ExprSolver::validate(SimpleCondition *left_condition, SimpleCondition *right_condition) {
+    StatementCondition *left = condition_cast<StatementCondition>(left_condition);
+    PatternCondition *right = condition_cast<PatternCondition>(right_condition);
+
+    if(!left || !right) return false;
+    
+    StatementAst *statement = left->get_statement_ast();
+    ExprAst *expr = right->get_expr_ast();
+
     return validate_statement_expr(statement, expr);
 }
 

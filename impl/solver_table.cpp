@@ -49,8 +49,7 @@ SolverTable create_solver_table(SimpleRoot ast) {
     solver_table["icalls"] = std::shared_ptr<QuerySolver>(
         new SimpleSolverGenerator<ICallSolver>(new ICallSolver(ast)));
 
-    solver_table["expr"] = std::shared_ptr<QuerySolver>(
-        new SimpleSolverGenerator<ExprSolver>(new ExprSolver(ast)));
+    solver_table["expr"] = std::shared_ptr<QuerySolver>(new ExprSolver(ast));
 
     solver_table["iexpr"] = std::shared_ptr<QuerySolver>(
         new SimpleSolverGenerator<IExprSolver>(new IExprSolver(ast)));

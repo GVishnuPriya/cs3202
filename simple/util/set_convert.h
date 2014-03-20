@@ -20,6 +20,7 @@
 
 #include "impl/condition.h"
 #include "simple/condition_set.h"
+#include "simple/util/expr_util.h"
 
 namespace simple{
 namespace util {
@@ -57,6 +58,16 @@ inline ConditionSet variable_set_to_condition_set(const VariableSet& variable_se
             it!= variable_set.end(); ++it)
     {
         result.insert(new SimpleVariableCondition(*it));
+    }
+
+    return result;
+}
+
+inline ConditionSet expr_set_to_condition_set(const ExprSet& expr_set) {
+    ConditionSet result;
+
+    for(auto it=expr_set.begin(); it != expr_set.end(); ++it) {
+        result.insert(new SimplePatternCondition(clone_expr(*it)));
     }
 
     return result;
