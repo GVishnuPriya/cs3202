@@ -61,7 +61,7 @@ void EqualSolver::index_statement(StatementAst *statement) {
             index_if(statement_cast<IfAst>(statement));
         break;
         case CallST:
-            // noop
+            index_call(statement_cast<CallAst>(statement));
         break;
     }
 }
@@ -77,6 +77,11 @@ void EqualSolver::index_while(WhileAst *ast) {
     index_variable(ast->get_variable());
 
     index_statement_list(ast->get_body());
+}
+
+void EqualSolver::index_call(CallAst *call) {
+    _name_index[call->get_proc_called()->get_name()].insert(
+        new SimpleStatementCondition(call));
 }
 
 void EqualSolver::index_variable(SimpleVariable *var) {
@@ -143,62 +148,6 @@ template <>
 ConditionSet EqualSolver::solve_equal<SimpleConstant>(SimpleConstant *constant)
 {
     return _number_index[constant->get_int()];
-}
-
-template <>
-bool EqualSolver::validate<SimpleVariable, SimpleVariable>(
-    SimpleVariable *var1, SimpleVariable *var2)
-{
-    return var1->get_name() == var2->get_name();
-}
-
-template <>
-bool EqualSolver::validate<ProcAst, ProcAst>(
-    ProcAst *proc1, ProcAst *proc2)
-{
-    return proc1->get_name() == proc2->get_name();
-}
-
-template <>
-bool EqualSolver::validate<StatementAst, StatementAst>(
-    StatementAst *statement1, StatementAst *statement2)
-{
-    return statement1->get_statement_line() == statement2->get_statement_line();
-}
-
-template <>
-bool EqualSolver::validate<SimpleConstant, SimpleConstant>(
-    SimpleConstant *constant1, SimpleConstant *constant2)
-{
-    return constant1->get_int() == constant2->get_int();
-}
-
-template <>
-bool EqualSolver::validate<SimpleVariable, ProcAst>(
-    SimpleVariable *var1, ProcAst *proc2)
-{
-    return var1->get_name() == proc2->get_name();
-}
-
-template <>
-bool EqualSolver::validate<ProcAst, SimpleVariable>(
-    ProcAst *proc1, SimpleVariable *var2)
-{
-    return proc1->get_name() == var2->get_name();
-}
-
-template <>
-bool EqualSolver::validate<StatementAst, SimpleConstant>(
-    StatementAst *statement1, SimpleConstant *constant2)
-{
-    return statement1->get_statement_line() == constant2->get_int();
-}
-
-template <>
-bool EqualSolver::validate<SimpleConstant, StatementAst>(
-    SimpleConstant *constant1, StatementAst *statement2)
-{
-    return constant1->get_int() == statement2->get_statement_line();
 }
 
 }

@@ -257,7 +257,7 @@ PqlTerm* SimplePqlParser::parse_expr_term() {
                 IdentifierToken>()->get_content();
         next_token();
         return new SimplePqlVariableTerm(var_name);
-        
+
     } else {
         throw ParseError("Invalid pattern term");
     }
@@ -302,8 +302,8 @@ void SimplePqlParser::parse_pattern() {
     current_token_as<CloseBracketToken>();
     next_token();
 
-    PqlTermType type2 = get_term_type(term1);
-    PqlTermType type3 = get_term_type(term1);
+    PqlTermType type2 = get_term_type(term2);
+    PqlTermType type3 = get_term_type(term3);
 
     SolverPtr uses_solver = _solver_table["direct_uses"];
 

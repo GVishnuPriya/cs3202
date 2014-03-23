@@ -51,6 +51,7 @@ class EqualSolver {
     void index_statement(StatementAst *statement);
     void index_if(IfAst *ast);
     void index_while(WhileAst *ast);
+    void index_call(CallAst *call);
     void index_variable(SimpleVariable *var);
     void index_assign(AssignmentAst *assign);
     void index_expr(ExprAst *expr);
@@ -78,11 +79,6 @@ ConditionSet EqualSolver::solve_equal(Condition *condition) {
     return ConditionSet();
 }
 
-template <typename Condition1, typename Condition2>
-bool EqualSolver::validate(Condition1 *condition1, Condition2 *condition2) {
-    return false;
-}
-
 template <>
 ConditionSet EqualSolver::solve_equal<ProcAst>(ProcAst *proc);
 
@@ -95,37 +91,89 @@ ConditionSet EqualSolver::solve_equal<StatementAst>(StatementAst *statement);
 template <>
 ConditionSet EqualSolver::solve_equal<SimpleConstant>(SimpleConstant *constant);
 
-template <>
-bool EqualSolver::validate<SimpleVariable, SimpleVariable>(
-    SimpleVariable *var1, SimpleVariable *var2);
+template <typename Condition>
+inline bool has_name(Condition *condition) {
+    return false;
+}
+
+template <typename Condition>
+inline std::string get_name(Condition *condition) {
+    return "";
+}
+
+template <typename Condition>
+inline bool has_number(Condition *condition) {
+    return false;
+}
+
+template <typename Condition>
+inline int get_number(Condition *condition) {
+    return 0;
+}
 
 template <>
-bool EqualSolver::validate<ProcAst, ProcAst>(
-    ProcAst *proc1, ProcAst *proc2);
+inline bool has_name<ProcAst>(ProcAst *proc) {
+    return true;
+}
 
 template <>
-bool EqualSolver::validate<StatementAst, StatementAst>(
-    StatementAst *statement1, StatementAst *statement2);
+inline bool has_name<SimpleVariable>(SimpleVariable *var) {
+    return true;
+}
 
 template <>
-bool EqualSolver::validate<SimpleConstant, SimpleConstant>(
-    SimpleConstant *constant1, SimpleConstant *constant2);
+inline bool has_name<CallAst>(CallAst *call) {
+    return true;
+}
 
 template <>
-bool EqualSolver::validate<SimpleVariable, ProcAst>(
-    SimpleVariable *var1, ProcAst *proc2);
+inline std::string get_name<ProcAst>(ProcAst *proc) {
+    return proc->get_name();
+}
 
 template <>
-bool EqualSolver::validate<ProcAst, SimpleVariable>(
-    ProcAst *proc1, SimpleVariable *var2);
+inline std::string get_name<SimpleVariable>(SimpleVariable *var) {
+    return var->get_name();
+}
 
 template <>
-bool EqualSolver::validate<StatementAst, SimpleConstant>(
-    StatementAst *statement1, SimpleConstant *constant2);
+inline std::string get_name<CallAst>(CallAst *call) {
+    return call->get_proc_called()->get_name();
+}
 
 template <>
-bool EqualSolver::validate<SimpleConstant, StatementAst>(
-    SimpleConstant *constant1, StatementAst *statement2);
+inline bool has_number<SimpleConstant>(SimpleConstant *constant) {
+    return true;
+}
+
+template <>
+inline bool has_number<StatementAst>(StatementAst *statement) {
+    return true;
+}
+
+template <>
+inline int get_number<SimpleConstant>(SimpleConstant *constant) {
+    return constant->get_int();
+}
+
+template <>
+inline int get_number<StatementAst>(StatementAst *statement) {
+    return statement->get_statement_line();
+}
+
+template <typename Condition1, typename Condition2>
+bool EqualSolver::validate(Condition1 *condition1, Condition2 *condition2) {
+    if(has_name<Condition1>(condition1) && has_name<Condition2>(condition2)) {
+        return get_name<Condition1>(condition1) == get_name<Condition2>(condition2);
+    }
+
+    if(has_number<Condition1>(condition1) && has_number<Condition2>(condition2)) {
+        return get_number<Condition1>(condition1) && get_number<Condition2>(condition2);
+    }
+
+    return false;
+}
+
 
 }
 }
