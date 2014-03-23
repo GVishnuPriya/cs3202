@@ -66,6 +66,10 @@ template <>
 bool is_same_condition<PatternCondition, PatternCondition>(
         PatternCondition *condition1, PatternCondition *condition2);
 
+template <>
+bool is_same_condition<ConstantCondition, ConstantCondition>(
+        ConstantCondition *condition1, ConstantCondition *condition2);
+
 /*
  * Condition Ordering:
  * Proc > Statement > Variable > Pattern
@@ -120,6 +124,10 @@ bool is_less_than_condition<ProcCondition, ProcCondition>(
 template <>
 bool is_less_than_condition<PatternCondition, PatternCondition>(
         PatternCondition *condition1, PatternCondition *condition2);
+
+template <>
+bool is_less_than_condition<ConstantCondition, ConstantCondition>(
+        ConstantCondition *condition1, ConstantCondition *condition2);
 
 
 template <typename SourceCondition, typename TargetCondition>

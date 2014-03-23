@@ -163,6 +163,14 @@ bool is_same_condition<PatternCondition, PatternCondition>(
     return same_expr(condition1->get_expr_ast(), condition2->get_expr_ast());
 }
 
+template <>
+bool is_same_condition<ConstantCondition, ConstantCondition>(
+        ConstantCondition *condition1, ConstantCondition *condition2)
+{
+    return condition1->get_constant()->get_int() == 
+        condition2->get_constant()->get_int();
+}
+
 
 template <>
 bool is_less_than_condition<SimpleCondition, SimpleCondition>(
@@ -210,7 +218,6 @@ bool is_less_than_condition<PatternCondition, StatementCondition>(
     return true;
 }
 
-
 template <>
 bool is_less_than_condition<PatternCondition, ProcCondition>(
         PatternCondition *condition1, ProcCondition *condition2)
@@ -218,6 +225,33 @@ bool is_less_than_condition<PatternCondition, ProcCondition>(
     return true;
 }
 
+template <>
+bool is_less_than_condition<ConstantCondition, VariableCondition>(
+        ConstantCondition *condition1, VariableCondition *condition2)
+{
+    return true;
+}
+
+template <>
+bool is_less_than_condition<ConstantCondition, StatementCondition>(
+        ConstantCondition *condition1, StatementCondition *condition2)
+{
+    return true;
+}
+
+template <>
+bool is_less_than_condition<ConstantCondition, ProcCondition>(
+        ConstantCondition *condition1, ProcCondition *condition2)
+{
+    return true;
+}
+
+template <>
+bool is_less_than_condition<ConstantCondition, PatternCondition>(
+        ConstantCondition *condition1, PatternCondition *condition2)
+{
+    return true;
+}
 
 template <>
 bool is_less_than_condition<StatementCondition, StatementCondition>(
@@ -246,6 +280,14 @@ bool is_less_than_condition<PatternCondition, PatternCondition>(
         PatternCondition *condition1, PatternCondition *condition2)
 {
     return expr_to_string(condition1->get_expr_ast()) < expr_to_string(condition2->get_expr_ast());
+}
+
+template <>
+bool is_less_than_condition<ConstantCondition, ConstantCondition>(
+        ConstantCondition *condition1, ConstantCondition *condition2)
+{
+    return condition1->get_constant()->get_int() <
+        condition2->get_constant()->get_int();
 }
 
 

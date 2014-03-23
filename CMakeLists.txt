@@ -28,6 +28,7 @@ set(SOURCE
   impl/solvers/affects.cpp 
   impl/solvers/iaffects.cpp 
   impl/solvers/assign.cpp 
+  impl/solvers/equal.cpp 
   impl/solvers/expr.cpp 
   impl/solvers/iexpr.cpp 
   impl/solvers/follows.cpp 
@@ -42,7 +43,6 @@ set(SOURCE
   impl/solvers/call.cpp 
   impl/solvers/icall.cpp 
   impl/solvers/uses.cpp 
-  impl/solvers/same_name.cpp 
   impl/parser/token.cpp 
   impl/parser/parser.cpp 
   impl/parser/pql_parser.cpp 

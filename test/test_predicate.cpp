@@ -120,6 +120,10 @@ TEST(PredicateTest, BasicTest) {
     wildcard_set.insert(new SimplePatternCondition(new SimpleConstAst(2)));
     wildcard_set.insert(new SimplePatternCondition(new SimpleConstAst(3)));
     wildcard_set.insert(new SimplePatternCondition(new SimpleConstAst(4)));
+    wildcard_set.insert(new SimpleConstantCondition(1));
+    wildcard_set.insert(new SimpleConstantCondition(2));
+    wildcard_set.insert(new SimpleConstantCondition(3));
+    wildcard_set.insert(new SimpleConstantCondition(4));
 
     EXPECT_EQ(wildcard_pred->global_set(), wildcard_set);
 

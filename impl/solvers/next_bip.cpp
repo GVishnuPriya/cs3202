@@ -13,7 +13,9 @@ bool is_first_statement(StatementAst *statement) {
     return false;
 }
 
-bool is_last_statement(StatementAst *statement) {
+bool is_last_statement(StatementAst *statement);
+
+bool is_last_container_statement(StatementAst *statement) {
     StatementAst *next = statement->next();
     StatementAst *parent = statement->get_parent();
 
@@ -21,6 +23,14 @@ bool is_last_statement(StatementAst *statement) {
     if(!next && parent) return is_last_statement(parent);
 
     return false;
+}
+
+bool is_last_statement(StatementAst *statement) {
+    // If statement can never be the last statement
+    IfAst *if_ast = statement_cast<IfAst>(statement);
+    if(if_ast) return false;
+
+    return is_last_container_statement(statement);
 }
 
 NextBipSolver::NextBipSolver(SimpleRoot ast, 
