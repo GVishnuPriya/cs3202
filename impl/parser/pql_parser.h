@@ -56,12 +56,13 @@ class SimplePqlParser {
     ClausePtr parse_clause();
 
     PqlTerm* parse_term();
+    PqlTerm* parse_with_term();
 
     ConditionPtr parse_condition(const std::string& name);
 
     void parse_pattern();
 
-    void parse_with();
+    ClausePtr parse_with();
     
     std::shared_ptr<PqlSelector> parse_tuple_selector();
 

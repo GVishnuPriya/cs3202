@@ -141,6 +141,14 @@ class DotToken : public SimpleToken {
     static TokenType type;
 };
 
+class HashToken : public SimpleToken { 
+  public:
+    virtual TokenType& get_type() {
+        return HashToken::type;
+    }
+
+    static TokenType type;
+};
 
 class SemiColonToken : public SimpleToken { 
   public:

@@ -108,6 +108,12 @@ class IteratorTokenizer : public SimpleTokenizer {
                 next_char();
                 return &_dot_token;
 
+            break;
+            case '#':
+                next_char();
+                return &_hash_token;
+
+            break;
             case '=':
                 next_char();
                 return &_equal_token;
@@ -206,6 +212,7 @@ class IteratorTokenizer : public SimpleTokenizer {
     SemiColonToken      _semi_colon_token;
     CommaToken          _comma_token;
     DotToken            _dot_token;
+    HashToken            _hash_token;
     EqualToken          _equal_token;
     EOFToken            _eof_token;
     NewLineToken        _new_line_token;

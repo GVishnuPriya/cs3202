@@ -30,6 +30,7 @@ TokenType MoreThanToken::type("MoreThanToken");
 TokenType SemiColonToken::type("SemiColonToken");
 TokenType CommaToken::type("CommaToken");
 TokenType DotToken::type("DotToken");
+TokenType HashToken::type("HashToken");
 TokenType EqualToken::type("EqualToken");
 TokenType EOFToken::type("EOFToken");
 TokenType NewLineToken::type("NewLineToken");

@@ -124,9 +124,9 @@ void SimplePqlParser::parse_main_query() {
                 _query_set.clauses.insert(parse_clause());
             }
         } else if(keyword == "and") {
-                _query_set.clauses.insert(parse_clause());
+            _query_set.clauses.insert(parse_clause());
         } else if(keyword == "with") {
-            parse_with();
+            _query_set.clauses.insert(parse_with());
         } else if(keyword == "pattern") {
             parse_pattern();
         } else {
@@ -235,8 +235,54 @@ void SimplePqlParser::parse_pattern() {
     throw ParseError("Not yet implemented pattern clause"); // not implemented
 }
 
-void SimplePqlParser::parse_with() {
-    throw ParseError("Not yet implemented with clause"); // not implemented
+PqlTerm* SimplePqlParser::parse_with_term() {
+    if(current_token_is<LiteralToken>()) {
+        ConditionPtr condition = parse_condition(
+                current_token_as<LiteralToken>()->get_content());
+        next_token();
+        return new SimplePqlConditionTerm(condition);
+    } 
+
+    if(current_token_is<IntegerToken>()) {
+        int line = current_token_as<IntegerToken>()->get_value();
+        next_token();
+        return new SimplePqlConditionTerm(
+               new SimpleStatementCondition(get_statement(line)));
+    }
+
+    std::string qvar = current_token_as<IdentifierToken>()->get_content();
+    PqlTerm *term = new SimplePqlVariableTerm(qvar);
+
+    next_token(); // eat qvar
+    if(!current_token_is<DotToken>()) return term;
+
+    next_token(); // eat "."
+
+    std::string field1 = current_token_as_keyword();
+
+    if(field1 == "stmt") {
+        next_token_as<HashToken>();
+        next_token(); // eat #
+    } else if(field1 == "varname" || field1 == "procname" || field1 == "value") {
+        next_token(); // eat keyword
+    } else {
+        throw new ParseError("Invalid field name in with clause");
+    }
+
+    return term;
+}
+
+ClausePtr SimplePqlParser::parse_with() {
+    PqlTerm *term1 = parse_with_term();
+
+    current_token_as<EqualToken>();
+    next_token(); // eat =
+
+    PqlTerm *term2 = parse_with_term();
+
+    std::shared_ptr<QuerySolver> solver = _solver_table["equal"];
+
+    return ClausePtr(new SimplePqlClause(solver, term1, term2));
 }
 
 std::shared_ptr<PqlSelector> SimplePqlParser::parse_tuple_selector() {
