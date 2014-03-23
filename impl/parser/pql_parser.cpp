@@ -156,6 +156,8 @@ std::shared_ptr<PqlSelector> SimplePqlParser::parse_selector() {
                 IdentifierToken>()->get_content();
 
         next_token(); // eat var name
+        eat_field();
+
         return std::shared_ptr<PqlSelector>(
             new SimplePqlSingleVarSelector(selected_var));
     }
@@ -235,6 +237,23 @@ void SimplePqlParser::parse_pattern() {
     throw ParseError("Not yet implemented pattern clause"); // not implemented
 }
 
+void SimplePqlParser::eat_field() {
+    if(!current_token_is<DotToken>()) return;
+
+    next_token(); // eat "."
+
+    std::string field1 = current_token_as_keyword();
+
+    if(field1 == "stmt") {
+        next_token_as<HashToken>();
+        next_token(); // eat #
+    } else if(field1 == "varname" || field1 == "procname" || field1 == "value") {
+        next_token(); // eat keyword
+    } else {
+        throw new ParseError("Invalid field name after dot");
+    }
+}
+
 PqlTerm* SimplePqlParser::parse_with_term() {
     if(current_token_is<LiteralToken>()) {
         ConditionPtr condition = parse_condition(
@@ -254,20 +273,7 @@ PqlTerm* SimplePqlParser::parse_with_term() {
     PqlTerm *term = new SimplePqlVariableTerm(qvar);
 
     next_token(); // eat qvar
-    if(!current_token_is<DotToken>()) return term;
-
-    next_token(); // eat "."
-
-    std::string field1 = current_token_as_keyword();
-
-    if(field1 == "stmt") {
-        next_token_as<HashToken>();
-        next_token(); // eat #
-    } else if(field1 == "varname" || field1 == "procname" || field1 == "value") {
-        next_token(); // eat keyword
-    } else {
-        throw new ParseError("Invalid field name in with clause");
-    }
+    eat_field();
 
     return term;
 }
@@ -298,6 +304,8 @@ std::shared_ptr<PqlSelector> SimplePqlParser::parse_tuple_selector() {
         std::string qvar = current_token_as<IdentifierToken>()->get_content();
         tuples.push_back(qvar);
         next_token();
+
+        eat_field();
     }
 
     current_token_as<MoreThanToken>();

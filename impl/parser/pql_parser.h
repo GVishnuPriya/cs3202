@@ -54,6 +54,8 @@ class SimplePqlParser {
     std::shared_ptr<PqlSelector> parse_selector();
 
     ClausePtr parse_clause();
+    
+    void eat_field();
 
     PqlTerm* parse_term();
     PqlTerm* parse_with_term();
