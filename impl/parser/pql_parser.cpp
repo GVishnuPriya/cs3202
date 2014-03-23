@@ -16,8 +16,11 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <utility>
 #include <algorithm>
+#include "impl/ast.h"
 #include "impl/parser/pql_parser.h"
+#include "simple/util/term_utils.h"
 
 namespace simple {
 namespace parser {
@@ -233,8 +236,91 @@ ConditionPtr SimplePqlParser::parse_condition(const std::string& name) {
     }
 }
 
+PqlTerm* SimplePqlParser::parse_expr_term() {
+    if(current_token_is<LiteralToken>()) {
+        std::string expr_string = current_token_as<LiteralToken>()->get_content();
+        next_token();
+
+        std::shared_ptr<SimpleTokenizer> tokenizer(
+            new IteratorTokenizer<std::string::iterator>(
+                expr_string.begin(), expr_string.end()));
+
+        ExprParser parser(tokenizer);
+
+        ExprAst *expr = parser.parse_expr();
+
+        return new SimplePqlConditionTerm(
+            new SimplePatternCondition(expr));
+
+    } else if(current_token_is<IdentifierToken>()) {
+        std::string var_name = current_token_as<
+                IdentifierToken>()->get_content();
+        next_token();
+        return new SimplePqlVariableTerm(var_name);
+        
+    } else {
+        throw ParseError("Invalid pattern term");
+    }
+}
+
+std::pair<PqlTerm*, bool> SimplePqlParser::parse_pattern_term() {
+    if(!current_token_is<WildCardToken>()) {
+        PqlTerm* term = parse_expr_term();
+        return std::make_pair(term, false);
+    }
+
+    next_token();
+
+    if(current_token_is<CloseBracketToken>()) {
+        return std::make_pair(new SimplePqlWildcardTerm(), false);
+    }
+
+    PqlTerm* term = parse_expr_term();
+
+    current_token_as<WildCardToken>();
+    next_token(); // eat "_"
+
+    return std::make_pair(term, true);
+}
+
 void SimplePqlParser::parse_pattern() {
-    throw ParseError("Not yet implemented pattern clause"); // not implemented
+    PqlTerm* term1 = parse_term();
+
+    current_token_as<OpenBracketToken>();
+    next_token();
+
+    PqlTerm* term2 = parse_term();
+
+    current_token_as<CommaToken>();
+    next_token();
+
+    std::pair<PqlTerm*, bool> pattern_term = parse_pattern_term();
+
+    PqlTerm* term3 = pattern_term.first;
+    bool is_indirect = pattern_term.second;
+
+    current_token_as<CloseBracketToken>();
+    next_token();
+
+    PqlTermType type2 = get_term_type(term1);
+    PqlTermType type3 = get_term_type(term1);
+
+    SolverPtr uses_solver = _solver_table["direct_uses"];
+
+    SolverPtr expr_solver = is_indirect ? 
+        _solver_table["iexpr"] : _solver_table["expr"];
+
+    ClausePtr expr_clause(new SimplePqlClause(expr_solver, term1, term3));
+    ClausePtr uses_clause(new SimplePqlClause(uses_solver, clone_term(term1), term2));
+
+    if(type2 == WildcardTT) {
+        _query_set.clauses.insert(expr_clause);
+    } else if(type3 == WildcardTT) {
+        _query_set.clauses.insert(uses_clause);
+    } else {
+        _query_set.clauses.insert(expr_clause);
+        _query_set.clauses.insert(uses_clause);
+    }
 }
 
 void SimplePqlParser::eat_field() {
@@ -347,8 +433,6 @@ StatementAst* SimplePqlParser::get_statement(int line) {
     }
     return _line_table[line];
 }
-
-
 
 }
 }

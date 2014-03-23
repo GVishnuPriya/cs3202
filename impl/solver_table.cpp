@@ -9,6 +9,7 @@
 #include "impl/solvers/iparent.h"
 #include "impl/solvers/call.h"
 #include "impl/solvers/icall.h"
+#include "impl/solvers/direct_uses.h"
 #include "impl/solvers/equal.h"
 #include "impl/solvers/expr.h"
 #include "impl/solvers/iexpr.h"
@@ -51,6 +52,8 @@ SolverTable create_solver_table(SimpleRoot ast) {
 
     solver_table["equal"] = std::shared_ptr<QuerySolver>(
         new SimpleSolverGenerator<EqualSolver>(new EqualSolver(ast)));
+
+    solver_table["direct_uses"] = std::shared_ptr<QuerySolver>(new DirectUsesSolver(ast));
 
     solver_table["expr"] = std::shared_ptr<QuerySolver>(new ExprSolver(ast));
 

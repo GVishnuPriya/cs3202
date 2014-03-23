@@ -25,6 +25,8 @@
 #include "simple/solver.h"
 #include "impl/parse_error.h"
 #include "impl/condition.h"
+#include "impl/parser/iterator_tokenizer.h"
+#include "impl/parser/expr_parser.h"
 #include "impl/parser/tokenizer.h"
 #include "impl/query.h"
 
@@ -54,11 +56,14 @@ class SimplePqlParser {
     std::shared_ptr<PqlSelector> parse_selector();
 
     ClausePtr parse_clause();
-    
+
     void eat_field();
 
     PqlTerm* parse_term();
     PqlTerm* parse_with_term();
+    
+    PqlTerm* parse_expr_term();
+    std::pair<PqlTerm*, bool> parse_pattern_term();
 
     ConditionPtr parse_condition(const std::string& name);
 

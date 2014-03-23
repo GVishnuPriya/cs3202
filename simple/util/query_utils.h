@@ -31,7 +31,6 @@ bool is_same_term(PqlTerm *term1, PqlTerm *term2);
 
 bool is_same_clause(PqlClause *clause1, PqlClause *clause2);
 
-
 template <typename Visitor, typename VisitorTraits, typename FirstTerm>
 class SecondPqlTermDoubleDispatcher : public PqlTermVisitor {
   public:

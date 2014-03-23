@@ -19,6 +19,7 @@
 #pragma once
 
 #include "simple/ast.h"
+#include "simple/solver.h"
 #include "simple/condition.h"
 #include "simple/condition_set.h"
 #include "impl/condition.h"
@@ -28,10 +29,14 @@ namespace impl {
 
 using namespace simple;
 
-class DirectUsesSolver {
+class DirectUsesSolver : public QuerySolver  {
   public:
 
 	DirectUsesSolver(SimpleRoot ast);
+
+  ConditionSet solve_left(SimpleCondition *right_condition);
+  ConditionSet solve_right(SimpleCondition *left_condition);
+  bool validate(SimpleCondition *left_condition, SimpleCondition *right_condition);
 
 	/*
 	DirectUses checks for control variables of container statements.
@@ -39,11 +44,11 @@ class DirectUsesSolver {
 	Pattern i(v,_,_) = DirectUses(i,v)
 	*/
 
-	bool validate(StatementAst *statement, SimpleVariable *var);
+	bool validate_statement_var(StatementAst *statement, SimpleVariable *var);
 	
-	ConditionSet solve_left(SimpleVariable *var);
+	StatementSet solve_left_statement(SimpleVariable *var);
 	
-	ConditionSet solve_right(StatementAst *statement);
+	VariableSet solve_right_var(StatementAst *statement);
 	
 	// index for solve-left
 	void index_proc(ProcAst *proc);
@@ -51,10 +56,11 @@ class DirectUsesSolver {
 	void index_statement(StatementAst *statement);
 	void index_while(WhileAst *while_ast);
 	void index_if(IfAst *if_ast);
+	void index_assign(AssignmentAst *assign);
   
 private:
 	SimpleRoot _ast;
-	std::map<SimpleVariable, ConditionSet> _right_condition_index;
+	std::map<SimpleVariable, StatementSet> _right_statement_index;
 
 };
 } // namespace impl

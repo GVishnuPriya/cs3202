@@ -20,6 +20,7 @@ set(SOURCE
   simple/util/condition_utils.cpp 
   simple/util/expr_util.cpp
   simple/util/query_utils.cpp 
+  simple/util/term_utils.cpp 
   impl/linker.cpp 
   impl/predicate.cpp 
   impl/processor.cpp 
@@ -28,6 +29,7 @@ set(SOURCE
   impl/solvers/affects.cpp 
   impl/solvers/iaffects.cpp 
   impl/solvers/assign.cpp 
+  impl/solvers/direct_uses.cpp 
   impl/solvers/equal.cpp 
   impl/solvers/expr.cpp 
   impl/solvers/iexpr.cpp 
@@ -45,6 +47,7 @@ set(SOURCE
   impl/solvers/uses.cpp 
   impl/parser/token.cpp 
   impl/parser/parser.cpp 
+  impl/parser/expr_parser.cpp 
   impl/parser/pql_parser.cpp 
   spa/affects_star.cpp
   spa/affects.cpp
