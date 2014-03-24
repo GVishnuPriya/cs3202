@@ -111,9 +111,6 @@
     <ClCompile Include="impl\solvers\parent.cpp">
       <Filter>Source Files\impl\solvers</Filter>
     </ClCompile>
-    <ClCompile Include="impl\solvers\same_name.cpp">
-      <Filter>Source Files\impl\solvers</Filter>
-    </ClCompile>
     <ClCompile Include="impl\solvers\uses.cpp">
       <Filter>Source Files\impl\solvers</Filter>
     </ClCompile>
@@ -134,6 +131,18 @@
     </ClCompile>
     <ClCompile Include="simple\util\expr_util.cpp">
       <Filter>Source Files\simple\util</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\parser\expr_parser.cpp">
+      <Filter>Source Files\impl\parser</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\solvers\equal.cpp">
+      <Filter>Source Files\impl\solvers</Filter>
+    </ClCompile>
+    <ClCompile Include="simple\util\term_utils.cpp">
+      <Filter>Source Files\simple\util</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\solvers\direct_uses.cpp">
+      <Filter>Source Files\impl\solvers</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

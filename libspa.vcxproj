@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="impl\linker.cpp" />
+    <ClCompile Include="impl\parser\expr_parser.cpp" />
     <ClCompile Include="impl\parser\parser.cpp" />
     <ClCompile Include="impl\parser\pql_parser.cpp" />
     <ClCompile Include="impl\parser\token.cpp" />
@@ -21,6 +22,8 @@
     <ClCompile Include="impl\solvers\affects.cpp" />
     <ClCompile Include="impl\solvers\assign.cpp" />
     <ClCompile Include="impl\solvers\call.cpp" />
+    <ClCompile Include="impl\solvers\direct_uses.cpp" />
+    <ClCompile Include="impl\solvers\equal.cpp" />
     <ClCompile Include="impl\solvers\expr.cpp" />
     <ClCompile Include="impl\solvers\follows.cpp" />
     <ClCompile Include="impl\solvers\iaffects.cpp" />
@@ -34,7 +37,6 @@
     <ClCompile Include="impl\solvers\next_bip.cpp" />
     <ClCompile Include="impl\solvers\next_cached.cpp" />
     <ClCompile Include="impl\solvers\parent.cpp" />
-    <ClCompile Include="impl\solvers\same_name.cpp" />
     <ClCompile Include="impl\solvers\uses.cpp" />
     <ClCompile Include="impl\solver_table.cpp" />
     <ClCompile Include="simple\ast.cpp" />
@@ -46,6 +48,7 @@
     <ClCompile Include="simple\util\condition_utils.cpp" />
     <ClCompile Include="simple\util\expr_util.cpp" />
     <ClCompile Include="simple\util\query_utils.cpp" />
+    <ClCompile Include="simple\util\term_utils.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{6BDBA65E-9DC1-4D00-932B-B329F191900E}</ProjectGuid>
