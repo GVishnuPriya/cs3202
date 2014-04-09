@@ -364,9 +364,38 @@ PqlTerm* SimplePqlParser::parse_with_term() {
     PqlTerm *term = new SimplePqlVariableTerm(qvar);
 
     next_token(); // eat qvar
-    eat_field();
+    
+    if(!current_token_is<DotToken>()) return term;
 
-    return term;
+    next_token(); // eat "."
+
+    std::string field1 = current_token_as_keyword();
+    std::shared_ptr<SimplePredicate> pred = _query_set.predicates[qvar];
+    
+    if(field1 == "stmt") {
+        next_token_as<HashToken>();
+        next_token(); // eat #
+        if (pred == get_predicate("statement") 
+            || pred == get_predicate("assign") 
+            || pred == get_predicate("if")
+            || pred == get_predicate("while") 
+            || pred == get_predicate("call")) {
+            return term;
+        }
+    } else if(field1 == "varname") {
+        next_token(); // eat keyword
+        if (pred == get_predicate("var")) return term;
+    } else if(field1 == "procname") {
+        next_token(); // eat keyword
+        if (pred == get_predicate("procedure") || pred == get_predicate("call")) 
+            return term;
+    } else if(field1 == "value") {
+        next_token(); // eat keyword
+        if (pred == get_predicate("const")) return term;
+    } 
+    
+    throw new ParseError("Invalid field name after dot");
+
 }
 
 ClausePtr SimplePqlParser::parse_with() {
