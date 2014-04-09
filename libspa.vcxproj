@@ -37,6 +37,7 @@
     <ClCompile Include="impl\solvers\next_bip.cpp" />
     <ClCompile Include="impl\solvers\next_cached.cpp" />
     <ClCompile Include="impl\solvers\parent.cpp" />
+    <ClCompile Include="impl\solvers\sibling.cpp" />
     <ClCompile Include="impl\solvers\uses.cpp" />
     <ClCompile Include="impl\solver_table.cpp" />
     <ClCompile Include="simple\ast.cpp" />
@@ -49,6 +50,50 @@
     <ClCompile Include="simple\util\expr_util.cpp" />
     <ClCompile Include="simple\util\query_utils.cpp" />
     <ClCompile Include="simple\util\term_utils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="impl\ast.h" />
+    <ClInclude Include="impl\condition.h" />
+    <ClInclude Include="impl\frontend.h" />
+    <ClInclude Include="impl\linker.h" />
+    <ClInclude Include="impl\parse_error.h" />
+    <ClInclude Include="impl\predicate.h" />
+    <ClInclude Include="impl\processor.h" />
+    <ClInclude Include="impl\query.h" />
+    <ClInclude Include="impl\selector.h" />
+    <ClInclude Include="impl\solvers\affects.h" />
+    <ClInclude Include="impl\solvers\assign.h" />
+    <ClInclude Include="impl\solvers\call.h" />
+    <ClInclude Include="impl\solvers\direct_uses.h" />
+    <ClInclude Include="impl\solvers\equal.h" />
+    <ClInclude Include="impl\solvers\expr.h" />
+    <ClInclude Include="impl\solvers\follows.h" />
+    <ClInclude Include="impl\solvers\iaffects.h" />
+    <ClInclude Include="impl\solvers\icall.h" />
+    <ClInclude Include="impl\solvers\iexpr.h" />
+    <ClInclude Include="impl\solvers\ifollows.h" />
+    <ClInclude Include="impl\solvers\inext.h" />
+    <ClInclude Include="impl\solvers\iparent.h" />
+    <ClInclude Include="impl\solvers\modifies.h" />
+    <ClInclude Include="impl\solvers\next.h" />
+    <ClInclude Include="impl\solvers\next_bip.h" />
+    <ClInclude Include="impl\solvers\next_cached.h" />
+    <ClInclude Include="impl\solvers\parent.h" />
+    <ClInclude Include="impl\solvers\pattern.h" />
+    <ClInclude Include="impl\solvers\sibling.h" />
+    <ClInclude Include="impl\solvers\uses.h" />
+    <ClInclude Include="impl\solver_table.h" />
+    <ClInclude Include="impl\table_linker.h" />
+    <ClInclude Include="simple\ast.h" />
+    <ClInclude Include="simple\condition.h" />
+    <ClInclude Include="simple\condition_set.h" />
+    <ClInclude Include="simple\linker.h" />
+    <ClInclude Include="simple\predicate.h" />
+    <ClInclude Include="simple\query.h" />
+    <ClInclude Include="simple\solver.h" />
+    <ClInclude Include="simple\spa.h" />
+    <ClInclude Include="simple\tuple.h" />
+    <ClInclude Include="simple\types.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{6BDBA65E-9DC1-4D00-932B-B329F191900E}</ProjectGuid>

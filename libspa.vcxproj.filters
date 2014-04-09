@@ -28,6 +28,18 @@
     <Filter Include="Source Files\impl\parser">
       <UniqueIdentifier>{f4eeab7d-08f6-4ccb-903c-9804cd912c47}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\impl">
+      <UniqueIdentifier>{da12f165-d39f-4b70-8127-c48f678faf86}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\impl\parser">
+      <UniqueIdentifier>{fb37c7d4-f262-4ec5-95a3-24330fc119a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\impl\solvers">
+      <UniqueIdentifier>{747d5429-77bc-4137-a821-6d413b88cfde}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\simple">
+      <UniqueIdentifier>{27f20606-44c9-4800-97b4-5a22e8d653f3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="simple\ast.cpp">
@@ -144,5 +156,136 @@
     <ClCompile Include="impl\solvers\direct_uses.cpp">
       <Filter>Source Files\impl\solvers</Filter>
     </ClCompile>
+    <ClCompile Include="impl\solvers\sibling.cpp">
+      <Filter>Source Files\impl\solvers</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="impl\solvers\affects.h">
+      <Filter>Header Files\impl\solvers</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\solvers\assign.h">
+      <Filter>Header Files\impl\solvers</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\solvers\call.h">
+      <Filter>Header Files\impl\solvers</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\solvers\direct_uses.h">
+      <Filter>Header Files\impl\solvers</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\solvers\equal.h">
+      <Filter>Header Files\impl\solvers</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\solvers\expr.h">
+      <Filter>Header Files\impl\solvers</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\solvers\follows.h">
+      <Filter>Header Files\impl\solvers</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\solvers\iaffects.h">
+      <Filter>Header Files\impl\solvers</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\solvers\icall.h">
+      <Filter>Header Files\impl\solvers</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\solvers\iexpr.h">
+      <Filter>Header Files\impl\solvers</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\solvers\ifollows.h">
+      <Filter>Header Files\impl\solvers</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\solvers\inext.h">
+      <Filter>Header Files\impl\solvers</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\solvers\iparent.h">
+      <Filter>Header Files\impl\solvers</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\solvers\modifies.h">
+      <Filter>Header Files\impl\solvers</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\solvers\next.h">
+      <Filter>Header Files\impl\solvers</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\solvers\next_bip.h">
+      <Filter>Header Files\impl\solvers</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\solvers\next_cached.h">
+      <Filter>Header Files\impl\solvers</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\solvers\parent.h">
+      <Filter>Header Files\impl\solvers</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\solvers\pattern.h">
+      <Filter>Header Files\impl\solvers</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\solvers\uses.h">
+      <Filter>Header Files\impl\solvers</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\ast.h">
+      <Filter>Header Files\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\condition.h">
+      <Filter>Header Files\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\frontend.h">
+      <Filter>Header Files\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\linker.h">
+      <Filter>Header Files\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\parse_error.h">
+      <Filter>Header Files\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\predicate.h">
+      <Filter>Header Files\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\processor.h">
+      <Filter>Header Files\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\query.h">
+      <Filter>Header Files\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\selector.h">
+      <Filter>Header Files\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\solver_table.h">
+      <Filter>Header Files\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\table_linker.h">
+      <Filter>Header Files\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="simple\ast.h">
+      <Filter>Header Files\simple</Filter>
+    </ClInclude>
+    <ClInclude Include="simple\condition.h">
+      <Filter>Header Files\simple</Filter>
+    </ClInclude>
+    <ClInclude Include="simple\condition_set.h">
+      <Filter>Header Files\simple</Filter>
+    </ClInclude>
+    <ClInclude Include="simple\linker.h">
+      <Filter>Header Files\simple</Filter>
+    </ClInclude>
+    <ClInclude Include="simple\predicate.h">
+      <Filter>Header Files\simple</Filter>
+    </ClInclude>
+    <ClInclude Include="simple\query.h">
+      <Filter>Header Files\simple</Filter>
+    </ClInclude>
+    <ClInclude Include="simple\solver.h">
+      <Filter>Header Files\simple</Filter>
+    </ClInclude>
+    <ClInclude Include="simple\spa.h">
+      <Filter>Header Files\simple</Filter>
+    </ClInclude>
+    <ClInclude Include="simple\tuple.h">
+      <Filter>Header Files\simple</Filter>
+    </ClInclude>
+    <ClInclude Include="simple\types.h">
+      <Filter>Header Files\simple</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\solvers\sibling.h">
+      <Filter>Header Files\impl\solvers</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -31,3 +31,4 @@ ipch/
 CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
+AutoTester-TestCase
