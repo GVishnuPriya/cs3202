@@ -51,7 +51,32 @@ class SiblingSolver {
     }
 
   private:
+  
     SimpleRoot _ast;
 };
+  
+  template<>
+ConditionSet SiblingSolver::solve_right<ProcAst>(ProcAst *proc);
+  
+  template <>
+ConditionSet SiblingSolver::solve_right<StatementAst>(StatementAst *statement);
+
+  template<>
+ConditionSet SiblingSolver::solve_right<ExprAst>(ExprAst *expr);
+  
+  template <>
+ConditionSet SiblingSolver::solve_left<StatementAst>(StatementAst *ast);
+
+  template <>
+bool SiblingSolver::validate<StatementAst, StatementAst>(
+  StatementAst *left, StatementAst *right);
+
+  template<>
+bool SiblingSolver::validate<ProcAst, ProcAst>
+  (ProcAst *left, ProcAst *right);
+
+  template<>
+bool SiblingSolver::validate<ExprAst, ExprAst>(ExprAst *left, ExprAst *right);
+  
 } // namespace impl
 } // namespace simple
