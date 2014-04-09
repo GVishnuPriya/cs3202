@@ -44,6 +44,10 @@ std::vector<std::string> format_selector<PqlSingleVarSelector>(
     ConditionSet conditions = linker->get_conditions(qvar, pred);
     
     std::vector<std::string> result;
+    
+	  if(!linker->is_valid_state()){
+		  return result;
+	  }
 
     for(ConditionSet::iterator it = conditions.begin(); 
             it != conditions.end(); ++it)
@@ -77,6 +81,11 @@ std::vector<std::string> format_selector<PqlTupleSelector>(
     TupleList tuples = linker->make_tuples(selected_qvars);
 
     std::vector<std::string> result;
+  
+  	if(!linker->is_valid_state()){
+		  return result;
+	  }
+  
     for(auto it=tuples.begin(); it!=tuples.end(); ++it) {
         result.push_back(tuple_to_string(*it));
     }
