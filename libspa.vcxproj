@@ -56,6 +56,12 @@
     <ClInclude Include="impl\condition.h" />
     <ClInclude Include="impl\frontend.h" />
     <ClInclude Include="impl\linker.h" />
+    <ClInclude Include="impl\parser\expr_parser.h" />
+    <ClInclude Include="impl\parser\iterator_tokenizer.h" />
+    <ClInclude Include="impl\parser\parser.h" />
+    <ClInclude Include="impl\parser\pql_parser.h" />
+    <ClInclude Include="impl\parser\token.h" />
+    <ClInclude Include="impl\parser\tokenizer.h" />
     <ClInclude Include="impl\parse_error.h" />
     <ClInclude Include="impl\predicate.h" />
     <ClInclude Include="impl\processor.h" />
