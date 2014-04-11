@@ -63,8 +63,7 @@ namespace simple {
 
 			//Structure of Sibling Table is 
 			//[Statement Number] [Left expression, right expression]
-			std::map<int, list < pair <std::string, std::string> > > _sibling_index;
-			std::map<pair<std::string, std::string>, list<int>> _inverse_sibling_index;
+			std::map<std::string, StatementSet> _sibling_index;
 
 			std::string extract_string_from_expr(ExprAst* expr_ast);
 		};
