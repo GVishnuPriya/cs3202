@@ -31,7 +31,8 @@ namespace simple {
 
 		class SiblingSolver {
 		public:
-			SiblingSolver(SimpleRoot ast) : _ast(ast) { }
+			SiblingSolver::SiblingSolver(SimpleRoot ast);
+			
 
 			template <typename Condition>
 			ConditionSet solve_right(Condition *condition) {

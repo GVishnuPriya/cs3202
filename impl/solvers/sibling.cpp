@@ -28,6 +28,13 @@ namespace simple {
 		using namespace simple;
 		using namespace std;
 
+		SiblingSolver::SiblingSolver(SimpleRoot ast) : _ast(ast) {
+			for (auto it = _ast.begin(); it!= _ast.end(); ++it) {
+				index_proc(*it);
+			}
+		}
+
+
 		template <>
 		bool SiblingSolver::validate<StatementAst, StatementAst>(
 			StatementAst *left, StatementAst *right)
@@ -70,8 +77,15 @@ namespace simple {
 				if(left == right){
 					return false;
 				}
-				else{
+				else if( (_ast.get_proc(left->get_name()) != NULL)
+					&& (_ast.get_proc(right->get_name()) != NULL)
+					){	//Check that both procedure is inside AST
+					
 					return true;
+				}
+				else
+				{
+					return false;
 				}
 		}
 
@@ -95,13 +109,13 @@ namespace simple {
 		template<>
 		bool SiblingSolver::validate<VariableAst, ExprAst>(VariableAst *left,
 			ExprAst *right){
-				return validate(left, right);
+				return validate<ExprAst, ExprAst>(left, right);
 		}
 
 		template<>
 		bool SiblingSolver::validate<ExprAst, VariableAst>(ExprAst *left, 
 			VariableAst *right){
-				return validate(left, right);
+				return validate<ExprAst, ExprAst>(left, right);
 		}
 
 		void SiblingSolver::index_proc(ProcAst *proc) {
