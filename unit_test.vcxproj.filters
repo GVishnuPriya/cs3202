@@ -33,9 +33,6 @@
     <ClCompile Include="test\test_follows.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test\test_frontend.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="test\test_icall.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -93,7 +90,7 @@
     <ClCompile Include="test\test_expr.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test_sibling.cpp">
+    <ClCompile Include="test\test_sibling.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

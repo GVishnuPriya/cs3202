@@ -103,10 +103,6 @@ namespace simple {
 			ExprAst *right);
 
 		template<>
-		bool SiblingSolver::validate<ExprAst, ExprAst>(ExprAst *left, 
-			ExprAst *right);
-
-		template<>
 		bool SiblingSolver::validate<VariableAst, ExprAst>(VariableAst *left,
 			ExprAst *right);
 

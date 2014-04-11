@@ -39,10 +39,10 @@ namespace simple {
 		bool SiblingSolver::validate<StatementAst, StatementAst>(
 			StatementAst *left, StatementAst *right)
 		{
-			StatementVisitorGenerator<SiblingSolver, 
-				PartialValidateVisitorTraits<SiblingSolver> > visitor(this, right);
-			left->accept_statement_visitor(&visitor);
-			return visitor.return_result();
+			//StatementVisitorGenerator<SiblingSolver, 
+			//	PartialValidateVisitorTraits<SiblingSolver> > visitor(this, right);
+			//left->accept_statement_visitor(&visitor);
+			//return visitor.return_result();
 
 			//Alternative: Soares please choose which one to take
 			if(left == right){
