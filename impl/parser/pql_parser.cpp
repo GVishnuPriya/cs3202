@@ -410,8 +410,13 @@ PqlTerm* SimplePqlParser::parse_with_term() {
     if(current_token_is<IntegerToken>()) {
         int line = current_token_as<IntegerToken>()->get_value();
         next_token();
-        return new SimplePqlConditionTerm(
-               new SimpleStatementCondition(get_statement(line)));
+        try {
+            SimpleStatementCondition *condition = new SimpleStatementCondition(get_statement(line));
+            return new SimplePqlConditionTerm(condition);
+        } catch(ParseError& e) {
+            return new SimplePqlConditionTerm(new SimpleConstantCondition(line));
+        }
+        
     }
 
     std::string qvar = current_token_as<IdentifierToken>()->get_content();
