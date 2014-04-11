@@ -112,6 +112,14 @@ class SimplePqlSingleVarSelector : public PqlSingleVarSelector {
     std::string get_qvar_name() {
         return _qvar_name;
     }
+    
+    void set_select_type(int select_type) {
+        _select_type = select_type;
+    }
+    
+    int get_select_type() {
+        return _select_type;
+    }
 
     void accept_pql_selector_visitor(PqlSelectorVisitor *visitor) {
         visitor->visit_single_var(this);
@@ -119,6 +127,7 @@ class SimplePqlSingleVarSelector : public PqlSingleVarSelector {
 
   private:
     std::string _qvar_name;
+    int _select_type;
 };
 
 class SimplePqlBooleanSelector : public PqlBooleanSelector {

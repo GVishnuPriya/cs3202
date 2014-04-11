@@ -28,6 +28,13 @@
 #define WITH 1
 #define PATTERN 2
 
+// to denote type of select query (eg. v.varname)
+enum SelectType {
+    StmtNum,
+    VarName,
+    ProcName,
+    Value
+};
 
 namespace simple {
 namespace parser {
@@ -181,10 +188,36 @@ std::shared_ptr<PqlSelector> SimplePqlParser::parse_selector() {
                 IdentifierToken>()->get_content();
 
         next_token(); // eat var name
-        eat_field();
+        
+        SimplePqlSingleVarSelector *selector =  new SimplePqlSingleVarSelector(selected_var);
+        
+        if(!current_token_is<DotToken>()) {
+            selector->set_select_type(StmtNum);
+            return std::shared_ptr<PqlSelector>(selector);
+        }
 
-        return std::shared_ptr<PqlSelector>(
-            new SimplePqlSingleVarSelector(selected_var));
+        next_token(); // eat "."
+
+        std::string field1 = current_token_as_keyword();
+
+        if(field1 == "stmt") {
+            selector->set_select_type(StmtNum);
+            next_token_as<HashToken>();
+            next_token(); // eat #
+        } else if(field1 == "varname") {
+            selector->set_select_type(VarName);
+            next_token(); // eat keyword
+        } else if(field1 == "procname") {
+            selector->set_select_type(ProcName);
+            next_token(); // eat keyword
+        } else if(field1 == "value") {
+            selector->set_select_type(Value);
+            next_token(); // eat keyword
+        } else {
+            throw new ParseError("Invalid field name after dot");
+        }
+
+        return std::shared_ptr<PqlSelector>(selector);
     }
 }
 
