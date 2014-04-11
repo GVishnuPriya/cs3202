@@ -22,6 +22,13 @@
 #include "impl/parser/pql_parser.h"
 #include "simple/util/term_utils.h"
 
+// these definitions are used to keep track of previous clause type
+#define PLACEHOLDER -1
+#define SUCH_THAT 0
+#define WITH 1
+#define PATTERN 2
+
+
 namespace simple {
 namespace parser {
 
@@ -117,26 +124,36 @@ void SimplePqlParser::parse_predicate() {
 void SimplePqlParser::parse_main_query() {
     _query_set.selector = parse_selector();
 
+    int prev_clause_type = PLACEHOLDER;
+    
     while(!(current_token_is<EOFToken>() || 
             current_token_is<SemiColonToken>())) 
     {
         std::string keyword = current_token_as_keyword();
         next_token(); // eat keyword
-
+                
         if(keyword == "such") {
             if(current_token_as_keyword() != "that") {
                 throw ParseError("Expected \"that\" keyword after \"such\".");
             } else {
                 next_token(); // eat "that"
-
                 _query_set.clauses.insert(parse_clause());
+                prev_clause_type = SUCH_THAT;
             }
         } else if(keyword == "and") {
-            _query_set.clauses.insert(parse_clause());
+            if (prev_clause_type == SUCH_THAT) {
+                _query_set.clauses.insert(parse_clause());
+            } else if (prev_clause_type == WITH) {
+                _query_set.clauses.insert(parse_with());
+            } else if (prev_clause_type == PATTERN) {
+                parse_pattern();
+            } 
         } else if(keyword == "with") {
             _query_set.clauses.insert(parse_with());
+            prev_clause_type = WITH;
         } else if(keyword == "pattern") {
             parse_pattern();
+            prev_clause_type = PATTERN;
         } else {
             throw ParseError("Invalid keyword " + keyword);
         }
