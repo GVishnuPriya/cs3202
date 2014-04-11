@@ -287,5 +287,23 @@
     <ClInclude Include="impl\solvers\sibling.h">
       <Filter>Header Files\impl\solvers</Filter>
     </ClInclude>
+    <ClInclude Include="impl\parser\expr_parser.h">
+      <Filter>Header Files\impl\parser</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\parser\iterator_tokenizer.h">
+      <Filter>Header Files\impl\parser</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\parser\parser.h">
+      <Filter>Header Files\impl\parser</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\parser\pql_parser.h">
+      <Filter>Header Files\impl\parser</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\parser\token.h">
+      <Filter>Header Files\impl\parser</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\parser\tokenizer.h">
+      <Filter>Header Files\impl\parser</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -22,6 +22,7 @@
 #include "simple/condition.h"
 #include "simple/solver.h"
 #include "impl/condition.h"
+#include <list>
 
 namespace simple {
 	namespace impl {
@@ -32,9 +33,6 @@ namespace simple {
 		public:
 			SiblingSolver(SimpleRoot ast) : _ast(ast) { }
 
-			/*
-			* SOLVE RIGHT PART
-			*/
 			template <typename Condition>
 			ConditionSet solve_right(Condition *condition) {
 				return ConditionSet();
@@ -57,12 +55,17 @@ namespace simple {
 			void index_while(WhileAst *while_ast);
 			void index_if(IfAst *if_ast);
 			void index_assign(AssignmentAst *assign_ast);
+			void index_expr(ExprAst *expr_ast, int statement_num);
+			void index_variable(VariableAst *variable_ast);
 
 		private:
 			SimpleRoot _ast;
 
-			// map string to set of assign statement for solve-left
-			std::map<std::string, std::string > silbling_index;
+			//Structure of Sibling Table is 
+			//[Statement Number] [Left expression, right expression]
+			std::map<std::string, StatementSet> _sibling_index;
+
+			std::string extract_string_from_expr(ExprAst* expr_ast);
 		};
 		
 		template <>
