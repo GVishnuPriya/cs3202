@@ -105,7 +105,7 @@ TEST(SiblingTest, Test_Procedure) {
 	result.insert(new SimpleProcCondition(proc_third));
 
 	EXPECT_EQ(result, solver.solve_left<ProcAst>(proc_first));
-	//EXPECT_EQ(result, solver.solve_right<ProcAst>(proc_first));
+	EXPECT_EQ(result, solver.solve_right<ProcAst>(proc_first));
 
 	////Middle
 	result.clear();
@@ -113,7 +113,7 @@ TEST(SiblingTest, Test_Procedure) {
 	result.insert(new SimpleProcCondition(proc_third));
 
 	EXPECT_EQ(result, solver.solve_left<ProcAst>(proc_second));
-	//EXPECT_EQ(result, solver.solve_right<ProcAst>(proc_second));
+	EXPECT_EQ(result, solver.solve_right<ProcAst>(proc_second));
 
 	//Right side
 	result.clear();
@@ -121,12 +121,12 @@ TEST(SiblingTest, Test_Procedure) {
 	result.insert(new SimpleProcCondition(proc_second));
 	
 	EXPECT_EQ(result, solver.solve_left<ProcAst>(proc_third));
-	//EXPECT_EQ(result, solver.solve_right<ProcAst>(proc_third));
+	EXPECT_EQ(result, solver.solve_right<ProcAst>(proc_third));
 
 	//External procedure
 	result.clear();
 	EXPECT_EQ(result, solver.solve_left<ProcAst>(proc_wrong));
-	//EXPECT_EQ(result, solver.solve_right<ProcAst>(proc_wrong));
+	EXPECT_EQ(result, solver.solve_right<ProcAst>(proc_wrong));
 }
 
 TEST(SiblingTest, Test_Assignment) {

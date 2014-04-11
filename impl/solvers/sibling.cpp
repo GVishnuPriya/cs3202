@@ -250,5 +250,11 @@ namespace simple {
 			return proc_set_to_condition_set(_sibling_proc_index[proc]);
 		}
 
+		template<>
+		ConditionSet SiblingSolver::solve_right<ProcAst>(ProcAst *proc)
+		{
+			return proc_set_to_condition_set(_sibling_proc_index[proc]);
+		}
+
 	}
 }
