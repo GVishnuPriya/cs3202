@@ -33,7 +33,8 @@ enum SelectType {
     StmtNum,
     VarName,
     ProcName,
-    Value
+    Value,
+    Default
 };
 
 namespace simple {
@@ -192,7 +193,7 @@ std::shared_ptr<PqlSelector> SimplePqlParser::parse_selector() {
         SimplePqlSingleVarSelector *selector =  new SimplePqlSingleVarSelector(selected_var);
         
         if(!current_token_is<DotToken>()) {
-            selector->set_select_type(StmtNum);
+            selector->set_select_type(Default);
             return std::shared_ptr<PqlSelector>(selector);
         }
 

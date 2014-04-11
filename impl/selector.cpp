@@ -30,7 +30,8 @@ enum SelectType {
     StmtNum,
     VarName,
     ProcName,
-    Value
+    Value,
+    Default
 };
 
 template <typename Selector>
@@ -92,9 +93,9 @@ std::vector<std::string> format_selector<PqlSingleVarSelector>(
         switch(var_selector->get_select_type())
         {
             case StmtNum:
-                result.push_back(condition_to_string(*it));
-                break;
             case VarName:
+            case Value:
+            case Default:
                 result.push_back(condition_to_string(*it));
                 break;
             case ProcName:
@@ -108,9 +109,6 @@ std::vector<std::string> format_selector<PqlSingleVarSelector>(
                     } 
                     
                 }
-                break;
-            case Value:
-                result.push_back(condition_to_string(*it));
                 break;
             default:
                 break;
