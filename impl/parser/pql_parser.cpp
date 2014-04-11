@@ -333,13 +333,23 @@ std::pair<PqlTerm*, bool> SimplePqlParser::parse_pattern_term() {
     if(current_token_is<CloseBracketToken>()) {
         return std::make_pair(new SimplePqlWildcardTerm(), false);
     }
-
+    
+    if (current_token_is<CommaToken>()) {
+         next_token();
+    
+        current_token_as<WildCardToken>();
+        next_token(); // eat "_"
+    
+        return std::make_pair(new SimplePqlWildcardTerm(), false);
+    }
+    
     PqlTerm* term = parse_expr_term();
-
+    
     current_token_as<WildCardToken>();
     next_token(); // eat "_"
 
     return std::make_pair(term, true);
+   
 }
 
 void SimplePqlParser::parse_pattern() {
@@ -360,7 +370,13 @@ void SimplePqlParser::parse_pattern() {
 
     current_token_as<CloseBracketToken>();
     next_token();
-
+    
+    PqlVariableTerm *cast_term1;
+    cast_term1 = static_cast<SimplePqlVariableTerm*>(term1);
+    
+    std::string qvar = cast_term1->get_query_variable();
+    std::shared_ptr<SimplePredicate> pred = _query_set.predicates[qvar];
+    
     PqlTermType type2 = get_term_type(term2);
     PqlTermType type3 = get_term_type(term3);
 
@@ -371,15 +387,18 @@ void SimplePqlParser::parse_pattern() {
 
     ClausePtr expr_clause(new SimplePqlClause(expr_solver, term1, term3));
     ClausePtr uses_clause(new SimplePqlClause(uses_solver, clone_term(term1), term2));
-
-    if(type2 == WildcardTT) {
-        _query_set.clauses.insert(expr_clause);
-    } else if(type3 == WildcardTT) {
-        _query_set.clauses.insert(uses_clause);
-    } else {
-        _query_set.clauses.insert(expr_clause);
+    
+    if (pred == get_predicate("assign")) {
+        if(type2 != WildcardTT) {
+            _query_set.clauses.insert(uses_clause);
+        } 
+        if(type3 != WildcardTT) {
+            _query_set.clauses.insert(expr_clause);
+        } 
+    } else if (pred == get_predicate("if") || pred == get_predicate("while")) {
         _query_set.clauses.insert(uses_clause);
     }
+    
 }
 
 void SimplePqlParser::eat_field() {
