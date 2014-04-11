@@ -18,6 +18,9 @@
 
 #include <utility>
 #include <algorithm>
+#include <functional> 
+#include <cctype>
+#include <locale>
 #include "impl/ast.h"
 #include "impl/parser/pql_parser.h"
 #include "simple/util/term_utils.h"
@@ -257,8 +260,8 @@ ClausePtr SimplePqlParser::parse_clause() {
 
 PqlTerm* SimplePqlParser::parse_term() {
     if(current_token_is<LiteralToken>()) {
-        ConditionPtr condition = parse_condition(
-                current_token_as<LiteralToken>()->get_content());
+        ConditionPtr condition = parse_condition(string_trim(
+                current_token_as<LiteralToken>()->get_content()));
         next_token();
         return new SimplePqlConditionTerm(condition);
 
@@ -294,7 +297,7 @@ ConditionPtr SimplePqlParser::parse_condition(const std::string& name) {
 
 PqlTerm* SimplePqlParser::parse_expr_term() {
     if(current_token_is<LiteralToken>()) {
-        std::string expr_string = current_token_as<LiteralToken>()->get_content();
+        std::string expr_string = string_trim(current_token_as<LiteralToken>()->get_content());
         next_token();
 
         std::shared_ptr<SimpleTokenizer> tokenizer(
@@ -398,8 +401,8 @@ void SimplePqlParser::eat_field() {
 
 PqlTerm* SimplePqlParser::parse_with_term() {
     if(current_token_is<LiteralToken>()) {
-        ConditionPtr condition = parse_condition(
-                current_token_as<LiteralToken>()->get_content());
+        ConditionPtr condition = parse_condition(string_trim(
+                current_token_as<LiteralToken>()->get_content()));
         next_token();
         return new SimplePqlConditionTerm(condition);
     } 
@@ -519,5 +522,13 @@ StatementAst* SimplePqlParser::get_statement(int line) {
     return _line_table[line];
 }
 
+std::string SimplePqlParser::string_trim(std::string str) {
+    std::string s = str;
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
+    s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+    return s;
+}
+    
+    
 }
 }

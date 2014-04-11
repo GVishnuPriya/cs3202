@@ -102,6 +102,8 @@ class SimplePqlParser {
     PredicatePtr get_predicate(const std::string& name);
 
     StatementAst* get_statement(int line);
+    
+    std::string string_trim(std::string str);
 
   private:
     std::shared_ptr<SimpleTokenizer> _tokenizer;
