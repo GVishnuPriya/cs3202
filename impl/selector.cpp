@@ -70,7 +70,7 @@ std::vector<std::string> format_selector<PqlSingleVarSelector>(
                 return result;
             break;
         case VarName:
-            if(pred->get_predicate_name() != "var")
+            if(pred->get_predicate_name() != "variable")
                 return result;
             break;
         case ProcName:
@@ -79,7 +79,7 @@ std::vector<std::string> format_selector<PqlSingleVarSelector>(
                 return result;
             break;            
         case Value:
-            if(pred->get_predicate_name() != "const")
+            if(pred->get_predicate_name() != "constant")
                 return result;
             break;
         default:
