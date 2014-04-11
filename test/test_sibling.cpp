@@ -93,8 +93,40 @@ TEST(SiblingTest, Test_Procedure) {
 	EXPECT_FALSE((solver.validate<AssignmentAst, ProcAst>(assign,
 		proc_second)));	
 
-	//Solve left
+	/*
+	 * Solve left and right
+	 * Since solve left and solve right is symmetric, the test case and result is the same 
+	 */
+	ConditionSet result;
 
+	//Left side
+	result.clear();
+	result.insert(new SimpleProcCondition(proc_second));
+	result.insert(new SimpleProcCondition(proc_third));
+
+	EXPECT_EQ(result, solver.solve_left<ProcAst>(proc_first));
+	//EXPECT_EQ(result, solver.solve_right<ProcAst>(proc_first));
+
+	////Middle
+	result.clear();
+	result.insert(new SimpleProcCondition(proc_first));
+	result.insert(new SimpleProcCondition(proc_third));
+
+	EXPECT_EQ(result, solver.solve_left<ProcAst>(proc_second));
+	//EXPECT_EQ(result, solver.solve_right<ProcAst>(proc_second));
+
+	//Right side
+	result.clear();
+	result.insert(new SimpleProcCondition(proc_first));
+	result.insert(new SimpleProcCondition(proc_second));
+	
+	EXPECT_EQ(result, solver.solve_left<ProcAst>(proc_third));
+	//EXPECT_EQ(result, solver.solve_right<ProcAst>(proc_third));
+
+	//External procedure
+	result.clear();
+	EXPECT_EQ(result, solver.solve_left<ProcAst>(proc_wrong));
+	//EXPECT_EQ(result, solver.solve_right<ProcAst>(proc_wrong));
 }
 
 TEST(SiblingTest, Test_Assignment) {

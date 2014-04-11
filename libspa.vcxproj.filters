@@ -40,6 +40,9 @@
     <Filter Include="Header Files\simple">
       <UniqueIdentifier>{27f20606-44c9-4800-97b4-5a22e8d653f3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\simple\utils">
+      <UniqueIdentifier>{8ef9d9aa-a37d-40dc-90d7-b1dd9ea4758f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="simple\ast.cpp">
@@ -304,6 +307,39 @@
     </ClInclude>
     <ClInclude Include="impl\parser\tokenizer.h">
       <Filter>Header Files\impl\parser</Filter>
+    </ClInclude>
+    <ClInclude Include="simple\util\ast_utils.h">
+      <Filter>Header Files\simple\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="simple\util\condition_utils.h">
+      <Filter>Header Files\simple\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="simple\util\condition_visitor_generator.h">
+      <Filter>Header Files\simple\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="simple\util\expr_util.h">
+      <Filter>Header Files\simple\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="simple\util\expr_visitor_generator.h">
+      <Filter>Header Files\simple\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="simple\util\query_utils.h">
+      <Filter>Header Files\simple\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="simple\util\set_convert.h">
+      <Filter>Header Files\simple\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="simple\util\set_utils.h">
+      <Filter>Header Files\simple\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="simple\util\solver_generator.h">
+      <Filter>Header Files\simple\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="simple\util\statement_visitor_generator.h">
+      <Filter>Header Files\simple\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="simple\util\term_utils.h">
+      <Filter>Header Files\simple\utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

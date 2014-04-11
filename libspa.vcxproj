@@ -100,6 +100,17 @@
     <ClInclude Include="simple\spa.h" />
     <ClInclude Include="simple\tuple.h" />
     <ClInclude Include="simple\types.h" />
+    <ClInclude Include="simple\util\ast_utils.h" />
+    <ClInclude Include="simple\util\condition_utils.h" />
+    <ClInclude Include="simple\util\condition_visitor_generator.h" />
+    <ClInclude Include="simple\util\expr_util.h" />
+    <ClInclude Include="simple\util\expr_visitor_generator.h" />
+    <ClInclude Include="simple\util\query_utils.h" />
+    <ClInclude Include="simple\util\set_convert.h" />
+    <ClInclude Include="simple\util\set_utils.h" />
+    <ClInclude Include="simple\util\solver_generator.h" />
+    <ClInclude Include="simple\util\statement_visitor_generator.h" />
+    <ClInclude Include="simple\util\term_utils.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{6BDBA65E-9DC1-4D00-932B-B329F191900E}</ProjectGuid>

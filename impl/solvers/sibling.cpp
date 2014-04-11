@@ -29,11 +29,19 @@ namespace simple {
 		using namespace std;
 
 		SiblingSolver::SiblingSolver(SimpleRoot ast) : _ast(ast) {
+			ProcSet proc_set;
+
 			for (auto it = _ast.begin(); it!= _ast.end(); ++it) {
+				proc_set.insert(*it);
 				index_proc(*it);
 			}
-		}
 
+			for(auto it = proc_set.begin(); it!=proc_set.end(); ++it){
+				ProcSet proc_sibling_set = proc_set;
+				proc_sibling_set.erase(*it);
+				_sibling_proc_index[*it] = proc_sibling_set;
+			}
+		}
 
 		template <>
 		bool SiblingSolver::validate<StatementAst, StatementAst>(
@@ -234,6 +242,12 @@ namespace simple {
 			}
 
 			return expr_string;
+		}
+
+		template<>
+		ConditionSet SiblingSolver::solve_left<ProcAst>(ProcAst *proc)
+		{
+			return proc_set_to_condition_set(_sibling_proc_index[proc]);
 		}
 
 	}

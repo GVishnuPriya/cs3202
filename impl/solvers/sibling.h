@@ -62,11 +62,18 @@ namespace simple {
 		private:
 			SimpleRoot _ast;
 
-			//Structure of Sibling Table is 
-			//[Statement Number] [Left expression, right expression]
 			std::map<std::string, std::set<std::string>> _sibling_index;
 
+			std::map<ProcAst*, ProcSet> _sibling_proc_index;
+			std::map<StatementAst*, StatementSet> _sibling_statement_index;
+			std::map<ExprAst*, ExprSet> _sibling_expression_index;
+
 			std::string extract_string_from_expr(ExprAst* expr_ast);
+
+			template <typename Condition>
+			ConditionSet solve(Condition *condition) {
+				return ConditionSet();
+			}
 		};
 		
 		template <>
