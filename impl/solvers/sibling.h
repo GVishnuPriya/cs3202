@@ -55,7 +55,7 @@ namespace simple {
 			void index_while(WhileAst *while_ast);
 			void index_if(IfAst *if_ast);
 			void index_assign(AssignmentAst *assign_ast);
-			void index_expr(ExprAst *expr_ast, int statement_num);
+			void index_expr(ExprAst *expr_ast);
 			void index_variable(VariableAst *variable_ast);
 
 		private:
@@ -63,7 +63,7 @@ namespace simple {
 
 			//Structure of Sibling Table is 
 			//[Statement Number] [Left expression, right expression]
-			std::map<std::string, StatementSet> _sibling_index;
+			std::map<std::string, std::set<std::string>> _sibling_index;
 
 			std::string extract_string_from_expr(ExprAst* expr_ast);
 		};

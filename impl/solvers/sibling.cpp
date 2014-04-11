@@ -81,20 +81,28 @@ namespace simple {
 				if(left == right){
 					return false;
 				}
-
-				ExprAst *expr_ast = left;
+				else if(_sibling_index[extract_string_from_expr(left)].count(
+					extract_string_from_expr(right)) > 0)
+				{
+					return true;
+				}
+				else 
+				{
+					return false;
+				}
 		}
 
 		template<>
 		bool SiblingSolver::validate<VariableAst, ExprAst>(VariableAst *left,
 			ExprAst *right){
-				return false;
-
+				return validate(left, right);
 		}
 
 		template<>
 		bool SiblingSolver::validate<ExprAst, VariableAst>(ExprAst *left, 
-			VariableAst *right);
+			VariableAst *right){
+				return validate(left, right);
+		}
 
 		void SiblingSolver::index_proc(ProcAst *proc) {
 			index_statement_list(proc->get_statement());
@@ -139,7 +147,7 @@ namespace simple {
 		void SiblingSolver::index_assign(AssignmentAst *assign_ast) 
 		{
 			SimpleVariable* variable = assign_ast->get_variable();
-			
+
 			int statement_number = assign_ast->get_statement_line();
 
 			string variable_name = variable->get_name();
@@ -147,13 +155,29 @@ namespace simple {
 			ExprAst *expr_ast = assign_ast->get_expr();
 			string expr_string = extract_string_from_expr(expr_ast);
 
-			
+			_sibling_index[variable_name].insert(expr_string);
+			_sibling_index[expr_string].insert(variable_name);
+
+			index_expr(expr_ast);
 		}
 
-		void SiblingSolver::index_expr(ExprAst* expr_ast, int statement_num) 
+		void SiblingSolver::index_expr(ExprAst* expr_ast) 
 		{
 			if(get_expr_type(expr_ast) == BinaryOpET){
+				BinaryOpAst *binary_ops_ast = expr_cast<BinaryOpAst>(
+					expr_ast);
 
+				ExprAst *left_expr = binary_ops_ast->get_lhs();
+				ExprAst *right_expr = binary_ops_ast->get_rhs();
+
+				string left_expr_string = extract_string_from_expr(left_expr);
+				string right_expr_string = extract_string_from_expr(right_expr);
+
+				_sibling_index[left_expr_string].insert(right_expr_string);
+				_sibling_index[right_expr_string].insert(left_expr_string);
+
+				index_expr(left_expr);
+				index_expr(right_expr);
 			}
 		}
 
@@ -168,7 +192,7 @@ namespace simple {
 				{
 					ConstAst *constant_ast = expr_cast<ConstAst>(expr_ast);
 					int constant_value = constant_ast->get_value();
-					
+
 					expr_string = to_string(static_cast<long long>(
 						constant_value));
 
@@ -189,7 +213,7 @@ namespace simple {
 				{
 					BinaryOpAst *binary_ops_ast = expr_cast<BinaryOpAst>(
 						expr_ast);
-					
+
 					expr_string = binary_ops_ast->get_op();
 					break;
 				}
