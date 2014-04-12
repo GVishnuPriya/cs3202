@@ -67,6 +67,7 @@ namespace simple {
 			std::map<ProcAst*, ProcSet> _sibling_proc_index;
 			std::map<StatementAst*, StatementSet> _sibling_statement_index;
 			std::map<ExprAst*, ExprSet> _sibling_expression_index;
+			std::map<VariableAst*, StatementSet> _sibling_container_index;
 
 			std::string extract_string_from_expr(ExprAst* expr_ast);
 
@@ -75,11 +76,10 @@ namespace simple {
 				return ConditionSet();
 			}
 		};
-		
-		template <>
-		ConditionSet SiblingSolver::solve_left<StatementAst>(
-			StatementAst *ast);
 
+		/*
+		 * Solve left
+		 */
 		template<>
 		ConditionSet SiblingSolver::solve_left<ProcAst>(ProcAst *proc);
 
@@ -88,6 +88,21 @@ namespace simple {
 			StatementAst *statement);
 
 		template<>
+		ConditionSet SiblingSolver::solve_left<ContainerAst>(
+			ContainerAst *container);
+
+		template<>
+		ConditionSet SiblingSolver::solve_left<VariableAst>(
+			VariableAst *variable);
+
+		template<>
+		ConditionSet SiblingSolver::solve_left<ExprAst>(
+			ExprAst *expr);
+
+		/*
+		 * Solve right
+		 */
+		template<>
 		ConditionSet SiblingSolver::solve_right<ProcAst>(ProcAst *proc);
 
 		template <>
@@ -95,8 +110,19 @@ namespace simple {
 			StatementAst *statement);
 
 		template<>
+		ConditionSet SiblingSolver::solve_right<ContainerAst>(
+			ContainerAst *container);
+
+		template<>
+		ConditionSet SiblingSolver::solve_right<VariableAst>(
+			VariableAst *variable);
+
+		template<>
 		ConditionSet SiblingSolver::solve_right<ExprAst>(ExprAst *expr);
 
+		/*
+		 * Solve right
+		 */
 		template <>
 		bool SiblingSolver::validate<StatementAst, StatementAst>(
 			StatementAst *left, StatementAst *right);

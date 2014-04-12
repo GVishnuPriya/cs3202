@@ -105,7 +105,7 @@ TEST(SiblingTest, Test_Procedure) {
 	result.insert(new SimpleProcCondition(proc_third));
 
 	EXPECT_EQ(result, solver.solve_left<ProcAst>(proc_first));
-	//EXPECT_EQ(result, solver.solve_right<ProcAst>(proc_first));
+	EXPECT_EQ(result, solver.solve_right<ProcAst>(proc_first));
 
 	////Middle
 	result.clear();
@@ -113,7 +113,7 @@ TEST(SiblingTest, Test_Procedure) {
 	result.insert(new SimpleProcCondition(proc_third));
 
 	EXPECT_EQ(result, solver.solve_left<ProcAst>(proc_second));
-	//EXPECT_EQ(result, solver.solve_right<ProcAst>(proc_second));
+	EXPECT_EQ(result, solver.solve_right<ProcAst>(proc_second));
 
 	//Right side
 	result.clear();
@@ -121,12 +121,12 @@ TEST(SiblingTest, Test_Procedure) {
 	result.insert(new SimpleProcCondition(proc_second));
 	
 	EXPECT_EQ(result, solver.solve_left<ProcAst>(proc_third));
-	//EXPECT_EQ(result, solver.solve_right<ProcAst>(proc_third));
+	EXPECT_EQ(result, solver.solve_right<ProcAst>(proc_third));
 
 	//External procedure
 	result.clear();
 	EXPECT_EQ(result, solver.solve_left<ProcAst>(proc_wrong));
-	//EXPECT_EQ(result, solver.solve_right<ProcAst>(proc_wrong));
+	EXPECT_EQ(result, solver.solve_right<ProcAst>(proc_wrong));
 }
 
 TEST(SiblingTest, Test_Assignment) {
@@ -137,6 +137,7 @@ TEST(SiblingTest, Test_Assignment) {
 	 * }
 	 * procedure second {
 	 *  x = 0;
+	 *  z = 3;
 	 *  i = 5;
 	 * }
 	 */
@@ -178,17 +179,27 @@ TEST(SiblingTest, Test_Assignment) {
 
 	proc_second->set_first_statement(assign3);
 
-	//i = 5
+	//z = 3
 	SimpleAssignmentAst *assign4 = new SimpleAssignmentAst();
-	SimpleVariable varI("i");
-	SimpleConstant const5(5);
 
-	assign4->set_variable(varI);
-	assign4->set_expr(new SimpleConstAst(5));
+	assign4->set_variable(varZ);
+	assign4->set_expr(new SimpleConstAst(4));
     assign4->set_line(4);
     assign4->set_proc(proc_second);
 
 	set_next(assign3, assign4);
+
+	//i = 5
+	SimpleAssignmentAst *assign5 = new SimpleAssignmentAst();
+	SimpleVariable varI("i");
+	SimpleConstant const5(5);
+
+	assign5->set_variable(varI);
+	assign5->set_expr(new SimpleConstAst(5));
+    assign5->set_line(5);
+    assign5->set_proc(proc_second);
+
+	set_next(assign4, assign5);
 
 	std::vector<ProcAst*> procs;
     procs.push_back(proc_first);
@@ -209,6 +220,39 @@ TEST(SiblingTest, Test_Assignment) {
 	 */
 	EXPECT_FALSE((solver.validate<StatementAst, StatementAst>(assign1, assign3)));	//Not inside the same procedure
 	EXPECT_FALSE((solver.validate<StatementAst, StatementAst>(assign4, assign2)));	//Directly right sibling
+
+	/*
+	 * Solve left and right
+	 * Since solve left and solve right is symmetric, the test case and result is the same 
+	 */
+	ConditionSet result;
+
+	//Left
+	result.clear();
+	result.insert(new SimpleStatementCondition(assign2));
+	EXPECT_EQ(result, solver.solve_left<StatementAst>(assign1));
+
+	//Right
+	result.clear();
+	result.insert(new SimpleStatementCondition(assign1));
+	EXPECT_EQ(result, solver.solve_left<StatementAst>(assign2));
+
+	//Middle
+	result.clear();
+	result.insert(new SimpleStatementCondition(assign3));
+	result.insert(new SimpleStatementCondition(assign5));
+	EXPECT_EQ(result, solver.solve_left<StatementAst>(assign4));
+
+
+	//Verify that it is not inter-procedure
+	result.clear();
+	result.insert(new SimpleStatementCondition(assign1));
+	result.insert(new SimpleStatementCondition(assign2));
+	result.insert(new SimpleStatementCondition(assign3));
+	EXPECT_NE(result, solver.solve_left<StatementAst>(assign4));
+}
+
+TEST(SiblingTest, Test_Assignment) {
 }
 
 TEST(SiblingTest, Test_Expression) {
