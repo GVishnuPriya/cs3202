@@ -142,5 +142,5 @@ namespace simple {
 		template<>
 		bool SiblingSolver::validate<ExprAst, VariableAst>(ExprAst *left, 
 			VariableAst *right);
-	} // namespace impl
+} // namespace impl
 } // namespace simple

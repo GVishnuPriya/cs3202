@@ -252,9 +252,6 @@ TEST(SiblingTest, Test_Assignment) {
 	EXPECT_NE(result, solver.solve_left<StatementAst>(assign4));
 }
 
-TEST(SiblingTest, Test_Assignment) {
-}
-
 TEST(SiblingTest, Test_Expression) {
 	/*
 	 * procedure first{
