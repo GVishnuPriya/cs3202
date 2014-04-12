@@ -8,7 +8,7 @@ namespace simple {
 
 typedef std::stack<CallAst*> CallStack;
 
-typedef std::pair<StatementAst*, CallStack> StackedStatement;
+typedef std::pair<StatementAst*, const CallStack> StackedStatement;
 
 typedef std::set<StackedStatement> StackedStatementSet;
 

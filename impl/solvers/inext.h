@@ -20,6 +20,7 @@
 
 #include <map>
 #include "simple/solver.h"
+#include "simple/next.h"
 #include "simple/condition_set.h"
 #include "simple/ast.h"
 
@@ -28,13 +29,22 @@ namespace impl {
 
 using namespace simple;
 
-class INextSolver {
+class INextSolver : public NextQuerySolver {
   public:
     typedef std::map<StatementAst*, StatementSet>  INextTable;
 
-    INextSolver(SimpleRoot ast, std::shared_ptr<NextQuerySolver> solver) :
+    INextSolver(SimpleRoot ast, std::shared_ptr<NextBipQuerySolver> solver) :
         _ast(ast), _next_solver(solver)
     { }
+
+    StatementSet solve_next_statement(StatementAst *statement);
+    StatementSet solve_prev_statement(StatementAst *statement);
+
+    StackedStatementSet solve_inext(
+        StatementAst *statement, CallStack callstack);
+
+    StackedStatementSet solve_iprev(
+        StatementAst *statement, CallStack callstack);
 
     template <typename Condition>
     ConditionSet solve_right(Condition *condition) {
@@ -51,14 +61,14 @@ class INextSolver {
         return false;
     }
 
-    void solve_inext(StatementAst *statement, StatementSet& results);
-    void solve_iprev(StatementAst *statement, StatementSet& results);
-
   private:
     SimpleRoot _ast;
-    std::shared_ptr<NextQuerySolver> _next_solver;
+    std::shared_ptr<NextBipQuerySolver> _next_solver;
+
     INextTable _inext_cache;
     INextTable _iprev_cache;
+
+    StackedStatementSet _visit_cache;
 };
 
 template <>
