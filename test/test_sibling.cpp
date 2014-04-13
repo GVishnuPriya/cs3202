@@ -331,7 +331,8 @@ TEST(SiblingTest, Test_If){
 	 */
 	EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(assign2, if_)));	//Directly right sibling
 	EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(assign1, if_)));	//Indirectly right sibling
-	//EXPECT_TRUE((solver.validate<VariableAst, StatementAst>(varX, if_then_assign)));	//if inside 
+	//EXPECT_TRUE((solver.validate<VariableAst, StatementAst>(new SimpleVariableAst(varX), if_then_assign)));	//if inside 
+	//EXPECT_TRUE((solver.validate<StatementAst, VariableAst>(if_then_assign, new SimpleVariableAst(varX))));	//if inside 
 
 	/*
 	 * Negative testing
@@ -345,30 +346,152 @@ TEST(SiblingTest, Test_If){
 	 */
 	ConditionSet result;
 
-	//Left
-	//result.clear();
-	//result.insert(new SimpleStatementCondition(assign2));
-	//EXPECT_EQ(result, solver.solve_left<StatementAst>(assign1));
+	//1st level Left
+	result.clear();
+	result.insert(new SimpleStatementCondition(assign2));
+	result.insert(new SimpleStatementCondition(if_));
+	result.insert(new SimpleStatementCondition(assign3));
+	EXPECT_EQ(result, solver.solve_left<StatementAst>(assign1));
+	EXPECT_EQ(result, solver.solve_right<StatementAst>(assign1));
 
-	////Right
-	//result.clear();
-	//result.insert(new SimpleStatementCondition(assign1));
-	//EXPECT_EQ(result, solver.solve_left<StatementAst>(assign2));
+	//1st level Middle
+	result.clear();
+	result.insert(new SimpleStatementCondition(assign1));
+	result.insert(new SimpleStatementCondition(assign2));
+	result.insert(new SimpleStatementCondition(assign3));
+	EXPECT_EQ(result, solver.solve_left<StatementAst>(if_));
+	EXPECT_EQ(result, solver.solve_right<StatementAst>(if_));
 
-	////Middle
-	//result.clear();
-	//result.insert(new SimpleStatementCondition(assign3));
-	//result.insert(new SimpleStatementCondition(assign5));
-	//EXPECT_EQ(result, solver.solve_left<StatementAst>(assign4));
+	//1st level right
+	result.clear();
+	result.insert(new SimpleStatementCondition(assign1));
+	result.insert(new SimpleStatementCondition(assign2));
+	result.insert(new SimpleStatementCondition(if_));
+	EXPECT_EQ(result, solver.solve_left<StatementAst>(assign3));
+	EXPECT_EQ(result, solver.solve_right<StatementAst>(assign3));
+
+	//Variable inside if
+	result.clear();
+	result.insert(new SimpleVariableCondition(varX));
+	//EXPECT_EQ(result, solver.solve_left<ContainerAst>(if_));
 
 
-	////Verify that it is not inter-procedure
-	//result.clear();
-	//result.insert(new SimpleStatementCondition(assign1));
-	//result.insert(new SimpleStatementCondition(assign2));
-	//result.insert(new SimpleStatementCondition(assign3));
-	//EXPECT_NE(result, solver.solve_left<StatementAst>(assign4));
 }
+
+TEST(SiblingTest, Test_If_Isolated){
+	/*
+	* procedure second{
+	*	if x then {
+	*		x = 1;}
+	*	else{
+	*		z = 1;}}
+	*/
+
+	SimpleProcAst *proc_second = new SimpleProcAst("second");
+
+	// if x 
+	SimpleIfAst *if_ = new SimpleIfAst();
+	SimpleVariable varX("x");
+	if_->set_variable(varX);
+	if_->set_line(1);
+	
+	proc_second->set_first_statement(if_);
+
+	// then { x = 1; }
+	SimpleAssignmentAst *if_then_assign = new SimpleAssignmentAst();
+	if_then_assign->set_variable(varX);
+
+	if_then_assign->set_expr(new SimpleConstAst(1));
+
+    if_then_assign->set_line(2);
+    if_then_assign->set_proc(proc_second);
+	if_->set_then_branch(if_then_assign);
+
+	// else {z = 1; }
+	SimpleAssignmentAst *if_else_assign = new SimpleAssignmentAst();
+	SimpleVariable varZ("z");
+	if_else_assign->set_variable(varZ);
+	if_else_assign->set_expr(new SimpleConstAst(1));
+
+    if_else_assign->set_line(3);
+    if_else_assign->set_proc(proc_second);
+	if_->set_else_branch(if_else_assign);
+
+	//Solver
+	SimpleRoot root(proc_second);
+	SiblingSolver solver(root);
+
+	/*
+	 * Positive testing
+	 */
+	EXPECT_TRUE((solver.validate<VariableAst, StatementAst>(new SimpleVariableAst(varX), if_then_assign)));	//if inside 
+	EXPECT_TRUE((solver.validate<StatementAst, VariableAst>(if_then_assign, new SimpleVariableAst(varX))));	//if inside 
+
+	//Variable inside if
+	ConditionSet result;
+
+	result.clear();
+	result.insert(new SimpleVariableCondition(varX));
+	EXPECT_EQ(result, solver.solve_left<ContainerAst>(if_));
+}
+
+TEST(SiblingTest, Test_While){
+	/*
+	* procedure first{
+	*	x = x;
+	*	while x{
+	*		x = 0;}
+	*	i = 0;
+	*/
+
+	SimpleProcAst *proc_first = new SimpleProcAst("first");
+
+	// x = x
+	SimpleVariable varX("x");
+	SimpleAssignmentAst *assign1 = new SimpleAssignmentAst(1);
+	assign1->set_variable(varX);
+	assign1->set_expr(new SimpleVariableAst(varX));
+
+	proc_first->set_first_statement(assign1);
+
+	//while x
+	SimpleWhileAst *while_ = new SimpleWhileAst();
+	while_->set_variable(varX);
+	while_->set_statement_line(2);
+
+	set_next(assign1, while_);
+
+	//x = 0;
+	SimpleAssignmentAst *while_assign = new SimpleAssignmentAst(3);
+	while_assign->set_variable(varX);
+	while_assign->set_expr(new SimpleConstAst(0));
+	
+	while_->set_body(while_assign);
+
+	//i = 0
+	SimpleAssignmentAst *assign2 = new SimpleAssignmentAst(4);
+	SimpleVariable varI("i");
+	assign2->set_variable(varI);
+	assign2->set_expr(new SimpleConstAst(0));
+
+	set_next(while_, assign2);
+
+	//Solver
+	SimpleRoot root(proc_first);
+	SiblingSolver solver(root);
+
+	
+	/*
+	 * Positive testing
+	 */
+	EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(assign1, while_)));	//Left of while
+	EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(assign2, while_)));	//Right of while (reverse testing)
+	EXPECT_TRUE((solver.validate<VariableAst, StatementAst>(new SimpleVariableAst(varX), while_)));
+	EXPECT_TRUE((solver.validate<StatementAst, VariableAst>(while_, new SimpleVariableAst(varX))));
+
+	
+}
+
 TEST(SiblingTest, Test_Expression) {
 	/*
 	 * procedure first{
@@ -491,6 +614,48 @@ TEST(SiblingTest, Test_Expression) {
 	EXPECT_FALSE((solver.validate<ExprAst, ExprAst>(new SimpleVariableAst(varA), new SimpleVariableAst(varG))));
 
 	EXPECT_FALSE((solver.validate<ExprAst, ExprAst>(new SimpleConstAst(7), new SimpleConstAst(2))));
+
+	/*
+	 * Solve left and right
+	 * Since solve left and solve right is symmetric, the test case and result is the same 
+	 */
+	ConditionSet result;
+
+	//1st Level
+	result.clear();
+	result.insert(new SimpleVariableCondition(varX));
+
+	//EXPECT_EQ(result, solver.solve_left<ExprAst>(plus));
+
+	//4th Level
+	result.clear();
+	SimpleConstant result_constant7(7);
+	result.insert(new SimpleConstantCondition(result_constant7));
+
+	EXPECT_EQ(result, solver.solve_left<ExprAst>(new SimpleVariableAst(varG)));
+	//EXPECT_EQ(result, solver.solve_right<ExprAst>(new SimpleVariableAst(varG)));
+
+	result.clear();
+	result.insert(new SimpleVariableCondition(varG));
+
+	EXPECT_EQ(result, solver.solve_left<ExprAst>(new SimpleConstAst(7)));
+
+	result.clear();
+	SimpleConstant result_constant2(2);
+	result.insert(new SimpleConstantCondition(result_constant2));
+
+	EXPECT_EQ(result, solver.solve_left<ExprAst>(times));
+
+	//5th Level
+	result.clear();
+	result.insert(new SimpleVariableCondition(varY));
+
+	EXPECT_EQ(result, solver.solve_left<ExprAst>(new SimpleVariableAst(varA)));
+
+	result.clear();
+	result.insert(new SimpleVariableCondition(varA));
+
+	EXPECT_EQ(result, solver.solve_left<ExprAst>(new SimpleVariableAst(varY)));
 }
 }
 }

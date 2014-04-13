@@ -65,16 +65,13 @@ namespace simple {
 			std::map<std::string, std::set<std::string>> _sibling_index;
 
 			std::map<ProcAst*, ProcSet> _sibling_proc_index;
-			std::map<StatementAst*, StatementSet> _sibling_statement_index;
+			//Statement statement also contain statement list <then,else> for if container
+			std::map<StatementAst*, StatementSet> _sibling_statement_index;	
 			std::map<ExprAst*, ExprSet> _sibling_expression_index;
 			std::map<VariableAst*, StatementSet> _sibling_container_index;
+			std::map<StatementAst*, ExprSet> _sibling_container_inverse_index;
 
 			std::string extract_string_from_expr(ExprAst* expr_ast);
-
-	template <typename Condition>
-			ConditionSet solve(Condition *condition) {
-				return ConditionSet();
-			}
 		};
 
 /*
@@ -88,8 +85,8 @@ template <>
  	StatementAst *statement);
 
 template<>
- ConditionSet SiblingSolver::solve_left<ContainerAst>(
- 	ContainerAst *container);
+ConditionSet SiblingSolver::solve_left<ContainerAst>(
+	ContainerAst *container);
 
 template<>
  ConditionSet SiblingSolver::solve_left<VariableAst>(

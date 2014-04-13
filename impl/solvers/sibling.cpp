@@ -92,19 +92,30 @@ void SiblingSolver::index_statement(StatementAst *statement) {
 
 void SiblingSolver::index_while(WhileAst *while_ast) {
     //Fill up the Sibling Table for container
-    const SimpleVariable while_variable(while_ast->get_variable()->get_name());
+    SimpleVariable while_variable(while_ast->get_variable()->get_name());
     SimpleVariableAst variable_ast(while_variable);
     _sibling_container_index[&variable_ast].insert(while_ast->get_body());
+
+	//Fill up the Sibling Table for container (inverse)
+	_sibling_container_inverse_index[while_ast->get_body()].insert(&variable_ast);
 
     index_statement_list(while_ast->get_body());
 }
 
 void SiblingSolver::index_if(IfAst *if_ast) {
     //Fill up the Sibling Table for container
-    const SimpleVariable if_variable(if_ast->get_variable()->get_name());
+    SimpleVariable if_variable(if_ast->get_variable()->get_name());
     SimpleVariableAst variable_ast(if_variable);
     _sibling_container_index[&variable_ast].insert(if_ast->get_then_branch());
     _sibling_container_index[&variable_ast].insert(if_ast->get_else_branch());
+
+	//Fill up the Sibling Table for container (inverse)
+	_sibling_container_inverse_index[if_ast->get_then_branch()].insert(&variable_ast);
+	_sibling_container_inverse_index[if_ast->get_else_branch()].insert(&variable_ast);
+
+	//Fill up the Sibling Table for statement
+	_sibling_statement_index[if_ast->get_then_branch()].insert(if_ast->get_else_branch());
+	_sibling_statement_index[if_ast->get_else_branch()].insert(if_ast->get_then_branch());
 
     index_statement_list(if_ast->get_then_branch());
     index_statement_list(if_ast->get_else_branch());
@@ -242,6 +253,38 @@ bool SiblingSolver::validate<ProcAst, ProcAst>
 }
 
 template<>
+ bool SiblingSolver::validate<VariableAst, StatementAst>(VariableAst *left,
+ 	StatementAst *right){
+		if(_sibling_container_index.count(left) == 0)
+		{
+			return false;
+		}
+		else if(_sibling_container_index[left].count(right) == 0)
+		{
+			return false;
+		}
+		else{
+			return true;
+		}
+ }
+
+template<>
+bool SiblingSolver::validate<StatementAst, VariableAst>(StatementAst *left,
+	VariableAst *right){
+		if(_sibling_container_inverse_index.count(left) == 0)
+		{
+			return false;
+		}
+		else if(_sibling_container_inverse_index[left].count(right) == 0)
+		{
+			return false;
+		}
+		else{
+			return true;
+		}
+}
+ 
+template<>
 bool SiblingSolver::validate<ExprAst, ExprAst>(ExprAst *left, 
     ExprAst *right){
         if(left == right){
@@ -286,5 +329,66 @@ ConditionSet SiblingSolver::solve_right<StatementAst>(
     return statement_set_to_condition_set(_sibling_statement_index[statement]);
 }
 
+//Container and variable
+template<>
+ConditionSet SiblingSolver::solve_left<ContainerAst>(
+	ContainerAst *container)
+{
+		switch(get_statement_type(container))
+		{
+		case IfST:
+			return expr_set_to_condition_set(_sibling_container_inverse_index[statement_cast<IfAst>(container)->get_then_branch()]);
+		
+		case WhileST:
+			return expr_set_to_condition_set(_sibling_container_inverse_index[statement_cast<WhileAst>(container)->get_body()]);
+
+		default:
+			return NULL;
+		}
+}
+
+template<>
+ConditionSet SiblingSolver::solve_right<ContainerAst>(
+	ContainerAst *container)
+{
+		switch(get_statement_type(container))
+		{
+		case IfST:
+			return expr_set_to_condition_set(_sibling_container_inverse_index[statement_cast<IfAst>(container)->get_then_branch()]);
+		
+		case WhileST:
+			return expr_set_to_condition_set(_sibling_container_inverse_index[statement_cast<WhileAst>(container)->get_body()]);
+
+		default:
+			return NULL;
+		}
+}
+
+template<>
+ConditionSet SiblingSolver::solve_left<VariableAst>(
+	VariableAst *variable){
+		return statement_set_to_condition_set(_sibling_container_index[variable]);
+}
+
+template<>
+ConditionSet SiblingSolver::solve_right<VariableAst>(
+	VariableAst *variable){
+		return statement_set_to_condition_set(_sibling_container_index[variable]);
+}
+
+//Expression
+template<>
+ConditionSet SiblingSolver::solve_left<ExprAst>(
+	ExprAst *expr)
+{
+	return expr_set_to_condition_set(_sibling_expression_index[expr]);
+}
+
+template<>
+ConditionSet SiblingSolver::solve_right<ExprAst>(
+	ExprAst *expr)
+{
+	return expr_set_to_condition_set(_sibling_expression_index[expr]);
+}
 }
 }
