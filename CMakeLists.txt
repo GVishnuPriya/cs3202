@@ -15,6 +15,7 @@ set(SOURCE
   simple/condition_set.cpp 
   simple/spa.cpp 
   simple/tuple.cpp 
+  simple/next.cpp 
   simple/query.cpp 
   simple/util/ast_utils.cpp 
   simple/util/condition_utils.cpp 

@@ -25,13 +25,14 @@
 #include "simple/condition.h"
 #include "simple/condition_set.h"
 #include "simple/solver.h"
+#include "simple/next.h"
 
 namespace simple {
 namespace impl {
 
 using namespace simple;
 
-class NextSolver : public NextQuerySolver {
+class NextSolver : public SimpleNextQuerySolver {
   public:
     NextSolver(SimpleRoot ast) : _ast(ast) { }
 

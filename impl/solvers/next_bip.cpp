@@ -40,48 +40,93 @@ NextBipSolver::NextBipSolver(SimpleRoot ast,
     _calls_solver(calls_solver)
 { }
 
-StatementSet NextBipSolver::solve_next_bip(StatementAst *statement) {
-    StatementSet result = _next_solver->solve_next_statement(statement);
+StackedStatementSet NextBipSolver::solve_next_bip(StatementAst *statement, CallStack callstack) {
+    StatementSet next_result = _next_solver->solve_next_statement(statement);
 
-    if(is_last_statement(statement)) {
+    StackedStatementSet result;
+
+    for(auto it = next_result.begin(); it != next_result.end(); ++it) {
+        result.insert(StackedStatement(*it, callstack));
+    }
+
+    if(!is_last_statement(statement)) return result;
+
+    if(callstack.empty()) {
         CallSet call_statements = _calls_solver->solve_calling_statements(
             statement->get_proc());
 
         for(auto it=call_statements.begin(); it!=call_statements.end(); ++it) {
             CallAst *call_statement = *it;
-            union_set(result, solve_next_bip(call_statement));
+
+            union_set(result, solve_next_bip(call_statement, callstack));
         }
+    } else {
+        CallAst* prev_call = callstack.top();
+        callstack.pop();
+
+        union_set(result, solve_next_bip(prev_call, callstack));
+    }
+
+    return result;
+}
+
+StackedStatementSet NextBipSolver::solve_next_bip_statement(
+    StatementAst *statement, CallStack callstack) 
+{
+    CallAst *calls = statement_cast<CallAst>(statement);
+
+    if(!calls) return solve_next_bip(statement, callstack);
+
+    callstack.push(calls);
+    StatementAst *result_statement = calls->get_proc_called()->get_statement();
+
+    StackedStatementSet result;
+    result.insert(StackedStatement(result_statement, callstack));
+
+    return result;
+}
+
+StackedStatementSet NextBipSolver::solve_prev_bip_statement(
+    StatementAst *statement, CallStack callstack) 
+{
+    StatementSet next_result = _next_solver->solve_prev_statement(statement);
+
+    StackedStatementSet result;
+    
+    for(auto it = next_result.begin(); it != next_result.end(); ++it) {
+        result.insert(StackedStatement(*it, callstack));
+    }
+
+    if(!is_first_statement(statement)) return result;
+
+    if(callstack.empty()) {
+        CallSet call_statements = _calls_solver->solve_calling_statements(
+            statement->get_proc());
+
+        for(auto it=call_statements.begin(); it!=call_statements.end(); ++it) {
+            CallAst *call_statement = *it;
+            result.insert(StackedStatement(call_statement, CallStack()));
+        }
+    } else {
+        CallAst *call_statement = callstack.top();
+        callstack.pop();
+
+        result.insert(StackedStatement(call_statement, callstack));
     }
 
     return result;
 }
 
 StatementSet NextBipSolver::solve_next_statement(StatementAst *statement) {
-    CallAst *calls = statement_cast<CallAst>(statement);
+    CallStack callstack;
 
-    if(calls) {
-        StatementSet result;
-        result.insert(calls->get_proc_called()->get_statement());
-        return result;
-    } else {
-        return solve_next_bip(statement);
-    }
+    return to_statement_set(solve_next_bip_statement(statement, callstack));
 }
 
 StatementSet NextBipSolver::solve_prev_statement(StatementAst *statement) {
-    StatementSet result = _next_solver->solve_prev_statement(statement);
+    CallStack callstack;
 
-    if(is_first_statement(statement)) {
-        CallSet call_statements = _calls_solver->solve_calling_statements(
-            statement->get_proc());
-
-        for(auto it=call_statements.begin(); it!=call_statements.end(); ++it) {
-            CallAst *call_statement = *it;
-            result.insert(call_statement);
-        }
-    }
-
-    return result;
+    return to_statement_set(solve_prev_bip_statement(statement, callstack));
 }
 
 template <>
