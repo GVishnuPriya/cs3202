@@ -54,6 +54,10 @@ class SimpleSolverGenerator : public QuerySolver  {
             _result = _solver->template solve_left<ExprAst>(condition->get_expr_ast());
         }
 
+        void visit_operator_condition(OperatorCondition* condition) {
+            _result = _solver->template solve_left<OperatorCondition>(condition);
+        }
+
         ConditionSet return_result() {
             return std::move(_result);
         }
@@ -85,6 +89,10 @@ class SimpleSolverGenerator : public QuerySolver  {
 
         void visit_pattern_condition(PatternCondition *condition) {
             _result = _solver->template solve_right<ExprAst>(condition->get_expr_ast());
+        }
+
+        void visit_operator_condition(OperatorCondition* condition) {
+            _result = _solver->template solve_right<OperatorCondition>(condition);
         }
 
         ConditionSet return_result() {
@@ -128,6 +136,11 @@ class SimpleSolverGenerator : public QuerySolver  {
         void visit_pattern_condition(PatternCondition *right_condition) {
             _result = _solver->template validate<Condition, ExprAst>(
                     _left_condition, right_condition->get_expr_ast());
+        }
+
+        void visit_operator_condition(OperatorCondition* right_condition) {
+            _result = _solver->template validate<Condition, OperatorCondition>(
+                    _left_condition, right_condition);
         }
 
         bool return_result() {
@@ -174,6 +187,12 @@ class SimpleSolverGenerator : public QuerySolver  {
 
         void visit_pattern_condition(PatternCondition *condition) {
             SecondSolverVisitor<ExprAst> visitor(_solver, condition->get_expr_ast());
+            _right_condition->accept_condition_visitor(&visitor);
+            _result = visitor.return_result();
+        }
+
+        void visit_operator_condition(OperatorCondition* right_condition) {
+            SecondSolverVisitor<OperatorCondition> visitor(_solver, right_condition);
             _right_condition->accept_condition_visitor(&visitor);
             _result = visitor.return_result();
         }

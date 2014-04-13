@@ -48,6 +48,10 @@ class ConditionTypeVisitor : public ConditionVisitor {
         result = PatternCT;
     }
 
+    void visit_operator_condition(OperatorCondition*) {
+        result = OperatorCT;
+    }
+
     ConditionType result;
 };
 
@@ -110,6 +114,12 @@ class ConditionPrinter : public ConditionVisitor {
         _result = expr_to_string(condition->get_expr_ast());
     }
 
+    void visit_operator_condition(OperatorCondition* condition) {
+        std::stringstream out;
+        out << condition->get_operator();
+        _result = out.str();
+    }
+
     std::string return_result() {
         return std::move(_result);
     }
@@ -169,6 +179,13 @@ bool is_same_condition<ConstantCondition, ConstantCondition>(
 {
     return condition1->get_constant()->get_int() == 
         condition2->get_constant()->get_int();
+}
+
+template <>
+bool is_same_condition<OperatorCondition, OperatorCondition>(
+        OperatorCondition *condition1, OperatorCondition *condition2) 
+{
+    return condition1->get_operator() == condition2->get_operator();
 }
 
 
@@ -253,6 +270,45 @@ bool is_less_than_condition<ConstantCondition, PatternCondition>(
     return true;
 }
 
+
+
+template <>
+bool is_less_than_condition<OperatorCondition, VariableCondition>(
+        OperatorCondition *condition1, VariableCondition *condition2)
+{
+    return true;
+}
+
+template <>
+bool is_less_than_condition<OperatorCondition, StatementCondition>(
+        OperatorCondition *condition1, StatementCondition *condition2)
+{
+    return true;
+}
+
+template <>
+bool is_less_than_condition<OperatorCondition, ProcCondition>(
+        OperatorCondition *condition1, ProcCondition *condition2)
+{
+    return true;
+}
+
+template <>
+bool is_less_than_condition<OperatorCondition, PatternCondition>(
+        OperatorCondition *condition1, PatternCondition *condition2)
+{
+    return true;
+}
+
+template <>
+bool is_less_than_condition<OperatorCondition, ConstantCondition>(
+        OperatorCondition *condition1, ConstantCondition *condition2)
+{
+    return true;
+}
+
+
+
 template <>
 bool is_less_than_condition<StatementCondition, StatementCondition>(
         StatementCondition *condition1, StatementCondition *condition2)
@@ -288,6 +344,13 @@ bool is_less_than_condition<ConstantCondition, ConstantCondition>(
 {
     return condition1->get_constant()->get_int() <
         condition2->get_constant()->get_int();
+}
+
+template <>
+bool is_less_than_condition<OperatorCondition, OperatorCondition>(
+        OperatorCondition *condition1, OperatorCondition *condition2)
+{
+    return condition1->get_operator() < condition2->get_operator();
 }
 
 

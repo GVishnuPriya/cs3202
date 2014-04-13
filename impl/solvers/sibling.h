@@ -31,7 +31,7 @@ namespace simple {
 
 		class SiblingSolver {
 		public:
-			SiblingSolver::SiblingSolver(SimpleRoot ast);
+			SiblingSolver(SimpleRoot ast);
 			
 
 	template <typename Condition>

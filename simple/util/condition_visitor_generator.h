@@ -48,6 +48,10 @@ class ConditionVisitorGenerator : public ConditionVisitor {
         _result = VisitorTraits::template visit<PatternCondition>(_visitor, condition);
     }
 
+    void visit_operator_condition(OperatorCondition* condition) {
+        _result = VisitorTraits::template visit<OperatorCondition>(_visitor, condition);
+    }
+
     typename VisitorTraits::ResultType return_result() {
         return std::move(_result);
     }
@@ -87,6 +91,11 @@ class SecondConditionVisitorGenerator : public ConditionVisitor {
     void visit_pattern_condition(PatternCondition *condition2) {
         _result = VisitorTraits::template visit_condition<
             FirstCondition, PatternCondition>(_condition1, condition2);
+    }
+
+    void visit_operator_condition(OperatorCondition* condition2) {
+        _result = VisitorTraits::template visit_condition<
+            FirstCondition, OperatorCondition>(_condition1, condition2);
     }
 
     typename VisitorTraits::ResultType return_result() {
@@ -138,6 +147,14 @@ class FirstConditionVisitorGenerator : public ConditionVisitor {
 
     void visit_pattern_condition(PatternCondition *condition1) {
         SecondConditionVisitorGenerator<PatternCondition, VisitorTraits> 
+        visitor(condition1);
+
+        _condition2->accept_condition_visitor(&visitor);
+        _result = visitor.return_result();
+    }
+
+    void visit_operator_condition(OperatorCondition* condition1) {
+        SecondConditionVisitorGenerator<OperatorCondition, VisitorTraits> 
         visitor(condition1);
 
         _condition2->accept_condition_visitor(&visitor);
