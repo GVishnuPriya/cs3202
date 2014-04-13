@@ -65,6 +65,13 @@ class PatternCondition : public SimpleCondition {
     virtual ~PatternCondition() { }
 };
 
+class OperatorCondition : public SimpleCondition {
+  public:
+    virtual char get_operator() = 0;
+
+    virtual ~OperatorCondition() { }
+};
+
 class ConditionVisitor {
   public:
     virtual void visit_statement_condition(StatementCondition*) = 0;
@@ -72,6 +79,7 @@ class ConditionVisitor {
     virtual void visit_variable_condition(VariableCondition*) = 0;
     virtual void visit_constant_condition(ConstantCondition*) = 0;
     virtual void visit_pattern_condition(PatternCondition*) = 0;
+    virtual void visit_operator_condition(OperatorCondition*) = 0;
 
     virtual ~ConditionVisitor() { }
 };

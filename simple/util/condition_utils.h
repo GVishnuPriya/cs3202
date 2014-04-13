@@ -30,8 +30,9 @@ enum ConditionType {
     StatementCT,
     ProcCT,
     VariableCT,
+    PatternCT,
     ConstantCT,
-    PatternCT
+    OperatorCT,
 };
 
 ConditionType get_condition_type(SimpleCondition *condition);
@@ -69,6 +70,10 @@ bool is_same_condition<PatternCondition, PatternCondition>(
 template <>
 bool is_same_condition<ConstantCondition, ConstantCondition>(
         ConstantCondition *condition1, ConstantCondition *condition2);
+
+template <>
+bool is_same_condition<OperatorCondition, OperatorCondition>(
+        OperatorCondition *condition1, OperatorCondition *condition2);
 
 /*
  * Condition Ordering:
