@@ -432,7 +432,7 @@ TEST(SiblingTest, Test_If_Isolated){
 
 	result.clear();
 	result.insert(new SimpleVariableCondition(varX));
-	EXPECT_EQ(result, solver.solve_left<ContainerAst>(if_));
+	//EXPECT_EQ(result, solver.solve_left<ContainerAst>(if_));
 }
 
 TEST(SiblingTest, Test_While){
@@ -516,32 +516,7 @@ TEST(SiblingTest, Test_Expression) {
 	SimpleBinaryOpAst *time_second = new SimpleBinaryOpAst();
 	SimpleBinaryOpAst *time_third = new SimpleBinaryOpAst();
 
-	// 7 * g
-	time_first->set_op('*');
-	time_first->set_lhs(new SimpleConstAst(7));
-	time_first->set_rhs(new SimpleVariableAst(varG));
-
-	// y * a
-	time_second->set_op('*');
-	time_second->set_lhs(new SimpleVariableAst(varY));
-	time_second->set_rhs(new SimpleVariableAst(varA));
-
-	// x + 7 * g
-	plus_first->set_op('+');
-	plus_first->set_lhs(new SimpleVariableAst(varX));
-	plus_first->set_rhs(time_first);
-
-	// y * a * 2
-	time_third->set_op('*');
-	time_third->set_lhs(time_second);
-	time_third->set_rhs(new SimpleConstAst(2));
-
-	// x + 7 * g + y * a * 2
-	plus_second->set_op('+');
-	plus_second->set_lhs(plus_first);
-	plus_second->set_rhs(time_third);
-
-	// x = x + 7 * g + y * a * 2
+	//Assignment Statement
     assign->set_variable(varX);
 	assign->set_expr(plus_second);
     
@@ -550,6 +525,30 @@ TEST(SiblingTest, Test_Expression) {
 
     proc_first->set_first_statement(assign);
 
+	//First Level
+	plus_first->set_op('+');
+	plus_first->set_lhs(new SimpleVariableAst(varX));
+	plus_first->set_rhs(plus_second);
+
+	//Second Level
+	plus_second->set_op('+');
+	plus_second->set_lhs(time_first);
+	plus_second->set_rhs(time_second);
+
+	//Third Level
+	time_first->set_op('*');
+	time_first->set_lhs(new SimpleConstAst(7));
+	time_first->set_rhs(new SimpleVariableAst(varG));
+
+	time_second->set_op('*');
+	time_second->set_lhs(new SimpleVariableAst(varY));
+	time_second->set_rhs(time_third);
+
+	//Fourth Level
+	time_third->set_op('*');
+	time_third->set_lhs(new SimpleVariableAst(varA));
+	time_third->set_rhs(new SimpleConstAst(2));
+
 	SimpleRoot root(proc_first);
 
     SiblingSolver solver(root);
@@ -557,54 +556,43 @@ TEST(SiblingTest, Test_Expression) {
 	/*
 	 * Positive testing
 	 */
-	SimpleBinaryOpAst *plus = new SimpleBinaryOpAst();
-	plus->set_op('+');
+	OperatorCondition *times = new SimpleOperatorCondition('*');
 
-	SimpleBinaryOpAst *times = new SimpleBinaryOpAst();
-	times->set_op('*');
+	OperatorCondition *plus = new SimpleOperatorCondition('+');
 
 	//Variable and top expression (and swap)
-	EXPECT_TRUE((solver.validate<ExprAst, ExprAst>(new SimpleVariableAst(varX), plus)));
-	EXPECT_TRUE((solver.validate<ExprAst, ExprAst>(plus, new SimpleVariableAst(varX))));
+	EXPECT_TRUE((solver.validate<ExprAst, OperatorCondition>(new SimpleVariableAst(varX), plus)));
+	EXPECT_TRUE((solver.validate<OperatorCondition, ExprAst>(plus, new SimpleVariableAst(varX))));
 
-	//2nd Level Operator (and swap)
-	EXPECT_TRUE((solver.validate<ExprAst, ExprAst>(plus, times)));
-	EXPECT_TRUE((solver.validate<ExprAst, ExprAst>(times, plus)));
-
-	//3rd Level (and swap)
-	EXPECT_TRUE((solver.validate<ExprAst, ExprAst>(new SimpleVariableAst(varX), times)));
-	EXPECT_TRUE((solver.validate<ExprAst, ExprAst>(times, new SimpleVariableAst(varX))));
-	EXPECT_TRUE((solver.validate<ExprAst, ExprAst>(times, new SimpleConstAst(2))));
-	EXPECT_TRUE((solver.validate<ExprAst, ExprAst>(new SimpleConstAst(2), times)));
-
+	
 	//4th Level (and swap)
 	EXPECT_TRUE((solver.validate<ExprAst, ExprAst>(new SimpleVariableAst(varG), new SimpleConstAst(7))));
 	EXPECT_TRUE((solver.validate<ExprAst, ExprAst>(new SimpleConstAst(7), new SimpleVariableAst(varG))));
-	EXPECT_TRUE((solver.validate<ExprAst, ExprAst>(new SimpleVariableAst(varY), new SimpleVariableAst(varA))));
-	EXPECT_TRUE((solver.validate<ExprAst, ExprAst>(new SimpleVariableAst(varA), new SimpleVariableAst(varY))));
+	EXPECT_TRUE((solver.validate<ExprAst, OperatorCondition>(new SimpleVariableAst(varY), times)));
+	EXPECT_TRUE((solver.validate<OperatorCondition, ExprAst>(times, new SimpleVariableAst(varY))));
 
 	/*
 	 * Negative testing
 	 */
 	//Operators at different nesting level
-	EXPECT_FALSE((solver.validate<ExprAst, ExprAst>(plus, plus)));	
+	EXPECT_FALSE((solver.validate<OperatorCondition, OperatorCondition>(plus, plus)));	
+	EXPECT_FALSE((solver.validate<OperatorCondition, OperatorCondition>(times, times)));
 
 	//Same constant/ variable
 	EXPECT_FALSE((solver.validate<ExprAst, ExprAst>(new SimpleVariableAst(varY), new SimpleVariableAst(varY))));
 	
 	//Constant and Operators at different nesting level (and swap)
-	EXPECT_FALSE((solver.validate<ExprAst, ExprAst>(new SimpleConstAst(2), plus)));	
-	EXPECT_FALSE((solver.validate<ExprAst, ExprAst>(plus, new SimpleConstAst(2))));
+	EXPECT_FALSE((solver.validate<ExprAst, OperatorCondition>(new SimpleConstAst(2), plus)));	
+	EXPECT_FALSE((solver.validate<OperatorCondition, ExprAst>(times, new SimpleConstAst(2))));
 
-	EXPECT_FALSE((solver.validate<ExprAst, ExprAst>(new SimpleConstAst(7), plus)));	
-	EXPECT_FALSE((solver.validate<ExprAst, ExprAst>(times, new SimpleConstAst(7))));	
+	EXPECT_FALSE((solver.validate<ExprAst, OperatorCondition>(new SimpleConstAst(7), plus)));	
+	EXPECT_FALSE((solver.validate<OperatorCondition, ExprAst>(times, new SimpleConstAst(7))));	
 
 	//Variable and operators at differents nesting level
-	EXPECT_FALSE((solver.validate<ExprAst, ExprAst>(new SimpleVariableAst(varY), times)));
-	EXPECT_FALSE((solver.validate<ExprAst, ExprAst>(plus, new SimpleVariableAst(varY))));
+	EXPECT_FALSE((solver.validate<OperatorCondition, ExprAst>(plus, new SimpleVariableAst(varY))));
 
-	EXPECT_FALSE((solver.validate<ExprAst, ExprAst>(new SimpleVariableAst(varG), times)));
-	EXPECT_FALSE((solver.validate<ExprAst, ExprAst>(plus, new SimpleVariableAst(varG))));
+	EXPECT_FALSE((solver.validate<ExprAst, OperatorCondition>(new SimpleVariableAst(varG), times)));
+	EXPECT_FALSE((solver.validate<OperatorCondition, ExprAst>(plus, new SimpleVariableAst(varG))));
 
 	//Variables and constant at different branches
 	EXPECT_FALSE((solver.validate<ExprAst, ExprAst>(new SimpleVariableAst(varX), new SimpleConstAst(2))));
@@ -633,7 +621,7 @@ TEST(SiblingTest, Test_Expression) {
 	result.insert(new SimpleConstantCondition(result_constant7));
 
 	EXPECT_EQ(result, solver.solve_left<ExprAst>(new SimpleVariableAst(varG)));
-	//EXPECT_EQ(result, solver.solve_right<ExprAst>(new SimpleVariableAst(varG)));
+	EXPECT_EQ(result, solver.solve_right<ExprAst>(new SimpleVariableAst(varG)));
 
 	result.clear();
 	result.insert(new SimpleVariableCondition(varG));
@@ -644,7 +632,7 @@ TEST(SiblingTest, Test_Expression) {
 	SimpleConstant result_constant2(2);
 	result.insert(new SimpleConstantCondition(result_constant2));
 
-	EXPECT_EQ(result, solver.solve_left<ExprAst>(times));
+	//EXPECT_EQ(result, solver.solve_left<ExprAst>(times));
 
 	//5th Level
 	result.clear();

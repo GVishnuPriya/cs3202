@@ -71,7 +71,7 @@ namespace simple {
 			std::map<VariableAst*, StatementSet> _sibling_container_index;
 			std::map<StatementAst*, ExprSet> _sibling_container_inverse_index;
 
-			std::string extract_string_from_expr(ExprAst* expr_ast);
+			std::string SiblingSolver::top_node_from_expression(ExprAst *expr_ast);
 		};
 
 /*
@@ -121,23 +121,35 @@ template<>
  * Validate
  */
 template<>
- bool SiblingSolver::validate<ProcAst, ProcAst>
- (ProcAst *left, ProcAst *right);
+bool SiblingSolver::validate<ProcAst, ProcAst>(
+	ProcAst *left, ProcAst *right);
 
 template <>
- bool SiblingSolver::validate<StatementAst, StatementAst>(
+bool SiblingSolver::validate<StatementAst, StatementAst>(
  	StatementAst *left, StatementAst *right);
 
 template<>
- bool SiblingSolver::validate<ExprAst, ExprAst>(ExprAst *left, 
+bool SiblingSolver::validate<ExprAst, ExprAst>(ExprAst *left, 
  	ExprAst *right);
 
 template<>
- bool SiblingSolver::validate<VariableAst, StatementAst>(VariableAst *left,
+bool SiblingSolver::validate<VariableAst, StatementAst>(VariableAst *left,
  	StatementAst *right);
 
 template<>
- bool SiblingSolver::validate<StatementAst, VariableAst>(StatementAst *left,
+bool SiblingSolver::validate<OperatorCondition, OperatorCondition>(
+	OperatorCondition *left, OperatorCondition *right);
+
+template<>
+bool SiblingSolver::validate<OperatorCondition, ExprAst>(
+	OperatorCondition *left, ExprAst *right);
+
+template<>
+bool SiblingSolver::validate<ExprAst, OperatorCondition>(
+	ExprAst *left, OperatorCondition *right);
+
+template<>
+bool SiblingSolver::validate<StatementAst, VariableAst>(StatementAst *left,
  	VariableAst *right);
 } // namespace impl
 } // namespace simple

@@ -127,16 +127,44 @@ void SiblingSolver::index_assign(AssignmentAst *assign_ast)
     SimpleVariableAst variable_ast(*variable);
 
     ExprAst *expr_ast = assign_ast->get_expr();
-    string expr_string = extract_string_from_expr(expr_ast);
 
+	string expr_string = top_node_from_expression(expr_ast);
+
+	_sibling_index[variable->get_name()].insert(expr_string);
+	_sibling_index[expr_string].insert(variable->get_name());
+
+	if(get_expr_type(expr_ast) == BinaryOpET)
+	{
+		index_expr(expr_ast);
+	}
+    
     //Filling the Sibling table for expressions
     _sibling_expression_index[&variable_ast].insert(expr_ast);
     _sibling_expression_index[expr_ast].insert(&variable_ast);
+}
 
-    _sibling_index[variable->get_name()].insert(expr_string);
-    _sibling_index[expr_string].insert(variable->get_name());
-
-    index_expr(expr_ast);
+string SiblingSolver::top_node_from_expression(ExprAst *expr_ast)
+{
+	switch(get_expr_type(expr_ast))
+	{
+	case VariableET:
+		{
+			VariableAst *variable = expr_cast<VariableAst>(expr_ast);
+			return variable->get_variable()->get_name();
+		}
+	case ConstantET:
+		{
+			ConstAst *constant = expr_cast<ConstAst>(expr_ast);
+			return to_string(static_cast<long long>(constant->get_constant()->get_int()));
+		}
+	case BinaryOpET:
+		{
+			BinaryOpAst *binary = expr_cast<BinaryOpAst>(expr_ast);
+			return string (1, binary->get_op());
+		}
+	default:
+		return "";
+	}
 }
 
 void SiblingSolver::index_expr(ExprAst* expr_ast) 
@@ -154,54 +182,14 @@ void SiblingSolver::index_expr(ExprAst* expr_ast)
         _sibling_expression_index[binary_ops_ast->get_rhs()].insert(
             binary_ops_ast->get_lhs());
 
-        _sibling_index[extract_string_from_expr(left_expr)].insert(
-            extract_string_from_expr(right_expr));
-        _sibling_index[extract_string_from_expr(right_expr)].insert(
-            extract_string_from_expr(left_expr));
+        _sibling_index[top_node_from_expression(left_expr)].insert(
+            top_node_from_expression(right_expr));
+        _sibling_index[top_node_from_expression(right_expr)].insert(
+            top_node_from_expression(left_expr));
 
         index_expr(left_expr);
         index_expr(right_expr);
     }
-}
-
-string SiblingSolver::extract_string_from_expr(ExprAst* expr_ast)
-{
-    string expr_string;
-    switch(get_expr_type(expr_ast)){
-    case ConstantET:
-        {
-            ConstAst *constant_ast = expr_cast<ConstAst>(expr_ast);
-            int constant_value = constant_ast->get_value();
-
-            expr_string = to_string(static_cast<long long>(
-                constant_value));
-
-            break;
-        }
-
-    case VariableET:
-        {
-            VariableAst *variable_ast = expr_cast<VariableAst>(
-                expr_ast);
-
-            SimpleVariable *variable = variable_ast->get_variable();
-            expr_string = variable->get_name();
-            break;
-        }
-
-    case BinaryOpET:
-        {
-            BinaryOpAst *binary_ops_ast = expr_cast<BinaryOpAst>(
-                expr_ast);
-
-            expr_string = binary_ops_ast->get_op();
-            break;
-        }
-
-    default:
-        break;
-    }
-    return expr_string;
 }
 
 template <>
@@ -290,8 +278,8 @@ bool SiblingSolver::validate<ExprAst, ExprAst>(ExprAst *left,
         if(left == right){
             return false;
         }
-        else if(_sibling_index[extract_string_from_expr(left)].count(
-            extract_string_from_expr(right)) > 0)
+        else if(_sibling_index[top_node_from_expression(left)].count(
+            top_node_from_expression(right)) > 0)
         {
             return true;
         }
@@ -299,6 +287,67 @@ bool SiblingSolver::validate<ExprAst, ExprAst>(ExprAst *left,
         {
             return false;
         }
+}
+
+template<>
+bool SiblingSolver::validate<OperatorCondition, OperatorCondition>(
+	OperatorCondition *left, OperatorCondition *right)
+{
+	string left_operator(1, left->get_operator());
+	string right_operator(1, right->get_operator());
+
+	if(left_operator == right_operator)
+	{
+		return false;
+	}
+	else if(_sibling_index[left_operator].count(
+		right_operator) > 0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+template<>
+bool SiblingSolver::validate<OperatorCondition, ExprAst>(
+	OperatorCondition *left, ExprAst *right)
+{
+	string left_operator(1, left->get_operator());
+	if(left_operator == top_node_from_expression(right))
+	{
+		return false;
+	}
+	else if(_sibling_index[left_operator].count(
+		top_node_from_expression(right)) > 0)
+	{
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+template<>
+bool SiblingSolver::validate<ExprAst, OperatorCondition>(
+	ExprAst *left, OperatorCondition *right)
+{
+	string right_operator(1, right->get_operator());
+	string left_expr(top_node_from_expression(left));
+	if(right_operator == left_expr)
+	{
+		return false;
+	}
+	else if(_sibling_index[right_operator].count(
+		left_expr) > 0)
+	{
+		return true;
+	}
+	else{
+		return false;
+	}
 }
 
 //Procedure
