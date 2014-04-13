@@ -10,48 +10,47 @@ namespace impl {
 using namespace simple;
 using namespace simple::util;
 
-IAffectsSolver::IAffectsSolver(std::shared_ptr<NextQuerySolver> next_solver,
+IAffectsSolver::IAffectsSolver(std::shared_ptr<NextBipQuerySolver> next_solver,
     std::shared_ptr<ModifiesSolver> modifies_solver) :
     AffectsSolver(next_solver, modifies_solver)
 { }
 
-StatementSet IAffectsSolver::solve_affected_by_var_assignment(
-        SimpleVariable var, AssignmentAst *statement)
+StackedStatementSet IAffectsSolver::solve_affected_by_var_assignment(
+        SimpleVariable var, AssignmentAst *statement, CallStack callstack)
 {
     SimpleVariable modified_var = *statement->get_variable();
     VariableSet used_vars = get_expr_vars(statement->get_expr());
 
-    StatementSet result;
+    StackedStatementSet result;
+
     if(modified_var != var) {
-        result = solve_next_affected_by_var(var, statement);
+        result = solve_next_affected_by_var(var, statement, callstack);
     }
 
     if(used_vars.count(var) > 0) {
-        union_set(result, solve_next_affected_by_var(modified_var, statement));
-        result.insert(statement);
+        union_set(result, solve_next_affected_by_var(modified_var, statement, callstack));
+        result.insert(StackedStatement(statement, callstack));
     }
 
     return result;
 }
 
-StatementSet IAffectsSolver::solve_affecting_with_var_assignment(
-        SimpleVariable var, AssignmentAst *statement)
+StackedStatementSet IAffectsSolver::solve_affecting_with_var_assignment(
+        SimpleVariable var, AssignmentAst *statement, CallStack callstack)
 {
     SimpleVariable modified_var = *statement->get_variable();
 
-    if(modified_var == var) {
-        VariableSet used_vars = get_expr_vars(statement->get_expr());
-        StatementSet result;
+    if(modified_var != var) return solve_prev_affecting_with_var(var, statement, callstack);
 
-        for(auto it = used_vars.begin(); it != used_vars.end(); ++it) {
-            union_set(result, solve_prev_affecting_with_var(*it, statement));
-        }
+    VariableSet used_vars = get_expr_vars(statement->get_expr());
+    StackedStatementSet result;
 
-        result.insert(statement);
-        return result;
-    } else {
-        return solve_prev_affecting_with_var(var, statement);
+    for(auto it = used_vars.begin(); it != used_vars.end(); ++it) {
+        union_set(result, solve_prev_affecting_with_var(*it, statement, callstack));
     }
+
+    result.insert(StackedStatement(statement, callstack));
+    return result;
 }
 
 

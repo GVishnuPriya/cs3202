@@ -5,6 +5,7 @@
 #include <memory>
 #include <utility>
 #include "simple/solver.h"
+#include "simple/next.h"
 #include "impl/solvers/modifies.h"
 
 namespace simple {
@@ -15,14 +16,14 @@ using namespace simple::util;
 
 class AffectsSolver {
   public:
-    AffectsSolver(std::shared_ptr<NextQuerySolver> next_solver,
+    AffectsSolver(std::shared_ptr<NextBipQuerySolver> next_solver,
         std::shared_ptr<ModifiesSolver> modifies_solver);
 
-    virtual StatementSet solve_affected_by_var_assignment(
-        SimpleVariable var, AssignmentAst *statement);
+    virtual StackedStatementSet solve_affected_by_var_assignment(
+        SimpleVariable var, AssignmentAst *statement, CallStack callstack);
 
-    virtual StatementSet solve_affecting_with_var_assignment(
-        SimpleVariable var, AssignmentAst *statement);
+    virtual StackedStatementSet solve_affecting_with_var_assignment(
+        SimpleVariable var, AssignmentAst *statement, CallStack callstack);
 
     template <typename Condition>
     StatementSet solve_affected_statements(Condition *statement);
@@ -41,28 +42,29 @@ class AffectsSolver {
     template <typename Condition>
     ConditionSet solve_left(Condition *condition);
 
-    StatementSet solve_next_affected_by_var(SimpleVariable var, StatementAst *statement);
+    StackedStatementSet solve_next_affected_by_var(
+        SimpleVariable var, StatementAst *statement, CallStack callstack);
     
     template <typename Condition>
-    StatementSet solve_affected_by_var(SimpleVariable var, Condition *condition);
+    StackedStatementSet solve_affected_by_var(
+        SimpleVariable var, Condition *condition, CallStack callstack);
 
-    StatementSet solve_prev_affecting_with_var(SimpleVariable var, StatementAst *statement);
+    StackedStatementSet solve_prev_affecting_with_var(
+        SimpleVariable var, StatementAst *statement, CallStack callstack);
 
     template <typename Condition>
-    StatementSet solve_affecting_with_var(SimpleVariable var, Condition *statement);
+    StackedStatementSet solve_affecting_with_var(
+        SimpleVariable var, Condition *statement, CallStack callstack);
     
   protected:
-    std::shared_ptr<NextQuerySolver> _next_solver;
+    std::shared_ptr<NextBipQuerySolver> _next_solver;
     std::shared_ptr<ModifiesSolver> _modifies_solver;
 
     std::map< StatementAst*, StatementSet > _affected_statements_cache;
     std::map< StatementAst*, StatementSet > _affecting_statements_cache;
 
-    std::map< std::pair<SimpleVariable, StatementAst*>, StatementSet> 
-    _affected_by_var_cache;
-
-    std::map< std::pair<SimpleVariable, StatementAst*>, StatementSet> 
-    _affecting_with_var_cache;
+    std::set< std::pair<SimpleVariable, StackedStatement> > 
+    _visit_cache;
 };
 
 template <typename Condition>
@@ -91,44 +93,44 @@ ConditionSet AffectsSolver::solve_left(Condition *condition) {
 }
 
 template <>
-StatementSet AffectsSolver::solve_affected_by_var<StatementAst>(
-    SimpleVariable var, StatementAst *statement);
+StackedStatementSet AffectsSolver::solve_affected_by_var<StatementAst>(
+    SimpleVariable var, StatementAst *statement, CallStack callstack);
 
 template <>
-StatementSet AffectsSolver::solve_affected_by_var<AssignmentAst>(
-    SimpleVariable var, AssignmentAst *statement);
+StackedStatementSet AffectsSolver::solve_affected_by_var<AssignmentAst>(
+    SimpleVariable var, AssignmentAst *statement, CallStack callstack);
 
 template <>
-StatementSet AffectsSolver::solve_affected_by_var<IfAst>(
-    SimpleVariable var, IfAst *statement);
+StackedStatementSet AffectsSolver::solve_affected_by_var<IfAst>(
+    SimpleVariable var, IfAst *statement, CallStack callstack);
 
 template <>
-StatementSet AffectsSolver::solve_affected_by_var<WhileAst>(
-    SimpleVariable var, WhileAst *statement);
+StackedStatementSet AffectsSolver::solve_affected_by_var<WhileAst>(
+    SimpleVariable var, WhileAst *statement, CallStack callstack);
 
 template <>
-StatementSet AffectsSolver::solve_affected_by_var<CallAst>(
-    SimpleVariable var, CallAst *statement);
+StackedStatementSet AffectsSolver::solve_affected_by_var<CallAst>(
+    SimpleVariable var, CallAst *statement, CallStack callstack);
 
 template <>
-StatementSet AffectsSolver::solve_affecting_with_var<StatementAst>(
-    SimpleVariable var, StatementAst *statement);
+StackedStatementSet AffectsSolver::solve_affecting_with_var<StatementAst>(
+    SimpleVariable var, StatementAst *statement, CallStack callstack);
 
 template <>
-StatementSet AffectsSolver::solve_affecting_with_var<AssignmentAst>(
-    SimpleVariable var, AssignmentAst *statement);
+StackedStatementSet AffectsSolver::solve_affecting_with_var<AssignmentAst>(
+    SimpleVariable var, AssignmentAst *statement, CallStack callstack);
 
 template <>
-StatementSet AffectsSolver::solve_affecting_with_var<IfAst>(
-    SimpleVariable var, IfAst *statement);
+StackedStatementSet AffectsSolver::solve_affecting_with_var<IfAst>(
+    SimpleVariable var, IfAst *statement, CallStack callstack);
 
 template <>
-StatementSet AffectsSolver::solve_affecting_with_var<WhileAst>(
-    SimpleVariable var, WhileAst *statement);
+StackedStatementSet AffectsSolver::solve_affecting_with_var<WhileAst>(
+    SimpleVariable var, WhileAst *statement, CallStack callstack);
 
 template <>
-StatementSet AffectsSolver::solve_affecting_with_var<CallAst>(
-    SimpleVariable var, CallAst *statement);
+StackedStatementSet AffectsSolver::solve_affecting_with_var<CallAst>(
+    SimpleVariable var, CallAst *statement, CallStack callstack);
 
 
 template <>

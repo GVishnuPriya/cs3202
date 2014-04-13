@@ -10,29 +10,31 @@ namespace impl {
 using namespace simple;
 using namespace simple::util;
 
+typedef std::pair<SimpleVariable, CallStack> AffectsCtx;
+
 class SolveAffectedByVarVisitorTraits {
   public:
-    typedef StatementSet ResultType;
-    typedef SimpleVariable ContextType;
+    typedef StackedStatementSet ResultType;
+    typedef AffectsCtx ContextType;
 
     template <typename Ast>
-    static StatementSet visit(
-            AffectsSolver *solver, Ast *ast, SimpleVariable *var) 
+    static StackedStatementSet visit(
+            AffectsSolver *solver, Ast *ast, AffectsCtx *ctx) 
     {
-        return solver->template solve_affected_by_var<Ast>(*var, ast);
+        return solver->template solve_affected_by_var<Ast>(ctx->first, ast, ctx->second);
     }
 };
 
 class SolveAffectingWithVarVisitorTraits {
   public:
-    typedef StatementSet ResultType;
-    typedef SimpleVariable ContextType;
+    typedef StackedStatementSet ResultType;
+    typedef AffectsCtx ContextType;
 
     template <typename Ast>
-    static StatementSet visit(
-            AffectsSolver *solver, Ast *ast, SimpleVariable *var) 
+    static StackedStatementSet visit(
+            AffectsSolver *solver, Ast *ast, AffectsCtx *ctx) 
     {
-        return solver->template solve_affecting_with_var<Ast>(*var, ast);
+        return solver->template solve_affecting_with_var<Ast>(ctx->first, ast, ctx->second);
     }
 };
 
@@ -62,49 +64,49 @@ class SolveAffectingStatementsVisitorTraits {
     }
 };
 
-AffectsSolver::AffectsSolver(std::shared_ptr<NextQuerySolver> next_solver,
+AffectsSolver::AffectsSolver(
+    std::shared_ptr<NextBipQuerySolver> next_solver,
     std::shared_ptr<ModifiesSolver> modifies_solver) :
     _next_solver(next_solver), _modifies_solver(modifies_solver)
 { }
 
-StatementSet AffectsSolver::solve_affected_by_var_assignment(
-        SimpleVariable var, AssignmentAst *statement)
+StackedStatementSet AffectsSolver::solve_affected_by_var_assignment(
+        SimpleVariable var, AssignmentAst *statement, CallStack callstack)
 {
     SimpleVariable modified_var = *statement->get_variable();
     VariableSet used_vars = get_expr_vars(statement->get_expr());
 
-    StatementSet result;
+    StackedStatementSet result;
+
     if(modified_var != var) {
-        result = solve_next_affected_by_var(var, statement);
+        result = solve_next_affected_by_var(var, statement, callstack);
     }
 
     if(used_vars.count(var) > 0) {
-        result.insert(statement);
+        result.insert(StackedStatement(statement, CallStack()));
     }
 
     return result;
 }
 
-StatementSet AffectsSolver::solve_affecting_with_var_assignment(
-    SimpleVariable var, AssignmentAst *statement)
+StackedStatementSet AffectsSolver::solve_affecting_with_var_assignment(
+    SimpleVariable var, AssignmentAst *statement, CallStack callstack)
 {
     SimpleVariable modified_var = *statement->get_variable();
 
-    if(modified_var == var) {
-        StatementSet result;
-        result.insert(statement);
-        return result;
-    } else {
-        return solve_prev_affecting_with_var(var, statement);
-    }
-}
+    if(modified_var != var) return solve_prev_affecting_with_var(
+        var, statement, callstack);
 
+    StackedStatementSet result;
+    result.insert(StackedStatement(statement, CallStack()));
+    return result;
+}
 
 template <>
 StatementSet AffectsSolver::solve_affected_statements<StatementAst>(StatementAst *statement) {
     if(_affected_statements_cache.count(statement) > 0) return _affected_statements_cache[statement];
 
-    _affected_by_var_cache.clear();
+    _visit_cache.clear();
 
     StatementVisitorGenerator<AffectsSolver, SolveAffectedStatementsVisitorTraits>
     visitor(this);
@@ -131,83 +133,88 @@ StatementSet AffectsSolver::solve_affected_statements<StatementAst>(StatementAst
 template <>
 StatementSet AffectsSolver::solve_affected_statements<AssignmentAst>(AssignmentAst *statement) {
     SimpleVariable modified_var = *statement->get_variable();
-    return solve_next_affected_by_var(modified_var, statement);
+
+    return to_statement_set(solve_next_affected_by_var(
+        modified_var, statement, CallStack()));
 }
 
 /*
  * Solve the set of statement that is next after that statementAST
  */
-StatementSet AffectsSolver::solve_next_affected_by_var(SimpleVariable var, StatementAst *statement) {
-    StatementSet next = _next_solver->solve_next_statement(statement);
+StackedStatementSet AffectsSolver::solve_next_affected_by_var(
+    SimpleVariable var, StatementAst *statement, CallStack callstack) 
+{
+    StackedStatementSet next = _next_solver->solve_next_bip_statement(statement, callstack);
     
-    StatementSet result;
+    StackedStatementSet result;
 
     for(auto it=next.begin(); it != next.end(); ++it) {
-        union_set(result, solve_affected_by_var<StatementAst>(var, *it));
+        union_set(result, solve_affected_by_var<StatementAst>(var, it->first, it->second));
     }
 
     return result;
 }
 
 template <>
-StatementSet AffectsSolver::solve_affected_by_var<StatementAst>(
-    SimpleVariable var, StatementAst *statement) 
+StackedStatementSet AffectsSolver::solve_affected_by_var<StatementAst>(
+    SimpleVariable var, StatementAst *statement, CallStack callstack) 
 {
-    std::pair<SimpleVariable, StatementAst*> key(var, statement);
-    if(_affected_by_var_cache.count(key) > 0) return _affected_by_var_cache[key];
+    std::pair<SimpleVariable, StackedStatement> trace(
+        var, StackedStatement(statement, callstack));
 
-    _affected_by_var_cache[key] = StatementSet();
+    if(_visit_cache.count(trace) > 0) return StackedStatementSet();
 
+    _visit_cache.insert(trace);
+
+    AffectsCtx ctx(var, callstack);
     StatementVisitorGenerator<AffectsSolver, SolveAffectedByVarVisitorTraits>
-        visitor(this, &var);
+        visitor(this, &ctx);
 
     statement->accept_statement_visitor(&visitor);
-    StatementSet result = visitor.return_result();
+    StackedStatementSet result = visitor.return_result();
 
-    _affected_by_var_cache[key] = result;
     return result;
 }
 
 template <>
-StatementSet AffectsSolver::solve_affected_by_var<AssignmentAst>(
-    SimpleVariable var, AssignmentAst *statement) 
+StackedStatementSet AffectsSolver::solve_affected_by_var<AssignmentAst>(
+    SimpleVariable var, AssignmentAst *statement, CallStack callstack) 
 {
-    return solve_affected_by_var_assignment(var, statement);
+    return solve_affected_by_var_assignment(var, statement, callstack);
 }
 
 template <>
-StatementSet AffectsSolver::solve_affected_by_var<IfAst>(
-    SimpleVariable var, IfAst *statement)
+StackedStatementSet AffectsSolver::solve_affected_by_var<IfAst>(
+    SimpleVariable var, IfAst *statement, CallStack callstack)
 {
-    return solve_next_affected_by_var(var, statement);
+    return solve_next_affected_by_var(var, statement, callstack);
 }
 
 template <>
-StatementSet AffectsSolver::solve_affected_by_var<WhileAst>(
-    SimpleVariable var, WhileAst *statement)
+StackedStatementSet AffectsSolver::solve_affected_by_var<WhileAst>(
+    SimpleVariable var, WhileAst *statement, CallStack callstack)
 {
-    return solve_next_affected_by_var(var, statement);
+    return solve_next_affected_by_var(var, statement, callstack);
 }
 
 template <>
-StatementSet AffectsSolver::solve_affected_by_var<CallAst>(
-    SimpleVariable var, CallAst *statement)
+StackedStatementSet AffectsSolver::solve_affected_by_var<CallAst>(
+    SimpleVariable var, CallAst *statement, CallStack callstack)
 {
     if(_modifies_solver->get_vars_modified_by_proc(
         statement->get_proc_called()).count(var) > 0)
     {
-        return StatementSet();
+        return StackedStatementSet();
     }
     
-    return solve_next_affected_by_var(var, statement);
+    return solve_next_affected_by_var(var, statement, callstack);
 }
-
 
 template <>
 StatementSet AffectsSolver::solve_affecting_statements<StatementAst>(StatementAst *statement) {
     if(_affecting_statements_cache.count(statement) > 0) return _affecting_statements_cache[statement];
 
-    _affecting_with_var_cache.clear();
+    _visit_cache.clear();
 
     StatementVisitorGenerator<AffectsSolver, SolveAffectingStatementsVisitorTraits>
     visitor(this);
@@ -225,74 +232,79 @@ StatementSet AffectsSolver::solve_affecting_statements<AssignmentAst>(Assignment
     
     StatementSet result;
     for(auto it=used_vars.begin(); it!= used_vars.end(); ++it) {
-        union_set(result, solve_prev_affecting_with_var(*it, statement));
+        union_set(result, to_statement_set(
+            solve_prev_affecting_with_var(*it, statement, CallStack())));
     }
 
     return result;
 }
 
-StatementSet AffectsSolver::solve_prev_affecting_with_var(SimpleVariable var, StatementAst *statement) {
-    StatementSet prev = _next_solver->solve_prev_statement(statement);
+StackedStatementSet AffectsSolver::solve_prev_affecting_with_var(
+    SimpleVariable var, StatementAst *statement, CallStack callstack) 
+{
+    StackedStatementSet prev = _next_solver->solve_prev_bip_statement(statement, callstack);
     
-    StatementSet result;
+    StackedStatementSet result;
     for(auto it=prev.begin(); it != prev.end(); ++it) {
-        union_set(result, solve_affecting_with_var<StatementAst>(var, *it));
+        union_set(result, solve_affecting_with_var<StatementAst>(var, it->first, it->second));
     }
 
     return result;
 }
 
 template <>
-StatementSet AffectsSolver::solve_affecting_with_var<StatementAst>(
-    SimpleVariable var, StatementAst *statement) 
+StackedStatementSet AffectsSolver::solve_affecting_with_var<StatementAst>(
+    SimpleVariable var, StatementAst *statement, CallStack callstack) 
 {
-    std::pair<SimpleVariable, StatementAst*> key(var, statement);
-    if(_affecting_with_var_cache.count(key) > 0) return _affecting_with_var_cache[key];
+    std::pair<SimpleVariable, StackedStatement> trace(
+        var, StackedStatement(statement, callstack));
 
-    _affecting_with_var_cache[key] = StatementSet();
+    if(_visit_cache.count(trace) > 0) return StackedStatementSet();
 
+    _visit_cache.insert(trace);
+
+    AffectsCtx ctx(var, callstack);
     StatementVisitorGenerator<AffectsSolver, SolveAffectingWithVarVisitorTraits>
-        visitor(this, &var);
+        visitor(this, &ctx);
 
     statement->accept_statement_visitor(&visitor);
-    StatementSet result = visitor.return_result();
+    StackedStatementSet result = visitor.return_result();
 
-    _affecting_with_var_cache[key] = result;
     return result;
 }
 
 template <>
-StatementSet AffectsSolver::solve_affecting_with_var<AssignmentAst>(
-    SimpleVariable var, AssignmentAst *statement) 
+StackedStatementSet AffectsSolver::solve_affecting_with_var<AssignmentAst>(
+    SimpleVariable var, AssignmentAst *statement, CallStack callstack) 
 {
-    return solve_affecting_with_var_assignment(var, statement);
+    return solve_affecting_with_var_assignment(var, statement, callstack);
 }
 
 template <>
-StatementSet AffectsSolver::solve_affecting_with_var<IfAst>(
-    SimpleVariable var, IfAst *statement)
+StackedStatementSet AffectsSolver::solve_affecting_with_var<IfAst>(
+    SimpleVariable var, IfAst *statement, CallStack callstack)
 {
-    return solve_prev_affecting_with_var(var, statement);
+    return solve_prev_affecting_with_var(var, statement, callstack);
 }
 
 template <>
-StatementSet AffectsSolver::solve_affecting_with_var<WhileAst>(
-    SimpleVariable var, WhileAst *statement)
+StackedStatementSet AffectsSolver::solve_affecting_with_var<WhileAst>(
+    SimpleVariable var, WhileAst *statement, CallStack callstack)
 {
-    return solve_prev_affecting_with_var(var, statement);
+    return solve_prev_affecting_with_var(var, statement, callstack);
 }
 
 template <>
-StatementSet AffectsSolver::solve_affecting_with_var<CallAst>(
-    SimpleVariable var, CallAst *statement)
+StackedStatementSet AffectsSolver::solve_affecting_with_var<CallAst>(
+    SimpleVariable var, CallAst *statement, CallStack callstack)
 {
     if(_modifies_solver->get_vars_modified_by_proc(
         statement->get_proc_called()).count(var) > 0)
     {
-        return StatementSet();
+        return StackedStatementSet();
     }
 
-    return solve_prev_affecting_with_var(var, statement);
+    return solve_prev_affecting_with_var(var, statement, callstack);
 }
 
 bool AffectsSolver::validate_affect(StatementAst *affecting, StatementAst *affected) {

@@ -91,6 +91,12 @@ SolverTable create_solver_table(SimpleRoot ast) {
     solver_table["iaffects"] = std::shared_ptr<QuerySolver>(
         new SimpleSolverGenerator<IAffectsSolver>(new IAffectsSolver(next_solver, modifies_solver)));
 
+    solver_table["affectsbip"] = std::shared_ptr<QuerySolver>(
+        new SimpleSolverGenerator<AffectsSolver>(new AffectsSolver(next_bip_solver, modifies_solver)));
+
+    solver_table["iaffectsbip"] = std::shared_ptr<QuerySolver>(
+        new SimpleSolverGenerator<IAffectsSolver>(new IAffectsSolver(next_bip_solver, modifies_solver)));
+
     return solver_table;
 }
 

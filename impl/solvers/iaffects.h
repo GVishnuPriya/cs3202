@@ -11,14 +11,14 @@ using namespace simple::util;
 
 class IAffectsSolver : public AffectsSolver {
   public:
-    IAffectsSolver(std::shared_ptr<NextQuerySolver> next_solver,
+    IAffectsSolver(std::shared_ptr<NextBipQuerySolver> next_solver,
         std::shared_ptr<ModifiesSolver> modifies_solver);
 
-    virtual StatementSet solve_affected_by_var_assignment(
-        SimpleVariable var, AssignmentAst *statement);
+    virtual StackedStatementSet solve_affected_by_var_assignment(
+        SimpleVariable var, AssignmentAst *statement, CallStack callstack);
 
-    virtual StatementSet solve_affecting_with_var_assignment(
-        SimpleVariable var, AssignmentAst *statement);
+    virtual StackedStatementSet solve_affecting_with_var_assignment(
+        SimpleVariable var, AssignmentAst *statement, CallStack callstack);
 };
 
 }
