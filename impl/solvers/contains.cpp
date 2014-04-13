@@ -145,27 +145,27 @@ void ContainsSolver::index_assign(AssignmentAst *assign_ast) {
     		right_set.insert(right_constant);
     		_right_index[right_constant].insert(left);
     }else if(type == BinaryOpET){
-    		ConditionPtr right_op(new SimpleOperatorCondition (expr_cast<BinaryOpAst>(right2)));
+    		ConditionPtr right_op(new SimpleOperatorCondition (expr_cast<BinaryOpAst>(right2)->get_op()));
     		right_set.insert(right_op);
     		_right_index[right_op].insert(left);
-    		index_operator(expr_cast<BinaryOpAst>(right2);
+    		index_operator(expr_cast<BinaryOpAst>(right2));
     }else{
-    		ConditionPtr right_var(new SimpleVariableCondition (right2));
+    		ConditionPtr right_var(new SimpleVariableCondition (*expr_cast<VariableAst>(right2)->get_variable()));
     		right_set.insert(right_var);
     		_right_index[right_var].insert(left);
     }
-    _left_index[left].insert(right_set);
+    _left_index[left]=right_set;
 }
 
 void ContainsSolver::index_operator(BinaryOpAst *op_ast){
-	ConditionPtr left(new SimpleOperatorCondition(op_ast));
+	ConditionPtr left(new SimpleOperatorCondition(expr_cast<BinaryOpAst>(op_ast)->get_op()));
     ExprAst *lhs = op_ast->get_lhs();
     ExprAst *rhs = op_ast->get_rhs();
     ConditionSet right_set;
-    union_set(right_set, index_expr(lhs, left));
-    union_set(right_set, index_expr(rhs, left));
+    right_set.union_with(index_expr(lhs, left));
+    right_set.union_with( index_expr(rhs, left));
 
-    _left_index[left].insert(right_set);
+    _left_index[left]=right_set;
 
 }
 
@@ -179,17 +179,17 @@ ConditionSet ContainsSolver::index_expr(ExprAst *expr_ast, ConditionPtr op_ptr){
     		right_set.insert(_constant);
     		_right_index[_constant].insert(op_ptr);
   }else if(type==BinaryOpET){
-    		ConditionPtr _op(new SimpleOperatorCondition (expr_ast));
+    		ConditionPtr _op(new SimpleOperatorCondition (expr_cast<BinaryOpAst>(expr_ast)->get_op()));
     		right_set.insert(_op);
     		_right_index[_op].insert(op_ptr);
-    		index_operator(expr_cast<BinaryOpAst>(expr_ast);
+    		index_operator(expr_cast<BinaryOpAst>(expr_ast));
   }else{
-    		ConditionPtr _var(new SimpleVariableCondition (expr_ast));
+    		ConditionPtr _var(new SimpleVariableCondition (*expr_cast<VariableAst>(expr_ast)->get_variable()));
     		right_set.insert(_var);
     		_right_index[_var].insert(op_ptr);
-    		break;
   }
     return right_set;
 }
-
+}
+}
 
