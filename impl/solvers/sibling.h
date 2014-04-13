@@ -31,25 +31,25 @@ namespace simple {
 
 		class SiblingSolver {
 		public:
-			SiblingSolver::SiblingSolver(SimpleRoot ast);
+			SiblingSolver(SimpleRoot ast);
 			
 
-			template <typename Condition>
+	template <typename Condition>
 			ConditionSet solve_right(Condition *condition) {
 				return ConditionSet();
 			}
 
-			template <typename Condition>
+	template <typename Condition>
 			ConditionSet solve_left(Condition *condition) {
 				return ConditionSet();
 			}
 
-			template <typename Condition1, typename Condition2>
+	template <typename Condition1, typename Condition2>
 			bool validate(Condition1 *condition1, Condition2 *condition2) {
 				return false;
 			}
 
-			// helper methods to index for solve-left
+	// helper methods to index for solve-left
 			void index_proc(ProcAst *proc);
 			void index_statement_list(StatementAst *statement);
 			void index_statement(StatementAst *statement) ;
@@ -65,56 +65,79 @@ namespace simple {
 			std::map<std::string, std::set<std::string>> _sibling_index;
 
 			std::map<ProcAst*, ProcSet> _sibling_proc_index;
-			std::map<StatementAst*, StatementSet> _sibling_statement_index;
+			//Statement statement also contain statement list <then,else> for if container
+			std::map<StatementAst*, StatementSet> _sibling_statement_index;	
 			std::map<ExprAst*, ExprSet> _sibling_expression_index;
+			std::map<VariableAst*, StatementSet> _sibling_container_index;
+			std::map<StatementAst*, ExprSet> _sibling_container_inverse_index;
 
 			std::string extract_string_from_expr(ExprAst* expr_ast);
-
-			template <typename Condition>
-			ConditionSet solve(Condition *condition) {
-				return ConditionSet();
-			}
 		};
-		
-		template <>
-		ConditionSet SiblingSolver::solve_left<StatementAst>(
-			StatementAst *ast);
 
-		template<>
-		ConditionSet SiblingSolver::solve_left<ProcAst>(ProcAst *proc);
+/*
+ * Solve left
+ */
+template<>
+ ConditionSet SiblingSolver::solve_left<ProcAst>(ProcAst *proc);
 
-		template <>
-		ConditionSet SiblingSolver::solve_left<StatementAst>(
-			StatementAst *statement);
+template <>
+ ConditionSet SiblingSolver::solve_left<StatementAst>(
+ 	StatementAst *statement);
 
-		template<>
-		ConditionSet SiblingSolver::solve_right<ProcAst>(ProcAst *proc);
+template<>
+ConditionSet SiblingSolver::solve_left<ContainerAst>(
+	ContainerAst *container);
 
-		template <>
-		ConditionSet SiblingSolver::solve_right<StatementAst>(
-			StatementAst *statement);
+template<>
+ ConditionSet SiblingSolver::solve_left<VariableAst>(
+ 	VariableAst *variable);
 
-		template<>
-		ConditionSet SiblingSolver::solve_right<ExprAst>(ExprAst *expr);
+template<>
+ ConditionSet SiblingSolver::solve_left<ExprAst>(
+ 	ExprAst *expr);
 
-		template <>
-		bool SiblingSolver::validate<StatementAst, StatementAst>(
-			StatementAst *left, StatementAst *right);
+/*
+ * Solve right
+ */
+template<>
+ ConditionSet SiblingSolver::solve_right<ProcAst>(ProcAst *proc);
 
-		template<>
-		bool SiblingSolver::validate<ProcAst, ProcAst>
-			(ProcAst *left, ProcAst *right);
+template <>
+ ConditionSet SiblingSolver::solve_right<StatementAst>(
+ 	StatementAst *statement);
 
-		template<>
-		bool SiblingSolver::validate<ExprAst, ExprAst>(ExprAst *left, 
-			ExprAst *right);
+template<>
+ ConditionSet SiblingSolver::solve_right<ContainerAst>(
+ 	ContainerAst *container);
 
-		template<>
-		bool SiblingSolver::validate<VariableAst, ExprAst>(VariableAst *left,
-			ExprAst *right);
+template<>
+ ConditionSet SiblingSolver::solve_right<VariableAst>(
+ 	VariableAst *variable);
 
-		template<>
-		bool SiblingSolver::validate<ExprAst, VariableAst>(ExprAst *left, 
-			VariableAst *right);
-	} // namespace impl
+template<>
+ ConditionSet SiblingSolver::solve_right<ExprAst>(ExprAst *expr);
+
+/*
+ * Validate
+ */
+template<>
+ bool SiblingSolver::validate<ProcAst, ProcAst>
+ (ProcAst *left, ProcAst *right);
+
+template <>
+ bool SiblingSolver::validate<StatementAst, StatementAst>(
+ 	StatementAst *left, StatementAst *right);
+
+template<>
+ bool SiblingSolver::validate<ExprAst, ExprAst>(ExprAst *left, 
+ 	ExprAst *right);
+
+template<>
+ bool SiblingSolver::validate<VariableAst, StatementAst>(VariableAst *left,
+ 	StatementAst *right);
+
+template<>
+ bool SiblingSolver::validate<StatementAst, VariableAst>(StatementAst *left,
+ 	VariableAst *right);
+} // namespace impl
 } // namespace simple

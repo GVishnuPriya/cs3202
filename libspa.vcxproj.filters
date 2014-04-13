@@ -162,6 +162,9 @@
     <ClCompile Include="impl\solvers\sibling.cpp">
       <Filter>Source Files\impl\solvers</Filter>
     </ClCompile>
+    <ClCompile Include="simple\next.cpp">
+      <Filter>Source Files\simple</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="impl\solvers\affects.h">
@@ -340,6 +343,9 @@
     </ClInclude>
     <ClInclude Include="simple\util\term_utils.h">
       <Filter>Header Files\simple\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="simple\next.h">
+      <Filter>Header Files\simple</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

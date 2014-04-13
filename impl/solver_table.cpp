@@ -70,21 +70,32 @@ SolverTable create_solver_table(SimpleRoot ast) {
 
     std::shared_ptr<NextSolver> next_solver(new NextSolver(ast));
 
+    std::shared_ptr<NextBipSolver> next_bip_solver(new NextBipSolver(
+        ast, next_solver, calls_solver));
+
     solver_table["next"] = std::shared_ptr<QuerySolver>(
         new SimpleSolverGenerator<NextSolver>(next_solver));
 
     solver_table["nextbip"] = std::shared_ptr<QuerySolver>(
-        new SimpleSolverGenerator<NextBipSolver>(
-            new NextBipSolver(ast, next_solver, calls_solver)));
+        new SimpleSolverGenerator<NextBipSolver>(next_bip_solver));
 
     solver_table["inext"] = std::shared_ptr<QuerySolver>(
         new SimpleSolverGenerator<INextSolver>(new INextSolver(ast, next_solver)));
+
+    solver_table["inextbip"] = std::shared_ptr<QuerySolver>(
+        new SimpleSolverGenerator<INextSolver>(new INextSolver(ast, next_bip_solver)));
 
     solver_table["affects"] = std::shared_ptr<QuerySolver>(
         new SimpleSolverGenerator<AffectsSolver>(new AffectsSolver(next_solver, modifies_solver)));
 
     solver_table["iaffects"] = std::shared_ptr<QuerySolver>(
         new SimpleSolverGenerator<IAffectsSolver>(new IAffectsSolver(next_solver, modifies_solver)));
+
+    solver_table["affectsbip"] = std::shared_ptr<QuerySolver>(
+        new SimpleSolverGenerator<AffectsSolver>(new AffectsSolver(next_bip_solver, modifies_solver)));
+
+    solver_table["iaffectsbip"] = std::shared_ptr<QuerySolver>(
+        new SimpleSolverGenerator<IAffectsSolver>(new IAffectsSolver(next_bip_solver, modifies_solver)));
 
     return solver_table;
 }

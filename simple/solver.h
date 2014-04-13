@@ -19,6 +19,7 @@
 #pragma once
 
 #include <map>
+#include <stack>
 #include "simple/ast.h"
 #include "simple/condition.h"
 #include "simple/condition_set.h"

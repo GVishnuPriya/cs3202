@@ -25,13 +25,17 @@
 #include "simple/condition_set.h"
 #include "simple/util/ast_utils.h"
 #include "simple/solver.h"
+#include "simple/next.h"
 
 namespace simple {
 namespace impl {
 
 using namespace simple;
 
-class NextBipSolver : public NextQuerySolver {
+class NextBipSolver : 
+    public NextQuerySolver,
+    public NextBipQuerySolver
+{
   public:
     NextBipSolver(SimpleRoot ast, 
         std::shared_ptr<NextQuerySolver> next_solver, 
@@ -50,7 +54,15 @@ class NextBipSolver : public NextQuerySolver {
 
     StatementSet solve_prev_statement(StatementAst *statement);
 
-    StatementSet solve_next_bip(StatementAst *statement);
+    StackedStatementSet solve_next_bip_statement(
+        StatementAst *statement, CallStack callstack);
+
+    StackedStatementSet solve_prev_bip_statement(
+        StatementAst *statement, CallStack callstack);
+
+    StackedStatementSet solve_next_bip(
+        StatementAst *statement, CallStack callstack);
+    
   private:
     SimpleRoot _ast; 
     std::shared_ptr<NextQuerySolver> _next_solver;

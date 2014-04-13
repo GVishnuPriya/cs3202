@@ -1,0 +1,74 @@
+procedure p{ a = x + y * b;
+	c = m - y + z * 3;
+	call a;
+	if b then {
+		while m {
+			m = m - 1;
+			k = m + b + d; }
+		b = b - m;
+	} else { x = b - d + x;
+		call q;
+		y = x + 5 * b; } }
+procedure q{ if i then {
+		b = x + (y - m) * i;
+		x = 2 - 8;
+		while b {
+			y = b - c - 3;
+			x = x + y;
+			if z then {
+				a = b * 3 + x + y;
+				x = i - y * 5;
+				while z {
+					a = b;
+					b = c + 3;
+					c = b - e;
+					e = c + d;
+					while x {
+						x = x + b;
+						b = b - 1; }}
+				if m then {
+					e = m - 1;
+					a = x - i;
+				} else { k = b + k - m; }
+			} else { if x then {
+					if m then {
+						y = x - 5;
+						call a;
+						m = y - 1;
+					} else { b = x + y - m; }
+					b = x + y + k;
+				} else { i = m - i;
+					while i {
+						y = x;
+						k = k + 1;
+						y = z - k - i; }}}
+			y = m + 3 * (5 * x) * b; }
+		y = x * x - 3;
+	} else { y = k - 5;
+		while k {
+			x = y;
+			call a; }}}
+procedure a{ while b {
+		while d {
+			x = m + i;
+			k = x - z - y; }}
+	b = m * i - k;
+	call d;
+	if i then {
+		a = b - m - x;
+	} else { e = b - m;
+		c = e + b * x; }
+	a = e + k; }
+procedure d { y = i + m + b;
+	if y then {
+		if m then {
+			if k then {
+				k = k + 1;
+			} else { y = y - 1; }
+		} else { y = y + 1; }
+	} else { while y {
+			y = y + k;
+			if y then {
+				k = k - m;
+			} else { c = b - m - x; }}}
+	c = k + y * 3;}
