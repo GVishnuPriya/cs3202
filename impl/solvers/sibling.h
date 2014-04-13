@@ -142,13 +142,5 @@ template<>
 template<>
  bool SiblingSolver::validate<StatementAst, VariableAst>(StatementAst *left,
  	VariableAst *right);
-
-template<>
- bool SiblingSolver::validate<VariableAst, ExprAst>(VariableAst *left,
- 	ExprAst *right);
-
-template<>
- bool SiblingSolver::validate<ExprAst, VariableAst>(ExprAst *left, 
- 	VariableAst *right);
 } // namespace impl
 } // namespace simple

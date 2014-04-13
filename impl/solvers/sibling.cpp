@@ -258,18 +258,6 @@ bool SiblingSolver::validate<ExprAst, ExprAst>(ExprAst *left,
         }
 }
 
-template<>
-bool SiblingSolver::validate<VariableAst, ExprAst>(VariableAst *left,
-    ExprAst *right){
-        return validate<ExprAst, ExprAst>(left, right);
-}
-
-template<>
-bool SiblingSolver::validate<ExprAst, VariableAst>(ExprAst *left, 
-    VariableAst *right){
-        return validate<ExprAst, ExprAst>(left, right);
-}
-
 //Procedure
 template<>
 ConditionSet SiblingSolver::solve_left<ProcAst>(ProcAst *proc)

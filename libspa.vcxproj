@@ -42,6 +42,7 @@
     <ClCompile Include="impl\solver_table.cpp" />
     <ClCompile Include="simple\ast.cpp" />
     <ClCompile Include="simple\condition_set.cpp" />
+    <ClCompile Include="simple\next.cpp" />
     <ClCompile Include="simple\query.cpp" />
     <ClCompile Include="simple\spa.cpp" />
     <ClCompile Include="simple\tuple.cpp" />
@@ -94,6 +95,7 @@
     <ClInclude Include="simple\condition.h" />
     <ClInclude Include="simple\condition_set.h" />
     <ClInclude Include="simple\linker.h" />
+    <ClInclude Include="simple\next.h" />
     <ClInclude Include="simple\predicate.h" />
     <ClInclude Include="simple\query.h" />
     <ClInclude Include="simple\solver.h" />
