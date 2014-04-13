@@ -438,74 +438,54 @@ TEST(INextTest, QuirksTest) {
     loop_prev.insert(a2);
     
     StatementSet result;
-    solver.solve_inext(loop1, result);
+    result = solver.solve_next_statement(loop1);
     EXPECT_EQ(result, loop_next);
 
-    result.clear();
-    EXPECT_TRUE(result.empty());
-    solver.solve_inext(condition1, result);
+    result = solver.solve_next_statement(condition1);
     EXPECT_EQ(result, loop_next);
 
-    result.clear();
-    solver.solve_inext(b3, result);
+    result = solver.solve_next_statement(b3);
     EXPECT_EQ(result, loop_next);
 
-    result.clear();
-    solver.solve_inext(loop2, result);
+    result = solver.solve_next_statement(loop2);
     EXPECT_EQ(result, loop_next);
 
-    result.clear();
-    solver.solve_inext(condition2, result);
+    result = solver.solve_next_statement(condition2);
     EXPECT_EQ(result, loop_next);
 
-    result.clear();
-    solver.solve_inext(c4, result);
+    result = solver.solve_next_statement(c4);
     EXPECT_EQ(result, loop_next);
 
-    result.clear();
-    solver.solve_inext(e2, result);
+    result = solver.solve_next_statement(e2);
     EXPECT_EQ(result, loop_next);
 
-    result.clear();
-    solver.solve_inext(f1, result);
+    result = solver.solve_next_statement(f1);
     EXPECT_EQ(result, loop_next);
 
-    result.clear();
-    solver.solve_inext(f2, result);
+    result = solver.solve_next_statement(f2);
     EXPECT_EQ(result, loop_next);
 
-    result.clear();
-    solver.solve_iprev(loop1, result);
+    result = solver.solve_prev_statement(loop1);
     EXPECT_EQ(result, loop_prev);
 
-    result.clear();
-    solver.solve_iprev(b2, result);
+    result = solver.solve_prev_statement(b2);
     EXPECT_EQ(result, loop_prev);
 
-    result.clear();
-    solver.solve_iprev(c1, result);
+    result = solver.solve_prev_statement(c1);
     EXPECT_EQ(result, loop_prev);
 
-    result.clear();
-    solver.solve_iprev(d3, result);
+    result = solver.solve_prev_statement(d3);
     EXPECT_EQ(result, loop_prev);
 
-    result.clear();
-    solver.solve_iprev(e1, result);
+    result = solver.solve_prev_statement(e1);
     EXPECT_EQ(result, loop_prev);
 
-    result.clear();
-    solver.solve_iprev(f2, result);
+    result = solver.solve_prev_statement(f2);
     EXPECT_EQ(result, loop_prev);
 
-    result.clear();
-    solver.solve_iprev(g1, result);
+    result = solver.solve_prev_statement(g1);
     EXPECT_EQ(result, loop_prev);
-
-
 }
-
-
 
 }
 }

@@ -114,5 +114,23 @@ class SimplePatternCondition : public PatternCondition {
     std::unique_ptr<ExprAst> _pattern;
 };
 
+class SimpleOperatorCondition : public OperatorCondition {
+  public:
+    SimpleOperatorCondition(char op) : _op(op) { }
+
+    char get_operator() {
+        return _op;
+    }
+
+    void accept_condition_visitor(ConditionVisitor *visitor) {
+        visitor->visit_operator_condition(this);
+    }
+
+    ~SimpleOperatorCondition() { }
+    
+  private:
+    char _op;
+};
+
 } // namespace impl
 } // namespace simple

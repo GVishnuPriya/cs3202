@@ -18,9 +18,27 @@
 
 #include <utility>
 #include <algorithm>
+#include <functional> 
+#include <cctype>
+#include <locale>
 #include "impl/ast.h"
 #include "impl/parser/pql_parser.h"
 #include "simple/util/term_utils.h"
+
+// these definitions are used to keep track of previous clause type
+#define PLACEHOLDER -1
+#define SUCH_THAT 0
+#define WITH 1
+#define PATTERN 2
+
+// to denote type of select query (eg. v.varname)
+enum SelectType {
+    StmtNum,
+    VarName,
+    ProcName,
+    Value,
+    Default
+};
 
 namespace simple {
 namespace parser {
@@ -117,26 +135,36 @@ void SimplePqlParser::parse_predicate() {
 void SimplePqlParser::parse_main_query() {
     _query_set.selector = parse_selector();
 
+    int prev_clause_type = PLACEHOLDER;
+    
     while(!(current_token_is<EOFToken>() || 
             current_token_is<SemiColonToken>())) 
     {
         std::string keyword = current_token_as_keyword();
         next_token(); // eat keyword
-
+                
         if(keyword == "such") {
             if(current_token_as_keyword() != "that") {
                 throw ParseError("Expected \"that\" keyword after \"such\".");
             } else {
                 next_token(); // eat "that"
-
                 _query_set.clauses.insert(parse_clause());
+                prev_clause_type = SUCH_THAT;
             }
         } else if(keyword == "and") {
-            _query_set.clauses.insert(parse_clause());
+            if (prev_clause_type == SUCH_THAT) {
+                _query_set.clauses.insert(parse_clause());
+            } else if (prev_clause_type == WITH) {
+                _query_set.clauses.insert(parse_with());
+            } else if (prev_clause_type == PATTERN) {
+                parse_pattern();
+            } 
         } else if(keyword == "with") {
             _query_set.clauses.insert(parse_with());
+            prev_clause_type = WITH;
         } else if(keyword == "pattern") {
             parse_pattern();
+            prev_clause_type = PATTERN;
         } else {
             throw ParseError("Invalid keyword " + keyword);
         }
@@ -164,10 +192,36 @@ std::shared_ptr<PqlSelector> SimplePqlParser::parse_selector() {
                 IdentifierToken>()->get_content();
 
         next_token(); // eat var name
-        eat_field();
+        
+        SimplePqlSingleVarSelector *selector =  new SimplePqlSingleVarSelector(selected_var);
+        
+        if(!current_token_is<DotToken>()) {
+            selector->set_select_type(Default);
+            return std::shared_ptr<PqlSelector>(selector);
+        }
 
-        return std::shared_ptr<PqlSelector>(
-            new SimplePqlSingleVarSelector(selected_var));
+        next_token(); // eat "."
+
+        std::string field1 = current_token_as_keyword();
+
+        if(field1 == "stmt") {
+            selector->set_select_type(StmtNum);
+            next_token_as<HashToken>();
+            next_token(); // eat #
+        } else if(field1 == "varname") {
+            selector->set_select_type(VarName);
+            next_token(); // eat keyword
+        } else if(field1 == "procname") {
+            selector->set_select_type(ProcName);
+            next_token(); // eat keyword
+        } else if(field1 == "value") {
+            selector->set_select_type(Value);
+            next_token(); // eat keyword
+        } else {
+            throw new ParseError("Invalid field name after dot");
+        }
+
+        return std::shared_ptr<PqlSelector>(selector);
     }
 }
 
@@ -206,8 +260,8 @@ ClausePtr SimplePqlParser::parse_clause() {
 
 PqlTerm* SimplePqlParser::parse_term() {
     if(current_token_is<LiteralToken>()) {
-        ConditionPtr condition = parse_condition(
-                current_token_as<LiteralToken>()->get_content());
+        ConditionPtr condition = parse_condition(string_trim(
+                current_token_as<LiteralToken>()->get_content()));
         next_token();
         return new SimplePqlConditionTerm(condition);
 
@@ -243,7 +297,7 @@ ConditionPtr SimplePqlParser::parse_condition(const std::string& name) {
 
 PqlTerm* SimplePqlParser::parse_expr_term() {
     if(current_token_is<LiteralToken>()) {
-        std::string expr_string = current_token_as<LiteralToken>()->get_content();
+        std::string expr_string = string_trim(current_token_as<LiteralToken>()->get_content());
         next_token();
 
         std::shared_ptr<SimpleTokenizer> tokenizer(
@@ -279,13 +333,23 @@ std::pair<PqlTerm*, bool> SimplePqlParser::parse_pattern_term() {
     if(current_token_is<CloseBracketToken>()) {
         return std::make_pair(new SimplePqlWildcardTerm(), false);
     }
-
+    
+    if (current_token_is<CommaToken>()) {
+         next_token();
+    
+        current_token_as<WildCardToken>();
+        next_token(); // eat "_"
+    
+        return std::make_pair(new SimplePqlWildcardTerm(), false);
+    }
+    
     PqlTerm* term = parse_expr_term();
-
+    
     current_token_as<WildCardToken>();
     next_token(); // eat "_"
 
     return std::make_pair(term, true);
+   
 }
 
 void SimplePqlParser::parse_pattern() {
@@ -306,7 +370,13 @@ void SimplePqlParser::parse_pattern() {
 
     current_token_as<CloseBracketToken>();
     next_token();
-
+    
+    PqlVariableTerm *cast_term1;
+    cast_term1 = static_cast<SimplePqlVariableTerm*>(term1);
+    
+    std::string qvar = cast_term1->get_query_variable();
+    std::shared_ptr<SimplePredicate> pred = _query_set.predicates[qvar];
+    
     PqlTermType type2 = get_term_type(term2);
     PqlTermType type3 = get_term_type(term3);
 
@@ -317,15 +387,18 @@ void SimplePqlParser::parse_pattern() {
 
     ClausePtr expr_clause(new SimplePqlClause(expr_solver, term1, term3));
     ClausePtr uses_clause(new SimplePqlClause(uses_solver, clone_term(term1), term2));
-
-    if(type2 == WildcardTT) {
-        _query_set.clauses.insert(expr_clause);
-    } else if(type3 == WildcardTT) {
-        _query_set.clauses.insert(uses_clause);
-    } else {
-        _query_set.clauses.insert(expr_clause);
+    
+    if (pred == get_predicate("assign")) {
+        if(type2 != WildcardTT) {
+            _query_set.clauses.insert(uses_clause);
+        } 
+        if(type3 != WildcardTT) {
+            _query_set.clauses.insert(expr_clause);
+        } 
+    } else if (pred == get_predicate("if") || pred == get_predicate("while")) {
         _query_set.clauses.insert(uses_clause);
     }
+    
 }
 
 void SimplePqlParser::eat_field() {
@@ -347,8 +420,8 @@ void SimplePqlParser::eat_field() {
 
 PqlTerm* SimplePqlParser::parse_with_term() {
     if(current_token_is<LiteralToken>()) {
-        ConditionPtr condition = parse_condition(
-                current_token_as<LiteralToken>()->get_content());
+        ConditionPtr condition = parse_condition(string_trim(
+                current_token_as<LiteralToken>()->get_content()));
         next_token();
         return new SimplePqlConditionTerm(condition);
     } 
@@ -356,8 +429,13 @@ PqlTerm* SimplePqlParser::parse_with_term() {
     if(current_token_is<IntegerToken>()) {
         int line = current_token_as<IntegerToken>()->get_value();
         next_token();
-        return new SimplePqlConditionTerm(
-               new SimpleStatementCondition(get_statement(line)));
+        try {
+            SimpleStatementCondition *condition = new SimpleStatementCondition(get_statement(line));
+            return new SimplePqlConditionTerm(condition);
+        } catch(ParseError& e) {
+            return new SimplePqlConditionTerm(new SimpleConstantCondition(line));
+        }
+        
     }
 
     std::string qvar = current_token_as<IdentifierToken>()->get_content();
@@ -468,5 +546,13 @@ StatementAst* SimplePqlParser::get_statement(int line) {
     return _line_table[line];
 }
 
+std::string SimplePqlParser::string_trim(std::string str) {
+    std::string s = str;
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
+    s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+    return s;
+}
+    
+    
 }
 }

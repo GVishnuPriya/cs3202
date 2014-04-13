@@ -15,6 +15,7 @@ set(SOURCE
   simple/condition_set.cpp 
   simple/spa.cpp 
   simple/tuple.cpp 
+  simple/next.cpp 
   simple/query.cpp 
   simple/util/ast_utils.cpp 
   simple/util/condition_utils.cpp 
@@ -45,6 +46,7 @@ set(SOURCE
   impl/solvers/contains.cpp
   impl/solvers/call.cpp 
   impl/solvers/icall.cpp 
+  impl/solvers/sibling.cpp 
   impl/solvers/uses.cpp 
   impl/parser/token.cpp 
   impl/parser/parser.cpp 

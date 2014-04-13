@@ -86,8 +86,9 @@ class PqlSelector {
 
 class PqlSingleVarSelector : public PqlSelector {
   public:
-    virtual std::string get_qvar_name() = 0;
-
+    virtual std::string get_qvar_name() = 0; 
+    virtual void set_select_type(int select_type)= 0;
+    virtual int get_select_type() = 0;
     virtual ~PqlSingleVarSelector() { }
 };
 

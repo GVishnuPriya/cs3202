@@ -18,11 +18,21 @@
 
 #include "impl/selector.h"
 #include "simple/util/condition_utils.h"
+#include "simple/util/ast_utils.h"
+#include <algorithm>
 
 namespace simple {
 namespace impl {
 
 using namespace simple;
+    
+enum SelectType {
+    StmtNum,
+    VarName,
+    ProcName,
+    Value,
+    Default
+};
 
 template <typename Selector>
 std::vector<std::string> format_selector(
@@ -45,15 +55,67 @@ std::vector<std::string> format_selector<PqlSingleVarSelector>(
     
     std::vector<std::string> result;
     
-	  if(!linker->is_valid_state()){
-		  return result;
-	  }
+	if(!linker->is_valid_state()){
+	    return result;
+	}
+    
+    switch(var_selector->get_select_type())
+    {
+        case StmtNum:
+            if(pred->get_predicate_name() != "statement" &&
+               pred->get_predicate_name() != "assign" &&
+               pred->get_predicate_name() != "if" &&
+               pred->get_predicate_name() != "while" &&
+               pred->get_predicate_name() != "call" )
+                return result;
+            break;
+        case VarName:
+            if(pred->get_predicate_name() != "variable")
+                return result;
+            break;
+        case ProcName:
+            if(pred->get_predicate_name() != "procedure" &&
+               pred->get_predicate_name() != "call")
+                return result;
+            break;            
+        case Value:
+            if(pred->get_predicate_name() != "constant")
+                return result;
+            break;
+        default:
+            break;
+            //continue on
+    }
 
     for(ConditionSet::iterator it = conditions.begin(); 
             it != conditions.end(); ++it)
     {
-        result.push_back(condition_to_string(*it));
-    }
+        switch(var_selector->get_select_type())
+        {
+            case StmtNum:
+            case VarName:
+            case Value:
+            case Default:
+                result.push_back(condition_to_string(*it));
+                break;
+            case ProcName:
+                if (pred->get_predicate_name() == "procedure") {
+                    result.push_back(condition_to_string(*it));
+                } else if (pred->get_predicate_name() == "call") {
+                    StatementCondition *state_cond = condition_cast<StatementCondition>(*it);
+                    CallAst *call_statement = statement_cast<CallAst>(state_cond->get_statement_ast());
+                    if(std::find(result.begin(), result.end(), call_statement->get_proc_called()->get_name()) == result.end()) {
+                        result.push_back(call_statement->get_proc_called()->get_name());
+                    } 
+                    
+                }
+                break;
+            default:
+                break;
+                //continue
+        }
+       // result.push_back(condition_to_string(*it));
+    };
 
     return result;
 }
@@ -65,9 +127,9 @@ std::vector<std::string> format_selector<PqlBooleanSelector>(
     std::vector<std::string> result;
 
     if(linker->is_valid_state()) {
-        result.push_back("true");
+        result.push_back("TRUE");
     } else {
-        result.push_back("false");
+        result.push_back("FALSE");
     }
 
     return result;

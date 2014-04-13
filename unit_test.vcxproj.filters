@@ -33,16 +33,10 @@
     <ClCompile Include="test\test_follows.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test\test_frontend.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="test\test_icall.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="test\test_ifollows.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="test\test_inext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="test\test_iparent.cpp">
@@ -55,9 +49,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="test\test_modifies.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="test\test_next.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="test\test_parent.cpp">
@@ -78,9 +69,6 @@
     <ClCompile Include="test\test_query.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test\test_solver.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="test\test_tokenizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -91,6 +79,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="test\test_expr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test\test_sibling.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

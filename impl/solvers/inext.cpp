@@ -29,79 +29,77 @@ using namespace simple::util;
 
 template <>
 ConditionSet INextSolver::solve_right<StatementAst>(StatementAst *statement) {
-    StatementSet result_stats;
-    solve_inext(statement, result_stats);
-
-    if(result_stats.size() == 0) {
-        // initialize empty set cache
-        _inext_cache[statement] = result_stats;
-        return ConditionSet();
-    }
-
-    ConditionSet result = statement_set_to_condition_set(result_stats);
-
-    // cache the result for future use
-    _inext_cache[statement] = std::move(result_stats);
-    return result;
+    return statement_set_to_condition_set(solve_next_statement(statement));
 }
 
 template <>
 ConditionSet INextSolver::solve_left<StatementAst>(StatementAst *statement) {
-    StatementSet result_stats;
-    solve_iprev(statement, result_stats);
-
-    if(result_stats.size() == 0) {
-        // initialize empty set cache
-        _iprev_cache[statement] = result_stats;
-        return ConditionSet();
-    }
-
-    ConditionSet result = statement_set_to_condition_set(result_stats);
-
-    // cache the result for future use
-    _iprev_cache[statement] = std::move(result_stats);
-    return result;
+    return statement_set_to_condition_set(solve_prev_statement(statement));
 }
 
+StatementSet INextSolver::solve_next_statement(StatementAst *statement) {
+    if(_inext_cache.count(statement) > 0) return _inext_cache[statement];
 
-void INextSolver::solve_inext(StatementAst *statement, StatementSet& results) {
-    if(_inext_cache.count(statement) > 0) {
-        union_set(results, _inext_cache[statement]);
-        return;
-    } else {
-        StatementSet direct_next = _next_solver->solve_next_statement(statement);
-        if(direct_next.size() == 0) {
-            return;
-        }
-        for(StatementSet::iterator it = direct_next.begin();
-            it != direct_next.end(); ++it)
-        {
-            if(results.count(*it) == 0) {
-                results.insert(*it);
-                solve_inext(*it, results);
-            }
-        }
-    }
+    _visit_cache.clear();
+    StatementSet results = to_statement_set(
+        solve_inext(statement, CallStack()));
+
+    _inext_cache[statement] = results;
+
+    return results;
 }
 
-void INextSolver::solve_iprev(StatementAst *statement, StatementSet& results) {
-    if(_iprev_cache.count(statement) > 0) {
-        union_set(results, _iprev_cache[statement]);
-        return;
-    } else {
-        StatementSet direct_prev = _next_solver->solve_prev_statement(statement);
-        if(direct_prev.size() == 0) {
-            return;
-        }
-        for(StatementSet::iterator it = direct_prev.begin();
-            it != direct_prev.end(); ++it)
-        {
-            if(results.count(*it) == 0) {
-                results.insert(*it);
-                solve_iprev(*it, results);
-            }
-        }
+StatementSet INextSolver::solve_prev_statement(StatementAst *statement) {
+    if(_iprev_cache.count(statement) > 0) return _iprev_cache[statement];
+
+    _visit_cache.clear();
+    StatementSet results = to_statement_set(
+        solve_iprev(statement, CallStack()));
+
+    _iprev_cache[statement] = results;
+    return results;
+}
+
+StackedStatementSet INextSolver::solve_inext(
+    StatementAst *statement, CallStack callstack) 
+{
+    StackedStatementSet results;
+
+    StackedStatement current_trace(statement, callstack);
+    if(_visit_cache.count(current_trace)) return StackedStatementSet();
+    _visit_cache.insert(current_trace);
+
+    StackedStatementSet direct_next = _next_solver->solve_next_bip_statement(
+        statement, callstack);
+    
+    union_set(results, direct_next);
+
+    for(auto it = direct_next.begin(); it != direct_next.end(); ++it) {
+        union_set(results, solve_inext(it->first, it->second));
     }
+
+    return results;
+}
+
+StackedStatementSet INextSolver::solve_iprev(
+    StatementAst *statement, CallStack callstack) 
+{
+    StackedStatementSet results;
+
+    StackedStatement current_trace(statement, callstack);
+    if(_visit_cache.count(current_trace)) return StackedStatementSet();
+    _visit_cache.insert(current_trace);
+
+    StackedStatementSet direct_prev = _next_solver->solve_prev_bip_statement(
+        statement, callstack);
+
+    union_set(results, direct_prev);
+
+    for(auto it = direct_prev.begin(); it != direct_prev.end(); ++it) {
+        union_set(results, solve_iprev(it->first, it->second));
+    }
+
+    return results;
 }
 
 template <>
