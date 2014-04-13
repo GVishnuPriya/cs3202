@@ -42,6 +42,7 @@ set(SOURCE
   impl/solvers/next_bip.cpp 
   impl/solvers/next_cached.cpp 
   impl/solvers/inext.cpp 
+  impl/solvers/contains.cpp
   impl/solvers/call.cpp 
   impl/solvers/icall.cpp 
   impl/solvers/uses.cpp 
