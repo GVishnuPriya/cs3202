@@ -71,7 +71,6 @@ TEST(SiblingTest, Test_Procedure) {
 	EXPECT_TRUE((solver.validate<ProcAst, ProcAst>(proc_second, proc_first)));	//Directly left sibling
 	EXPECT_TRUE((solver.validate<ProcAst, ProcAst>(proc_third, proc_first)));	//Indirectly sibling
 
-
 	/*
 	 * Negative testing
 	 */
@@ -147,7 +146,6 @@ TEST(SiblingTest, Test_Assignment) {
 	// x = 2
     SimpleAssignmentAst *assign1 = new SimpleAssignmentAst();
     SimpleVariable varX("x");
-	SimpleConstant const2(2);
 
     assign1->set_variable(varX);
 	assign1->set_expr(new SimpleConstAst(2));
@@ -159,7 +157,6 @@ TEST(SiblingTest, Test_Assignment) {
 	// z = 3
 	SimpleAssignmentAst *assign2 = new SimpleAssignmentAst();
     SimpleVariable varZ("z");
-	SimpleConstant const3(3);
 
 	assign2->set_variable(varZ);
 	assign2->set_expr(new SimpleConstAst(3));
@@ -170,7 +167,6 @@ TEST(SiblingTest, Test_Assignment) {
 
 	// x = 0
 	SimpleAssignmentAst *assign3 = new SimpleAssignmentAst();
-	SimpleConstant const0(0);
 
 	assign3->set_variable(varX);
 	assign3->set_expr(new SimpleConstAst(0));
@@ -192,7 +188,6 @@ TEST(SiblingTest, Test_Assignment) {
 	//i = 5
 	SimpleAssignmentAst *assign5 = new SimpleAssignmentAst();
 	SimpleVariable varI("i");
-	SimpleConstant const5(5);
 
 	assign5->set_variable(varI);
 	assign5->set_expr(new SimpleConstAst(5));
@@ -201,6 +196,7 @@ TEST(SiblingTest, Test_Assignment) {
 
 	set_next(assign4, assign5);
 
+	//Procedure
 	std::vector<ProcAst*> procs;
     procs.push_back(proc_first);
     procs.push_back(proc_second);
@@ -252,6 +248,127 @@ TEST(SiblingTest, Test_Assignment) {
 	EXPECT_NE(result, solver.solve_left<StatementAst>(assign4));
 }
 
+TEST(SiblingTest, Test_If){
+	/*
+	* procedure second{
+	*	x=0;
+	*	i=5;
+	*	if x then {
+	*		x = 1;}
+	*	else{
+	*		z = 1;}
+	*	z = i;}
+	*/
+
+	SimpleProcAst *proc_second = new SimpleProcAst("second");
+
+	//x = 0
+	SimpleAssignmentAst *assign1 = new SimpleAssignmentAst();
+	SimpleVariable varX("x");
+	SimpleConstant const0(0);
+
+	assign1->set_variable(varX);
+	assign1->set_expr(new SimpleConstAst(0));
+	assign1->set_line(1);
+	assign1->set_proc(proc_second);
+
+	proc_second->set_first_statement(assign1);
+
+	// i = 5
+	SimpleAssignmentAst *assign2 = new SimpleAssignmentAst();
+    SimpleVariable varI("i");
+
+	assign2->set_variable(varI);
+	assign2->set_expr(new SimpleConstAst(5));
+    assign2->set_line(2);
+    assign2->set_proc(proc_second);
+
+	set_next(assign1, assign2);
+
+	// if x 
+	SimpleIfAst *if_ = new SimpleIfAst();
+	if_->set_variable(varX);
+	if_->set_line(3);
+	
+	set_next(assign2, if_);
+
+	// x = 1;
+	SimpleAssignmentAst *if_then_assign = new SimpleAssignmentAst();
+	if_then_assign->set_variable(varX);
+
+	if_then_assign->set_expr(new SimpleConstAst(1));
+
+    if_then_assign->set_line(4);
+    if_then_assign->set_proc(proc_second);
+	if_->set_then_branch(if_then_assign);
+
+	// z = 1;
+	SimpleAssignmentAst *if_else_assign = new SimpleAssignmentAst();
+	SimpleVariable varZ("z");
+	if_else_assign->set_variable(varZ);
+	if_else_assign->set_expr(new SimpleConstAst(1));
+
+    if_else_assign->set_line(5);
+    if_else_assign->set_proc(proc_second);
+	if_->set_else_branch(if_else_assign);
+	
+	// z = i;
+	SimpleAssignmentAst *assign3 = new SimpleAssignmentAst();
+
+	assign3->set_variable(varZ);
+	assign3->set_expr(new SimpleVariableAst(varI));
+    assign3->set_line(6);
+    assign3->set_proc(proc_second);
+
+	set_next(if_, assign3);
+
+	//Solver
+	SimpleRoot root(proc_second);
+	SiblingSolver solver(root);
+
+	/*
+	 * Positive testing
+	 */
+	EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(assign2, if_)));	//Directly right sibling
+	EXPECT_TRUE((solver.validate<StatementAst, StatementAst>(assign1, if_)));	//Indirectly right sibling
+	EXPECT_TRUE((solver.validate<VariableAst, StatementAst>(varX, if_then_assign)));	//if inside 
+
+	/*
+	 * Negative testing
+	 */
+	EXPECT_FALSE((solver.validate<StatementAst, StatementAst>(if_else_assign, assign1)));	//Not inside the same nesting level
+	EXPECT_FALSE((solver.validate<StatementAst, StatementAst>(assign2, if_then_assign)));	//Not inside same nesting level
+
+	/*
+	 * Solve left and right
+	 * Since solve left and solve right is symmetric, the test case and result is the same 
+	 */
+	ConditionSet result;
+
+	//Left
+	//result.clear();
+	//result.insert(new SimpleStatementCondition(assign2));
+	//EXPECT_EQ(result, solver.solve_left<StatementAst>(assign1));
+
+	////Right
+	//result.clear();
+	//result.insert(new SimpleStatementCondition(assign1));
+	//EXPECT_EQ(result, solver.solve_left<StatementAst>(assign2));
+
+	////Middle
+	//result.clear();
+	//result.insert(new SimpleStatementCondition(assign3));
+	//result.insert(new SimpleStatementCondition(assign5));
+	//EXPECT_EQ(result, solver.solve_left<StatementAst>(assign4));
+
+
+	////Verify that it is not inter-procedure
+	//result.clear();
+	//result.insert(new SimpleStatementCondition(assign1));
+	//result.insert(new SimpleStatementCondition(assign2));
+	//result.insert(new SimpleStatementCondition(assign3));
+	//EXPECT_NE(result, solver.solve_left<StatementAst>(assign4));
+}
 TEST(SiblingTest, Test_Expression) {
 	/*
 	 * procedure first{

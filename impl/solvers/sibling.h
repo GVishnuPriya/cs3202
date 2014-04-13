@@ -121,19 +121,27 @@ namespace simple {
 		ConditionSet SiblingSolver::solve_right<ExprAst>(ExprAst *expr);
 
 		/*
-		 * Solve right
+		 * Validate
 		 */
+		template<>
+		bool SiblingSolver::validate<ProcAst, ProcAst>
+			(ProcAst *left, ProcAst *right);
+
 		template <>
 		bool SiblingSolver::validate<StatementAst, StatementAst>(
 			StatementAst *left, StatementAst *right);
 
 		template<>
-		bool SiblingSolver::validate<ProcAst, ProcAst>
-			(ProcAst *left, ProcAst *right);
-
-		template<>
 		bool SiblingSolver::validate<ExprAst, ExprAst>(ExprAst *left, 
 			ExprAst *right);
+
+		template<>
+		bool SiblingSolver::validate<VariableAst, StatementAst>(VariableAst *left,
+			StatementAst *right);
+
+		template<>
+		bool SiblingSolver::validate<StatementAst, VariableAst>(StatementAst *left,
+			VariableAst *right);
 
 		template<>
 		bool SiblingSolver::validate<VariableAst, ExprAst>(VariableAst *left,
