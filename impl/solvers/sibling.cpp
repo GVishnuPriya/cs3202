@@ -123,24 +123,48 @@ void SiblingSolver::index_if(IfAst *if_ast) {
 
 void SiblingSolver::index_assign(AssignmentAst *assign_ast) 
 {
-    SimpleVariable *variable = assign_ast->get_variable();
-    SimpleVariableAst variable_ast(*variable);
-
+    SimpleVariable *assign_variable = assign_ast->get_variable();
+	SimpleVariableAst assign_variable_ast(assign_variable->get_name());
     ExprAst *expr_ast = assign_ast->get_expr();
+
+	switch(get_expr_type(expr_ast))
+	{
+	case VariableET:
+		{
+			VariableAst *variable = expr_cast<VariableAst>(expr_ast);
+
+			_sibling_expression_index[&assign_variable_ast].insert(variable);
+			_sibling_expression_index[variable].insert(&assign_variable_ast);
+			break;
+		}
+	case ConstantET:
+		{
+			ConstAst *constant = expr_cast<ConstAst>(expr_ast);
+
+			_sibling_expression_index[&assign_variable_ast].insert(constant);
+			_sibling_expression_index[constant].insert(&assign_variable_ast);
+			break;
+		}
+	case BinaryOpET:
+		{
+			BinaryOpAst *binary = expr_cast<BinaryOpAst>(expr_ast);
+			SimpleBinaryOpAst *simple_binary = new SimpleBinaryOpAst();
+			simple_binary->set_op(binary->get_op());
+
+			_sibling_expression_index[&assign_variable_ast].insert(simple_binary);
+			_sibling_expression_index[simple_binary].insert(&assign_variable_ast);
+
+			index_expr(binary);
+			break;
+		}
+	default:
+		break;
+	}
 
 	string expr_string = top_node_from_expression(expr_ast);
 
-	_sibling_index[variable->get_name()].insert(expr_string);
-	_sibling_index[expr_string].insert(variable->get_name());
-
-	if(get_expr_type(expr_ast) == BinaryOpET)
-	{
-		index_expr(expr_ast);
-	}
-    
-    //Filling the Sibling table for expressions
-    _sibling_expression_index[&variable_ast].insert(expr_ast);
-    _sibling_expression_index[expr_ast].insert(&variable_ast);
+	_sibling_index[assign_variable->get_name()].insert(expr_string);
+	_sibling_index[expr_string].insert(assign_variable->get_name());
 }
 
 string SiblingSolver::top_node_from_expression(ExprAst *expr_ast)
@@ -169,6 +193,10 @@ string SiblingSolver::top_node_from_expression(ExprAst *expr_ast)
 
 void SiblingSolver::index_expr(ExprAst* expr_ast) 
 {
+	//Need to break down each of the expression into individual expression
+	//AST, or else there is no way to store them effectively to do solve 
+	//left and right
+
     if(get_expr_type(expr_ast) == BinaryOpET){
         BinaryOpAst *binary_ops_ast = expr_cast<BinaryOpAst>(
             expr_ast);
@@ -176,11 +204,35 @@ void SiblingSolver::index_expr(ExprAst* expr_ast)
         ExprAst *left_expr = binary_ops_ast->get_lhs();
         ExprAst *right_expr = binary_ops_ast->get_rhs();
 
-        //Filling the Sibling table for expressions
-        _sibling_expression_index[binary_ops_ast->get_lhs()].insert(
-            binary_ops_ast->get_rhs());
-        _sibling_expression_index[binary_ops_ast->get_rhs()].insert(
-            binary_ops_ast->get_lhs());
+		//9 different variation
+		// Variable, Operator, Constant all can mix and match
+
+		switch(get_expr_type(left_expr))
+		{
+		case VariableET:
+			{
+				VariableAst *variable = expr_cast<VariableAst>(expr_ast);
+				index_variable(variable, right_expr);
+				break;
+			}
+		case ConstantET:
+			{
+				ConstAst *constant = expr_cast<ConstAst>(expr_ast);
+				index_constant(constant, right_expr);
+				break;
+			}
+		case BinaryOpET:
+			{
+				BinaryOpAst *binary = expr_cast<BinaryOpAst>(expr_ast);
+				SimpleBinaryOpAst *simple_binary = new SimpleBinaryOpAst();
+				simple_binary->set_op(binary->get_op());
+
+				index_binary_op(simple_binary, right_expr);
+				break;
+			}
+		default:
+			break;
+		}
 
         _sibling_index[top_node_from_expression(left_expr)].insert(
             top_node_from_expression(right_expr));
@@ -190,6 +242,111 @@ void SiblingSolver::index_expr(ExprAst* expr_ast)
         index_expr(left_expr);
         index_expr(right_expr);
     }
+}
+
+void SiblingSolver::index_variable(VariableAst *variable_ast, ExprAst *expr_ast)
+{
+	switch(get_expr_type(expr_ast))
+	{
+	case VariableET:
+		{
+			VariableAst *variable = expr_cast<VariableAst>(expr_ast);
+
+			_sibling_expression_index[variable_ast].insert(variable);
+			_sibling_expression_index[variable].insert(variable_ast);
+			break;
+		}
+	case ConstantET:
+		{
+			ConstAst *constant = expr_cast<ConstAst>(expr_ast);
+
+			_sibling_expression_index[variable_ast].insert(constant);
+			_sibling_expression_index[constant].insert(variable_ast);
+			break;
+		}
+	case BinaryOpET:
+		{
+			BinaryOpAst *binary = expr_cast<BinaryOpAst>(expr_ast);
+			SimpleBinaryOpAst *simple_binary = new SimpleBinaryOpAst();
+			simple_binary->set_op(binary->get_op());
+
+			_sibling_expression_index[variable_ast].insert(simple_binary);
+			_sibling_expression_index[simple_binary].insert(variable_ast);
+			break;
+		}
+	default:
+		break;
+	}
+}
+
+void SiblingSolver::index_constant(ConstAst *constant_ast, ExprAst *expr_ast)
+{
+	switch(get_expr_type(expr_ast))
+	{
+	case VariableET:
+		{
+			VariableAst *variable = expr_cast<VariableAst>(expr_ast);
+
+			_sibling_expression_index[constant_ast].insert(variable);
+			_sibling_expression_index[variable].insert(constant_ast);
+			break;
+		}
+	case ConstantET:
+		{
+			ConstAst *constant = expr_cast<ConstAst>(expr_ast);
+
+			_sibling_expression_index[constant_ast].insert(constant);
+			_sibling_expression_index[constant].insert(constant_ast);
+			break;
+		}
+	case BinaryOpET:
+		{
+			BinaryOpAst *binary = expr_cast<BinaryOpAst>(expr_ast);
+			SimpleBinaryOpAst *simple_binary = new SimpleBinaryOpAst();
+			simple_binary->set_op(binary->get_op());
+
+			_sibling_expression_index[constant_ast].insert(simple_binary);
+			_sibling_expression_index[simple_binary].insert(constant_ast);
+			break;
+		}
+	default:
+		break;
+	}
+}
+
+void SiblingSolver::index_binary_op(BinaryOpAst *binary_op_ast, ExprAst *expr_ast)
+{
+	switch(get_expr_type(expr_ast))
+	{
+	case VariableET:
+		{
+			VariableAst *variable = expr_cast<VariableAst>(expr_ast);
+
+			_sibling_expression_index[binary_op_ast].insert(variable);
+			_sibling_expression_index[variable].insert(binary_op_ast);
+			break;
+		}
+	case ConstantET:
+		{
+			ConstAst *constant = expr_cast<ConstAst>(expr_ast);
+
+			_sibling_expression_index[binary_op_ast].insert(constant);
+			_sibling_expression_index[constant].insert(binary_op_ast);
+			break;
+		}
+	case BinaryOpET:
+		{
+			BinaryOpAst *binary = expr_cast<BinaryOpAst>(expr_ast);
+			SimpleBinaryOpAst *simple_binary = new SimpleBinaryOpAst();
+			simple_binary->set_op(binary->get_op());
+
+			_sibling_expression_index[binary_op_ast].insert(simple_binary);
+			_sibling_expression_index[simple_binary].insert(binary_op_ast);
+			break;
+		}
+	default:
+		break;
+	}
 }
 
 template <>
@@ -430,7 +587,29 @@ template<>
 ConditionSet SiblingSolver::solve_left<ExprAst>(
 	ExprAst *expr)
 {
-	return expr_set_to_condition_set(_sibling_expression_index[expr]);
+	switch(get_expr_type(expr))
+	{
+	case VariableET:
+		{
+			VariableAst *variable = expr_cast<VariableAst>(expr);
+			return expr_set_to_condition_set(_sibling_expression_index[variable]);
+		}
+	case ConstantET:
+		{
+			ConstAst *constant = expr_cast<ConstAst>(expr);
+			return expr_set_to_condition_set(_sibling_expression_index[constant]);
+		}
+	case BinaryOpET:
+		{
+			BinaryOpAst *binary = expr_cast<BinaryOpAst>(expr);
+			SimpleBinaryOpAst *simple_binary = new SimpleBinaryOpAst();
+			simple_binary->set_op(binary->get_op());
+
+			return expr_set_to_condition_set(_sibling_expression_index[simple_binary]);
+		}
+	default:
+		break;
+	}
 }
 
 template<>

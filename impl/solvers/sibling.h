@@ -57,7 +57,9 @@ namespace simple {
 			void index_if(IfAst *if_ast);
 			void index_assign(AssignmentAst *assign_ast);
 			void index_expr(ExprAst *expr_ast);
-			void index_variable(VariableAst *variable_ast);
+			void index_variable(VariableAst *variable_ast, ExprAst *expr_ast);
+			void index_constant(ConstAst *constant_ast, ExprAst *expr_ast);
+			void index_binary_op(BinaryOpAst *binary_op_ast, ExprAst *expr_ast);
 
 		private:
 			SimpleRoot _ast;
