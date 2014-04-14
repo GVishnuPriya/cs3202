@@ -201,7 +201,7 @@ template <>
 StackedStatementSet AffectsSolver::solve_affected_by_var<CallAst>(
     SimpleVariable var, CallAst *statement, CallStack callstack)
 {
-    if(_modifies_solver->get_vars_modified_by_proc(
+    if(!_next_solver->is_bip() && _modifies_solver->get_vars_modified_by_proc(
         statement->get_proc_called()).count(var) > 0)
     {
         return StackedStatementSet();
@@ -298,7 +298,7 @@ template <>
 StackedStatementSet AffectsSolver::solve_affecting_with_var<CallAst>(
     SimpleVariable var, CallAst *statement, CallStack callstack)
 {
-    if(_modifies_solver->get_vars_modified_by_proc(
+    if(!_next_solver->is_bip() && _modifies_solver->get_vars_modified_by_proc(
         statement->get_proc_called()).count(var) > 0)
     {
         return StackedStatementSet();

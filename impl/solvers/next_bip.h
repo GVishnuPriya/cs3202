@@ -60,13 +60,27 @@ class NextBipSolver :
     StackedStatementSet solve_prev_bip_statement(
         StatementAst *statement, CallStack callstack);
 
+    bool is_bip();
+
     StackedStatementSet solve_next_bip(
         StatementAst *statement, CallStack callstack);
     
+    void index_last_proc_statement(ProcAst *proc);
+
+    StatementSet last_statements_in_list(StatementAst *statement);
+    StatementSet last_statements_in_statement(StatementAst *statement);
+    StatementSet last_statements_in_while(WhileAst *ast);
+    StatementSet last_statements_in_if(IfAst *ast);
+    StatementSet last_statements_in_assign(AssignmentAst *assign);
+    StatementSet last_statements_in_call(CallAst *call);
+
   private:
     SimpleRoot _ast; 
+
     std::shared_ptr<NextQuerySolver> _next_solver;
     std::shared_ptr<CallsQuerySolver> _calls_solver;
+
+    std::map< ProcAst*, StatementSet > _last_statement_index;
 };
 
 template <typename Condition>

@@ -20,6 +20,8 @@ class NextBipQuerySolver {
     virtual StackedStatementSet solve_prev_bip_statement(
         StatementAst *statement, CallStack callstack) = 0;
 
+    virtual bool is_bip() = 0;
+
     virtual ~NextBipQuerySolver() { }
 };
 
@@ -33,6 +35,8 @@ class SimpleNextQuerySolver :
 
     virtual StackedStatementSet solve_prev_bip_statement(
         StatementAst *statement, CallStack callstack);
+
+    virtual bool is_bip();
 
     virtual ~SimpleNextQuerySolver() { }
 };
