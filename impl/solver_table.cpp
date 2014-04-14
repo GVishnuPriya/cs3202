@@ -15,6 +15,7 @@
 #include "impl/solvers/expr.h"
 #include "impl/solvers/iexpr.h"
 #include "impl/solvers/modifies.h"
+#include "impl/solvers/sibling.h"
 #include "impl/solvers/uses.h"
 #include "impl/solvers/next.h"
 #include "impl/solvers/next_bip.h"
@@ -99,6 +100,8 @@ SolverTable create_solver_table(SimpleRoot ast) {
         new SimpleSolverGenerator<IAffectsSolver>(new IAffectsSolver(next_bip_solver, modifies_solver)));
 
     solver_table["contains"] = std::shared_ptr<QuerySolver>(new ContainsSolver(ast));
+
+    solver_table["sibling"] = std::shared_ptr<QuerySolver>(new SiblingSolver(ast));
 
     return solver_table;
 }
