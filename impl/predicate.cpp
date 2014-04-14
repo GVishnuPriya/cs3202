@@ -316,6 +316,71 @@ std::string ConstantPredicate::get_name() {
     return "constant";
 }
 
+
+OperatorPredicate::OperatorPredicate() { }
+
+template <typename Condition>
+bool OperatorPredicate::evaluate(Condition *condition) {
+    return false;
+}
+
+template <>
+bool OperatorPredicate::evaluate<OperatorCondition>(OperatorCondition *op) {
+    return true;
+}
+
+std::string OperatorPredicate::get_name() {
+    return "operator";
+}
+
+MinusPredicate::MinusPredicate() { }
+
+template <typename Condition>
+bool MinusPredicate::evaluate(Condition *condition) {
+    return false;
+}
+
+template <>
+bool MinusPredicate::evaluate<OperatorCondition>(OperatorCondition *op) {
+    return op->get_operator() == '-';
+}
+
+std::string MinusPredicate::get_name() {
+    return "minus";
+}
+
+PlusPredicate::PlusPredicate() { }
+
+template <typename Condition>
+bool PlusPredicate::evaluate(Condition *condition) {
+    return false;
+}
+
+template <>
+bool PlusPredicate::evaluate<OperatorCondition>(OperatorCondition *op) {
+    return op->get_operator() == '+';
+}
+
+std::string PlusPredicate::get_name() {
+    return "plus";
+}
+
+TimesPredicate::TimesPredicate() { }
+
+template <typename Condition>
+bool TimesPredicate::evaluate(Condition *condition) {
+    return false;
+}
+
+template <>
+bool TimesPredicate::evaluate<OperatorCondition>(OperatorCondition *op) {
+    return op->get_operator() == '*';
+}
+
+std::string TimesPredicate::get_name() {
+    return "times";
+}
+
 template class PredicateGenerator<WildCardPredicate>;
 template class PredicateGenerator<ProcPredicate>;
 template class PredicateGenerator<StatementPredicate>;
@@ -325,9 +390,10 @@ template class PredicateGenerator<IfPredicate>;
 template class PredicateGenerator<CallPredicate>;
 template class PredicateGenerator<VariablePredicate>;
 template class PredicateGenerator<ConstantPredicate>;
-
-
-
+template class PredicateGenerator<MinusPredicate>;
+template class PredicateGenerator<PlusPredicate>;
+template class PredicateGenerator<TimesPredicate>;
+template class PredicateGenerator<OperatorPredicate>;
 
 
 } // namespace impl

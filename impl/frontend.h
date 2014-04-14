@@ -31,9 +31,9 @@
 
 #include "impl/linker.h"
 #include "impl/selector.h"
-#include "impl/predicate.h"
 #include "impl/processor.h"
 #include "impl/solver_table.h"
+#include "impl/predicate_table.h"
 
 namespace simple {
 namespace impl {
@@ -89,17 +89,8 @@ class SimplePqlFrontEnd {
     }
 
     void populate_predicates() {
-        _wildcard_pred = PredicatePtr(new SimpleWildCardPredicate(_ast));
-
-        _pred_table["wildcard"] = _wildcard_pred;
-        _pred_table["procedure"] = PredicatePtr(new SimpleProcPredicate(_ast));
-        _pred_table["statement"] = PredicatePtr(new SimpleStatementPredicate(_ast));
-        _pred_table["assign"] = PredicatePtr(new SimpleAssignmentPredicate(_ast));
-        _pred_table["while"] = PredicatePtr(new SimpleWhilePredicate(_ast));
-        _pred_table["if"] = PredicatePtr(new SimpleIfPredicate(_ast));
-        _pred_table["call"] = PredicatePtr(new SimpleCallPredicate(_ast));
-        _pred_table["var"] = PredicatePtr(new SimpleVariablePredicate(_ast));
-        _pred_table["const"] = PredicatePtr(new SimpleConstantPredicate(_ast));
+        _pred_table = create_predicate_table(_ast);
+        _wildcard_pred = _pred_table["wildcard"];
     }
 
   private:

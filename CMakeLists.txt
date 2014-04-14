@@ -27,6 +27,7 @@ set(SOURCE
   impl/processor.cpp 
   impl/selector.cpp 
   impl/solver_table.cpp 
+  impl/predicate_table.cpp 
   impl/solvers/affects.cpp 
   impl/solvers/iaffects.cpp 
   impl/solvers/assign.cpp 

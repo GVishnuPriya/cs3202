@@ -81,12 +81,11 @@ void SimplePqlParser::parse_predicate() {
     next_token(); // eat keyword
 
     std::shared_ptr<SimplePredicate> pred;
-    bool check = true;
 
     if(keyword == "procedure") {
         pred = get_predicate("procedure");
     } else if(keyword == "prog_line" || keyword == "stmt" || 
-            keyword == "stmtlist" || keyword == "statement") 
+            keyword == "stmtlist" || keyword == "stmtlst" || keyword == "statement") 
     {
         pred = get_predicate("statement");
     } else if(keyword == "assign") {
@@ -101,19 +100,20 @@ void SimplePqlParser::parse_predicate() {
         pred = get_predicate("call");
     } else if (keyword == "const" || keyword == "constant") {
         pred = get_predicate("const");
-    } else if (keyword == "stmtlst" || keyword == "minus" || keyword == "plus" || keyword == "times"){
-      check = false;
+    } else if(keyword == "op" || keyword == "operator") {
+        pred = get_predicate("operator");
+    } else if (keyword == "minus" || keyword == "plus" || keyword == "times"){
+        pred = get_predicate(keyword);
     } else {
         pred = get_predicate(keyword);
     }
 
     while(true) {
-      if(check){
         std::string qvar = current_token_as<
                     IdentifierToken>()->get_content();
 
         _query_set.predicates[qvar] = pred;
-      }
+
         next_token(); // eat var name
 
         if(current_token_is<SemiColonToken>()) {

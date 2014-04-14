@@ -157,6 +157,46 @@ class ConstantPredicate {
     static std::string get_name();
 };
 
+class OperatorPredicate {
+  public:
+    OperatorPredicate();
+
+    template <typename Condition>
+    bool evaluate(Condition *condition);
+
+    static std::string get_name();
+};
+
+class MinusPredicate {
+  public:
+    MinusPredicate();
+
+    template <typename Condition>
+    bool evaluate(Condition *condition);
+
+    static std::string get_name();
+};
+
+class PlusPredicate {
+  public:
+    PlusPredicate();
+
+    template <typename Condition>
+    bool evaluate(Condition *condition);
+
+    static std::string get_name();
+};
+
+class TimesPredicate {
+  public:
+    TimesPredicate();
+
+    template <typename Condition>
+    bool evaluate(Condition *condition);
+
+    static std::string get_name();
+};
+
 typedef PredicateGenerator<WildCardPredicate>       SimpleWildCardPredicate;
 typedef PredicateGenerator<ProcPredicate>           SimpleProcPredicate;
 typedef PredicateGenerator<StatementPredicate>      SimpleStatementPredicate;
@@ -166,6 +206,10 @@ typedef PredicateGenerator<IfPredicate>             SimpleIfPredicate;
 typedef PredicateGenerator<CallPredicate>           SimpleCallPredicate;
 typedef PredicateGenerator<VariablePredicate>       SimpleVariablePredicate;
 typedef PredicateGenerator<ConstantPredicate>       SimpleConstantPredicate;
+typedef PredicateGenerator<OperatorPredicate>       SimpleOperatorPredicate;
+typedef PredicateGenerator<MinusPredicate>          SimpleMinusPredicate;
+typedef PredicateGenerator<PlusPredicate>           SimplePlusPredicate;
+typedef PredicateGenerator<TimesPredicate>          SimpleTimesPredicate;
 
 template <>
 bool ProcPredicate::evaluate<ProcAst>(ProcAst *proc);
@@ -200,6 +244,17 @@ bool VariablePredicate::evaluate<SimpleVariable>(SimpleVariable *variable);
 template <>
 bool ConstantPredicate::evaluate<SimpleConstant>(SimpleConstant *constant);
 
+template <>
+bool MinusPredicate::evaluate<OperatorCondition>(OperatorCondition *op);
+
+template <>
+bool OperatorPredicate::evaluate<OperatorCondition>(OperatorCondition *op);
+
+template <>
+bool PlusPredicate::evaluate<OperatorCondition>(OperatorCondition *op);
+
+template <>
+bool TimesPredicate::evaluate<OperatorCondition>(OperatorCondition *op);
 
 }
 }
