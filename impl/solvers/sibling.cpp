@@ -549,7 +549,7 @@ ConditionSet SiblingSolver::solve_left<ContainerAst>(
 			return expr_set_to_condition_set(_sibling_container_inverse_index[statement_cast<WhileAst>(container)->get_body()]);
 
 		default:
-			return NULL;
+			return ConditionSet();
 		}
 }
 
@@ -566,7 +566,7 @@ ConditionSet SiblingSolver::solve_right<ContainerAst>(
 			return expr_set_to_condition_set(_sibling_container_inverse_index[statement_cast<WhileAst>(container)->get_body()]);
 
 		default:
-			return NULL;
+			return ConditionSet();
 		}
 }
 
@@ -608,6 +608,7 @@ ConditionSet SiblingSolver::solve_left<ExprAst>(
 			return expr_set_to_condition_set(_sibling_expression_index[simple_binary]);
 		}
 	default:
+    return ConditionSet();
 		break;
 	}
 }

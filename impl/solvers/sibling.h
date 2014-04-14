@@ -73,7 +73,7 @@ namespace simple {
 			std::map<VariableAst*, StatementSet> _sibling_container_index;
 			std::map<StatementAst*, ExprSet> _sibling_container_inverse_index;
 
-			std::string SiblingSolver::top_node_from_expression(ExprAst *expr_ast);
+			std::string top_node_from_expression(ExprAst *expr_ast);
 		};
 
 /*

@@ -44,6 +44,7 @@ set(SOURCE
   impl/solvers/next_cached.cpp 
   impl/solvers/inext.cpp 
   impl/solvers/contains.cpp
+  impl/solvers/sibling.cpp
   impl/solvers/call.cpp 
   impl/solvers/icall.cpp 
   impl/solvers/uses.cpp 
