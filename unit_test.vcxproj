@@ -85,6 +85,7 @@
     <ClCompile Include="test\test_predicate.cpp" />
     <ClCompile Include="test\test_processor.cpp" />
     <ClCompile Include="test\test_query.cpp" />
+    <ClCompile Include="test\test_sibling.cpp" />
     <ClCompile Include="test\test_tokenizer.cpp" />
     <ClCompile Include="test\test_types.cpp" />
     <ClCompile Include="test\test_uses.cpp" />
