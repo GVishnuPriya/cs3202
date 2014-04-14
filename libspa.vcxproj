@@ -17,11 +17,13 @@
     <ClCompile Include="impl\parser\pql_parser.cpp" />
     <ClCompile Include="impl\parser\token.cpp" />
     <ClCompile Include="impl\predicate.cpp" />
+    <ClCompile Include="impl\predicate_table.cpp" />
     <ClCompile Include="impl\processor.cpp" />
     <ClCompile Include="impl\selector.cpp" />
     <ClCompile Include="impl\solvers\affects.cpp" />
     <ClCompile Include="impl\solvers\assign.cpp" />
     <ClCompile Include="impl\solvers\call.cpp" />
+    <ClCompile Include="impl\solvers\contains.cpp" />
     <ClCompile Include="impl\solvers\direct_uses.cpp" />
     <ClCompile Include="impl\solvers\equal.cpp" />
     <ClCompile Include="impl\solvers\expr.cpp" />
@@ -42,7 +44,7 @@
     <ClCompile Include="impl\solver_table.cpp" />
     <ClCompile Include="simple\ast.cpp" />
     <ClCompile Include="simple\condition_set.cpp" />
-    <ClCompile Include="simple\next.cpp" />
+    <ClCompile Include="simple\next_solver.cpp" />
     <ClCompile Include="simple\query.cpp" />
     <ClCompile Include="simple\spa.cpp" />
     <ClCompile Include="simple\tuple.cpp" />
