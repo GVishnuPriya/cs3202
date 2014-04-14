@@ -17,6 +17,10 @@ StackedStatementSet SimpleNextQuerySolver::solve_prev_bip_statement(
     return to_stacked_statement_set(result);
 }
 
+bool SimpleNextQuerySolver::is_bip() {
+    return false;
+}
+
 StatementSet to_statement_set(const StackedStatementSet& statement_set) {
     StatementSet result;
 

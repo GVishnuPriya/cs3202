@@ -20,7 +20,7 @@ bool is_last_container_statement(StatementAst *statement) {
     StatementAst *parent = statement->get_parent();
 
     if(!next && !parent) return true;
-    if(!next && parent) return is_last_statement(parent);
+    if(!next && parent) return is_last_container_statement(parent);
 
     return false;
 }
@@ -38,9 +38,15 @@ NextBipSolver::NextBipSolver(SimpleRoot ast,
     std::shared_ptr<CallsQuerySolver> calls_solver) :
     _ast(ast), _next_solver(next_solver),
     _calls_solver(calls_solver)
-{ }
+{ 
+    for(auto it=ast.begin(); it!=ast.end(); ++it) {
+        index_last_proc_statement(*it);
+    }
+}
 
-StackedStatementSet NextBipSolver::solve_next_bip(StatementAst *statement, CallStack callstack) {
+StackedStatementSet NextBipSolver::solve_next_bip(
+    StatementAst *statement, CallStack callstack) 
+{
     StatementSet next_result = _next_solver->solve_next_statement(statement);
 
     StackedStatementSet result;
@@ -94,7 +100,19 @@ StackedStatementSet NextBipSolver::solve_prev_bip_statement(
     StackedStatementSet result;
     
     for(auto it = next_result.begin(); it != next_result.end(); ++it) {
-        result.insert(StackedStatement(*it, callstack));
+        StatementAst *next_statement = *it;
+        CallAst *calls = statement_cast<CallAst>(next_statement);
+
+        if(!calls) {
+            result.insert(StackedStatement(*it, callstack));
+        } else {
+            CallStack current_stack(callstack);
+
+            StatementSet last_statements = _last_statement_index[calls->get_proc_called()];
+            for(auto it2 = last_statements.begin(); it2 != last_statements.end(); ++it2) {
+                result.insert(StackedStatement(*it2, current_stack));
+            }
+        }
     }
 
     if(!is_first_statement(statement)) return result;
@@ -117,6 +135,10 @@ StackedStatementSet NextBipSolver::solve_prev_bip_statement(
     return result;
 }
 
+bool NextBipSolver::is_bip() {
+    return true;
+}
+
 StatementSet NextBipSolver::solve_next_statement(StatementAst *statement) {
     CallStack callstack;
 
@@ -127,6 +149,66 @@ StatementSet NextBipSolver::solve_prev_statement(StatementAst *statement) {
     CallStack callstack;
 
     return to_statement_set(solve_prev_bip_statement(statement, callstack));
+}
+
+
+void NextBipSolver::index_last_proc_statement(ProcAst *proc) {
+    _last_statement_index[proc] = last_statements_in_list(proc->get_statement());
+}
+
+StatementSet NextBipSolver::last_statements_in_list(StatementAst *statement) {
+    while(statement->next() != NULL) {
+        statement = statement->next();
+    }
+
+    return last_statements_in_statement(statement);
+}
+
+StatementSet NextBipSolver::last_statements_in_statement(StatementAst *statement) {
+    switch(get_statement_type(statement)) {
+        case WhileST:
+            return last_statements_in_while(statement_cast<WhileAst>(statement));
+        break;
+        case IfST:
+            return last_statements_in_if(statement_cast<IfAst>(statement));
+        break;
+        case AssignST:
+            return last_statements_in_assign(statement_cast<AssignmentAst>(statement));
+        break;
+        case CallST:
+            return last_statements_in_call(statement_cast<CallAst>(statement));
+        break;
+        default:
+            return StatementSet();
+        break;
+    }
+}
+
+StatementSet NextBipSolver::last_statements_in_while(WhileAst *ast) {
+    StatementSet result = last_statements_in_statement(ast->get_body());
+    result.insert(ast);
+
+    return result;
+}
+
+StatementSet NextBipSolver::last_statements_in_if(IfAst *ast) {
+    StatementSet then_result = last_statements_in_statement(ast->get_then_branch());
+    StatementSet else_result = last_statements_in_statement(ast->get_else_branch());
+
+    union_set(then_result, else_result);
+    return then_result;
+}
+
+StatementSet NextBipSolver::last_statements_in_assign(AssignmentAst *assign) {
+    StatementSet result;
+    result.insert(assign);
+    return result;
+}
+
+StatementSet NextBipSolver::last_statements_in_call(CallAst *call) {
+    StatementSet result;
+    result.insert(call);
+    return result;
 }
 
 template <>
