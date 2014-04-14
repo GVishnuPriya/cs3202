@@ -99,7 +99,8 @@ SolverTable create_solver_table(SimpleRoot ast) {
     solver_table["iaffectsbip"] = std::shared_ptr<QuerySolver>(
         new SimpleSolverGenerator<IAffectsSolver>(new IAffectsSolver(next_bip_solver, modifies_solver)));
 
-    solver_table["contains"] = std::shared_ptr<QuerySolver>(new ContainsSolver(ast));
+    solver_table["contains"] = std::shared_ptr<QuerySolver>(new ContainsSolver(ast, false));
+    solver_table["icontains"] = std::shared_ptr<QuerySolver>(new ContainsSolver(ast, true));
 
     solver_table["sibling"] = std::shared_ptr<QuerySolver>(new SiblingSolver(ast));
 

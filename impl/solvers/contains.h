@@ -17,7 +17,7 @@ using namespace simple;
 
 class ContainsSolver : public QuerySolver {
   public:
-  	ContainsSolver(SimpleRoot ast);
+  	ContainsSolver(SimpleRoot ast, bool indirect);
 
     bool validate(SimpleCondition *left_condition, SimpleCondition *right_condition);
 
@@ -27,29 +27,29 @@ class ContainsSolver : public QuerySolver {
 
   private:
   	SimpleRoot _ast;
+    bool _indirect;
 
     std::map< ConditionPtr, ConditionSet > _left_index;
     std::map< ConditionPtr, ConditionSet > _right_index;
 
-    void index_condition(ConditionPtr left, ConditionPtr right);
+    void index_contains(ConditionPtr left, ConditionPtr right);
+    ConditionSet index_contains_set(ConditionPtr left, ConditionSet right);
 
     void index_proc(ProcAst *proc);
-    void index_statement_list(
-      StatementAst *statement, ConditionPtr parent);
+    ConditionSet index_statement_list(
+      StatementAst *statement);
 
-    void index_statement(StatementAst *statement) ;
-    void index_while(WhileAst *while_ast);
-    void index_if(IfAst *if_ast);
-    void index_assign(AssignmentAst *assign_ast);
+    ConditionSet index_statement(StatementAst *statement) ;
+    ConditionSet index_while(WhileAst *while_ast);
+    ConditionSet index_if(IfAst *if_ast);
+    ConditionSet index_assign(AssignmentAst *assign_ast);
 
-    void index_expr(ExprAst *expr, ConditionPtr parent);
+    ConditionSet index_expr(ExprAst *expr);
 
-    void index_binary_op_expr(BinaryOpAst *expr, ConditionPtr parent);
-    void index_const_expr(ConstAst *expr, ConditionPtr parent);
-    void index_var_expr(VariableAst *expr, ConditionPtr parent);
+    ConditionSet index_binary_op_expr(BinaryOpAst *expr);
+    ConditionSet index_const_expr(ConstAst *expr);
+    ConditionSet index_var_expr(VariableAst *expr);
 };
-
-
 
 } // namespace impl
 } // namespace simple

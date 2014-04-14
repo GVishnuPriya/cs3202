@@ -16,7 +16,9 @@ namespace impl {
 using namespace simple;
 using namespace simple::util;
 
-ContainsSolver::ContainsSolver(SimpleRoot ast) : _ast(ast) {
+ContainsSolver::ContainsSolver(SimpleRoot ast, bool indirect) : 
+    _ast(ast), _indirect(indirect) 
+{
     for (auto it = _ast.begin(); it!= _ast.end(); ++it) {
         index_proc(*it);
     }
@@ -41,122 +43,148 @@ ConditionSet ContainsSolver::solve_right(SimpleCondition *left_condition) {
     return _left_index[left];
 }
 
-void ContainsSolver::index_condition(ConditionPtr left, ConditionPtr right) {
-    _left_index[left].insert(right);
-    _right_index[right].insert(left);
+void ContainsSolver::index_contains(ConditionPtr parent, ConditionPtr contained) {
+    _left_index[parent].insert(contained);
+    _right_index[contained].insert(parent);
+}
+
+ConditionSet ContainsSolver::index_contains_set(
+    ConditionPtr parent, ConditionSet contained) 
+{
+    for(auto it=contained.begin(); it!=contained.end(); ++it) {
+        index_contains(parent, *it);
+    }
+
+    if(_indirect) {
+        contained.insert(parent);
+        return contained;
+    } else {
+        ConditionSet result;
+        result.insert(parent);
+        return result;
+    }
 }
 
 void ContainsSolver::index_proc(ProcAst *proc) {
-    ConditionPtr left(new SimpleProcCondition(proc));
-    StatementAst *statement = proc->get_statement();
+    ConditionPtr parent(new SimpleProcCondition(proc));
 
-    index_statement_list(statement, left);
+    StatementAst *statement = proc->get_statement();
+    ConditionSet contained = index_statement_list(statement);
+
+    index_contains_set(parent, contained);
 }
 
-void ContainsSolver::index_statement_list(
-    StatementAst *statement, ConditionPtr left)
-{
-    ConditionSet& right_set = _left_index[left];
+ConditionSet ContainsSolver::index_statement_list(StatementAst *statement) {
+    ConditionSet result;
 
     while(statement != NULL) {
-        index_statement(statement);
-
-        ConditionPtr right(new SimpleStatementCondition(statement));
-
-        right_set.insert(right);
-        _right_index[right].insert(left);
+        result.union_with(index_statement(statement));
 
         statement = statement->next();
     }
+
+    return result;
 }
 
-void ContainsSolver::index_statement(StatementAst *statement) {
+ConditionSet ContainsSolver::index_statement(StatementAst *statement) {
     switch(get_statement_type(statement)) {
         case AssignST:
-            index_assign(statement_cast<AssignmentAst>(statement));
+            return index_assign(statement_cast<AssignmentAst>(statement));
         break;
 
         case WhileST:
-            index_while(statement_cast<WhileAst>(statement));
+            return index_while(statement_cast<WhileAst>(statement));
         break;
 
         case IfST:
-            index_if(statement_cast<IfAst>(statement));
+            return index_if(statement_cast<IfAst>(statement));
         break;
 
         default:
-            // noop
+            return ConditionSet();
         break;
     }
 }
 
-void ContainsSolver::index_while(WhileAst *while_ast) {
-    ConditionPtr left(new SimpleStatementCondition(while_ast));
-    StatementAst *statement = while_ast->get_body();
+ConditionSet ContainsSolver::index_while(WhileAst *while_ast) {
+    ConditionPtr parent(new SimpleStatementCondition(while_ast));
 
-    index_statement_list(statement, left);
+    StatementAst *statement = while_ast->get_body();
+    ConditionSet contained = index_statement_list(statement);
+
+    return index_contains_set(parent, contained);
 }
 
-void ContainsSolver::index_if(IfAst *if_ast) {
-    ConditionPtr left(new SimpleStatementCondition(if_ast));
+ConditionSet ContainsSolver::index_if(IfAst *if_ast) {
+    ConditionPtr parent(new SimpleStatementCondition(if_ast));
     
     StatementAst *then_branch = if_ast->get_then_branch();
     StatementAst *else_branch = if_ast->get_else_branch();
 
-    index_statement_list(then_branch, left);
-    index_statement_list(else_branch, left);
+    ConditionSet left_contained = index_statement_list(then_branch);
+    ConditionSet right_contained = index_statement_list(else_branch);
+
+    left_contained.union_with(right_contained);
+    return index_contains_set(parent, left_contained);
 }
 
+ConditionSet ContainsSolver::index_assign(AssignmentAst *assign_ast) {
+    ConditionPtr parent(new SimpleStatementCondition(assign_ast));
 
-void ContainsSolver::index_assign(AssignmentAst *assign_ast) {
-    ConditionPtr left(new SimpleStatementCondition(assign_ast));
-    ConditionPtr right(new SimpleVariableCondition (*assign_ast->get_variable()));
+    ConditionPtr var(new SimpleVariableCondition (*assign_ast->get_variable()));
 
-    index_condition(left, right);
-    index_expr(assign_ast->get_expr(), left);
+    ConditionSet contained = index_expr(assign_ast->get_expr());
+    contained.insert(var);
+
+    return index_contains_set(parent, contained);
 }
 
-void ContainsSolver::index_expr(ExprAst *expr, ConditionPtr parent) {
+ConditionSet ContainsSolver::index_expr(ExprAst *expr) {
     ExprType expr_type = get_expr_type(expr);
 
     switch(expr_type) {
         case ConstantET:
-            index_const_expr(expr_cast<ConstAst>(expr), parent);
+            return index_const_expr(expr_cast<ConstAst>(expr));
         break;
         case VariableET:
-            index_var_expr(expr_cast<VariableAst>(expr), parent);
+            return index_var_expr(expr_cast<VariableAst>(expr));
         break;
         case BinaryOpET:
-            index_binary_op_expr(expr_cast<BinaryOpAst>(expr), parent);
+            return index_binary_op_expr(expr_cast<BinaryOpAst>(expr));
         break;
         default:
-            // noop
+            return ConditionSet();
         break;
     }
 }
 
-void ContainsSolver::index_binary_op_expr(
-    BinaryOpAst *expr, ConditionPtr parent) 
-{
-    ConditionPtr condition(new SimpleOperatorCondition(expr->get_op()));
-    index_condition(parent, condition);
+ConditionSet ContainsSolver::index_binary_op_expr(BinaryOpAst *expr) {
+    ConditionPtr parent(new SimpleOperatorCondition(expr->get_op()));
 
-    index_expr(expr->get_lhs(), condition);
-    index_expr(expr->get_rhs(), condition);
+    ConditionSet left_contained = index_expr(expr->get_lhs());
+    ConditionSet right_contained = index_expr(expr->get_rhs());
+
+    left_contained.union_with(right_contained);
+
+    return index_contains_set(parent, left_contained);
 }
 
-void ContainsSolver::index_const_expr(
-    ConstAst *expr, ConditionPtr parent) 
-{
-    ConditionPtr right(new SimpleConstantCondition(*expr->get_constant()));
-    index_condition(parent, right);
+ConditionSet ContainsSolver::index_const_expr(ConstAst *expr) {
+    ConditionPtr condition(new SimpleConstantCondition(*expr->get_constant()));
+
+    ConditionSet result;
+    result.insert(condition);
+
+    return result;
 }
 
-void ContainsSolver::index_var_expr(
-    VariableAst *expr, ConditionPtr parent) 
-{
-    ConditionPtr right(new SimpleVariableCondition(*expr->get_variable()));
-    index_condition(parent, right);
+ConditionSet ContainsSolver::index_var_expr(VariableAst *expr) {
+    ConditionPtr condition(new SimpleVariableCondition(*expr->get_variable()));
+
+    ConditionSet result;
+    result.insert(condition);
+
+    return result;
 }
 
 }
