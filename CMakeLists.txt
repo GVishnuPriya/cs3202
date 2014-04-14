@@ -46,7 +46,6 @@ set(SOURCE
   impl/solvers/contains.cpp
   impl/solvers/call.cpp 
   impl/solvers/icall.cpp 
-  impl/solvers/sibling.cpp 
   impl/solvers/uses.cpp 
   impl/parser/token.cpp 
   impl/parser/parser.cpp 

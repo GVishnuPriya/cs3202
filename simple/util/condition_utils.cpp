@@ -17,6 +17,7 @@
  */
 
 #include <sstream>
+#include "impl/condition.h"
 #include "simple/util/expr_util.h"
 #include "simple/util/ast_utils.h"
 #include "simple/util/condition_utils.h"
@@ -61,6 +62,46 @@ ConditionType get_condition_type(SimpleCondition *condition) {
     condition->accept_condition_visitor(&visitor);
     return visitor.result;
 }
+
+
+class CloneConditionVisitor : public ConditionVisitor {
+  public:
+    CloneConditionVisitor() { }
+
+    void visit_statement_condition(StatementCondition *condition) {
+        result = new SimpleStatementCondition(condition->get_statement_ast());
+    }
+
+    void visit_proc_condition(ProcCondition *condition) {
+        result = new SimpleProcCondition(condition->get_proc_ast());
+    }
+
+    void visit_variable_condition(VariableCondition *condition) {
+        result = new SimpleVariableCondition(*condition->get_variable());
+    }
+
+    void visit_constant_condition(ConstantCondition *condition) {
+        result = new SimpleConstantCondition(*condition->get_constant());
+    }
+
+    void visit_pattern_condition(PatternCondition *condition) {
+        result = new SimplePatternCondition(clone_expr(condition->get_expr_ast()));
+    }
+
+    void visit_operator_condition(OperatorCondition *condition) {
+        result = new SimpleOperatorCondition(condition->get_operator());
+    }
+
+    SimpleCondition* result;
+};
+
+SimpleCondition* clone_condition(SimpleCondition *condition) {
+    CloneConditionVisitor visitor;
+
+    condition->accept_condition_visitor(&visitor);
+    return visitor.result;
+}
+
 
 class SameConditionVisitorTraits {
   public:

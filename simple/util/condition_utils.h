@@ -39,6 +39,8 @@ ConditionType get_condition_type(SimpleCondition *condition);
 
 std::string condition_to_string(SimpleCondition *condition);
 
+SimpleCondition* clone_condition(SimpleCondition *condition);
+
 template <typename Condition>
 Condition* condition_cast(SimpleCondition *condition);
 

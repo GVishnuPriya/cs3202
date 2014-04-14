@@ -134,6 +134,13 @@ template <typename Predicate>
 void PredicateGenerator<Predicate>::visit_binary_op(BinaryOpAst *bin) {
     evaluate_expr(bin);
 
+    OperatorCondition *op_condition = new SimpleOperatorCondition(bin->get_op());
+    ConditionPtr condition(op_condition);
+
+    if(_pred->template evaluate<OperatorCondition>(op_condition)) {
+        _global_set.insert(condition);
+    }
+
     bin->get_lhs()->accept_expr_visitor(this);
     bin->get_rhs()->accept_expr_visitor(this);
 }

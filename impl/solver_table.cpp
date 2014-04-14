@@ -9,6 +9,7 @@
 #include "impl/solvers/iparent.h"
 #include "impl/solvers/call.h"
 #include "impl/solvers/icall.h"
+#include "impl/solvers/contains.h"
 #include "impl/solvers/direct_uses.h"
 #include "impl/solvers/equal.h"
 #include "impl/solvers/expr.h"
@@ -96,6 +97,8 @@ SolverTable create_solver_table(SimpleRoot ast) {
 
     solver_table["iaffectsbip"] = std::shared_ptr<QuerySolver>(
         new SimpleSolverGenerator<IAffectsSolver>(new IAffectsSolver(next_bip_solver, modifies_solver)));
+
+    solver_table["contains"] = std::shared_ptr<QuerySolver>(new ContainsSolver(ast));
 
     return solver_table;
 }

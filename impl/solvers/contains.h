@@ -25,22 +25,28 @@ class ContainsSolver : public QuerySolver {
 
     ConditionSet solve_left(SimpleCondition *condition);
 
-    ConditionSet index_var(SimpleCondition *condition);
-
   private:
   	SimpleRoot _ast;
 
     std::map< ConditionPtr, ConditionSet > _left_index;
     std::map< ConditionPtr, ConditionSet > _right_index;
 
+    void index_condition(ConditionPtr left, ConditionPtr right);
+
     void index_proc(ProcAst *proc);
-    void index_statement_list(StatementAst *statement);
+    void index_statement_list(
+      StatementAst *statement, ConditionPtr parent);
+
     void index_statement(StatementAst *statement) ;
     void index_while(WhileAst *while_ast);
     void index_if(IfAst *if_ast);
     void index_assign(AssignmentAst *assign_ast);
-    void index_operator(BinaryOpAst *op_ast);
-    ConditionSet index_expr(ExprAst *expr_ast, ConditionPtr op_ptr);
+
+    void index_expr(ExprAst *expr, ConditionPtr parent);
+
+    void index_binary_op_expr(BinaryOpAst *expr, ConditionPtr parent);
+    void index_const_expr(ConstAst *expr, ConditionPtr parent);
+    void index_var_expr(VariableAst *expr, ConditionPtr parent);
 };
 
 
