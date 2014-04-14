@@ -128,6 +128,7 @@ void batch_process(SimpleProgramAnalyzer *spa, istream& in) {
         }
 
         if(result.size() == 0 && expected == "none") {
+            ++passed;
             continue;
         }
 

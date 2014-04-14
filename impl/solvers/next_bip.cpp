@@ -104,9 +104,10 @@ StackedStatementSet NextBipSolver::solve_prev_bip_statement(
         CallAst *calls = statement_cast<CallAst>(next_statement);
 
         if(!calls) {
-            result.insert(StackedStatement(*it, callstack));
+            result.insert(StackedStatement(next_statement, callstack));
         } else {
             CallStack current_stack(callstack);
+            current_stack.push(calls);
 
             StatementSet last_statements = _last_statement_index[calls->get_proc_called()];
             for(auto it2 = last_statements.begin(); it2 != last_statements.end(); ++it2) {
