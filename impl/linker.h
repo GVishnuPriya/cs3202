@@ -19,6 +19,7 @@
 #pragma once
 
 #include <map>
+#include <tuple>
 #include <string>
 #include <utility>
 #include <exception>
@@ -92,6 +93,13 @@ class SimpleQueryLinker : public QueryLinker {
         const ConditionPtr& condition1, 
         std::set<std::string> visited_qvars = std::set<std::string>());
 
+    bool cached_has_indirect_links(
+        const std::string& qvar1, const std::string& qvar2);
+
+    ConditionSet cached_get_indirect_links(
+        const std::string& qvar1, const std::string& qvar2,
+        const ConditionPtr& condition1);
+
     bool validate(const std::string& qvar1, const std::string& qvar2, 
         const ConditionPtr& condition1, const ConditionPtr& condition2);
 
@@ -99,6 +107,12 @@ class SimpleQueryLinker : public QueryLinker {
     void invalidate_state();
     
   private:
+    std::map< QVarPair, bool > 
+    _has_indirect_links_cache;
+    
+    std::map< std::tuple< Qvar, Qvar, ConditionPtr >,  ConditionSet> 
+    _indirect_links_cache;
+
     std::map< QVarPair, std::map<ConditionPtr, ConditionSet> >
     _condition_link_table;
 
