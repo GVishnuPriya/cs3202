@@ -20,7 +20,7 @@
 
 #include <set>
 #include <memory>
-#include <iostream>
+#include <utility>
 #include "simple/condition.h"
 #include "simple/util/set_utils.h"
 
@@ -100,15 +100,7 @@ class ConditionSet {
     std::set<ConditionPtr> _set;
 };
 
-struct ConditionPair {
-  public:
-    ConditionPair(ConditionPtr first_, ConditionPtr second_) :
-        first(first_), second(second_)
-    { }
-
-    ConditionPtr first;
-    ConditionPtr second;
-};
+typedef std::pair<ConditionPtr, ConditionPtr> ConditionPair;
 
 ::std::ostream& operator<<(::std::ostream& os, const ConditionSet& set);
 
