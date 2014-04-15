@@ -456,13 +456,6 @@ TEST(LinkerTest, ThreeWayTest) {
     
     EXPECT_EQ(linker.make_tuples(make_string_list("x", "z")), tuples_xz1);
 
-    /*
-     * TODO: Fix the combination algorithms that involves both direct and 
-     * indirect links. It seems that the whole linker needs to be rewritten
-     * to solve this bug.
-     */
-
-#if 0
     TupleList tuples_yzx1;
     tuples_yzx1.insert(make_tuples(condition22, condition35, condition11));
     tuples_yzx1.insert(make_tuples(condition23, condition33, condition11));
@@ -480,8 +473,6 @@ TEST(LinkerTest, ThreeWayTest) {
     tuples_zxy1.insert(make_tuples(condition33, condition12, condition24));
     
     EXPECT_EQ(linker.make_tuples(make_string_list("z", "x", "y")), tuples_zxy1);
-#endif
-    
 }
 
 TEST(LinkerTest, UnlinkedPermutations) {

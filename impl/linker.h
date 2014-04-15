@@ -29,7 +29,9 @@ namespace impl {
 
 using namespace simple;
 
-typedef std::pair<std::string, std::string> QVarPair;
+typedef std::string Qvar;
+typedef std::vector<Qvar> QvarList;
+typedef std::pair<Qvar, Qvar> QVarPair;
 
 class QueryLinkerError : public std::exception { };
 
@@ -43,13 +45,12 @@ class SimpleQueryLinker : public QueryLinker {
 
     void update_results(const std::string& qvar, const ConditionSet& conditions);
 
-    TupleList make_tuples(const std::vector<std::string>& variables);
+    bool validate_tuple(const Qvar& qvar1, 
+        const ConditionPtr& condition1,
+        const QvarList& rest_qvars,
+        ConditionTuplePtr tuple);
 
-    TupleList make_tuples(
-        const std::string& current_qvar,
-        const ConditionPtr& current_condition,
-        std::vector<std::string>::const_iterator next_qit,
-        std::vector<std::string>::const_iterator end);
+    TupleList make_tuples(std::vector<std::string> variables);
 
     bool add_link(const std::string& qvar1, const std::string& qvar2, 
         const ConditionPtr& condition1, const ConditionPtr& condition2);
@@ -73,9 +74,6 @@ class SimpleQueryLinker : public QueryLinker {
     ConditionSet get_linked_conditions(
         const std::string& qvar1, const std::string& qvar2,
         const ConditionPtr& condition1);
-
-    void merge_tuples(const ConditionPtr& target_condition,
-        const TupleList& tuples, TupleList& result);
 
     ConditionSet get_conditions(const std::string& qvar,
         SimplePredicate *pred);
