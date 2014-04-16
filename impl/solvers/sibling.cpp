@@ -192,8 +192,6 @@ ConditionPtr SiblingSolver::index_binary_op_expr(BinaryOpAst* expr) {
     ConditionPtr left_condition(index_expr(expr->get_lhs()));
     ConditionPtr right_condition(index_expr(expr->get_rhs()));
 
-    index_siblings(op_condition, left_condition);
-    index_siblings(op_condition, right_condition);
     index_siblings(left_condition, right_condition);
 
     return op_condition;
