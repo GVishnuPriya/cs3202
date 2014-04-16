@@ -268,7 +268,7 @@ ConditionSet SimpleQueryLinker::cached_get_indirect_links(
     const std::string& qvar1, const std::string& qvar2,
     const ConditionPtr& condition1)
 {
-    std::tuple< Qvar, Qvar, ConditionPtr > key(qvar1, qvar2, condition1);
+    std::pair<QVarPair, ConditionPtr> key(QVarPair(qvar1, qvar2), condition1);
 
     if(_indirect_links_cache.count(key)) return _indirect_links_cache[key];
     

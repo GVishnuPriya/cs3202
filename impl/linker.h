@@ -19,7 +19,6 @@
 #pragma once
 
 #include <map>
-#include <tuple>
 #include <string>
 #include <utility>
 #include <exception>
@@ -110,7 +109,7 @@ class SimpleQueryLinker : public QueryLinker {
     std::map< QVarPair, bool > 
     _has_indirect_links_cache;
     
-    std::map< std::tuple< Qvar, Qvar, ConditionPtr >,  ConditionSet> 
+    std::map< std::pair<QVarPair, ConditionPtr>,  ConditionSet> 
     _indirect_links_cache;
 
     std::map< QVarPair, std::map<ConditionPtr, ConditionSet> >
