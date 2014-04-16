@@ -173,9 +173,9 @@ TEST(LinkerTest, TrivialTest) {
     EXPECT_EQ(linker1.get_conditions("x"), x1);
     EXPECT_EQ(linker1.get_conditions("y"), y1);
 
-    std::vector<ConditionPair> links1;
-    links1.push_back(ConditionPair(condition11, condition23));
-    links1.push_back(ConditionPair(condition13, condition25));
+    std::set<ConditionPair> links1;
+    links1.insert(ConditionPair(condition11, condition23));
+    links1.insert(ConditionPair(condition13, condition25));
 
     linker1.update_links("x", "y", links1);
 
@@ -195,11 +195,11 @@ TEST(LinkerTest, TrivialTest) {
      * has conditions not currently in the query variable
      * will not affect the original results.
      */
-    std::vector<ConditionPair> links2;
-    links2.push_back(ConditionPair(condition11, condition23));
-    links2.push_back(ConditionPair(condition13, condition25));
-    links2.push_back(ConditionPair(condition14, condition23));
-    links2.push_back(ConditionPair(condition11, condition21));
+    std::set<ConditionPair> links2;
+    links2.insert(ConditionPair(condition11, condition23));
+    links2.insert(ConditionPair(condition13, condition25));
+    links2.insert(ConditionPair(condition14, condition23));
+    links2.insert(ConditionPair(condition11, condition21));
 
     linker1.update_links("x", "y", links2);
 
@@ -376,17 +376,17 @@ TEST(LinkerTest, ThreeWayTest) {
     linker.update_results("y", y1);
     linker.update_results("z", z1);
 
-    std::vector<ConditionPair> links_xy1;
-    links_xy1.push_back(ConditionPair(condition11, condition22));
-    links_xy1.push_back(ConditionPair(condition11, condition23));
-    links_xy1.push_back(ConditionPair(condition13, condition23));
-    links_xy1.push_back(ConditionPair(condition12, condition24));
+    std::set<ConditionPair> links_xy1;
+    links_xy1.insert(ConditionPair(condition11, condition22));
+    links_xy1.insert(ConditionPair(condition11, condition23));
+    links_xy1.insert(ConditionPair(condition13, condition23));
+    links_xy1.insert(ConditionPair(condition12, condition24));
 
-    std::vector<ConditionPair> links_yz1;
-    links_yz1.push_back(ConditionPair(condition22, condition35));
-    links_yz1.push_back(ConditionPair(condition23, condition33));
-    links_yz1.push_back(ConditionPair(condition24, condition34));
-    links_yz1.push_back(ConditionPair(condition24, condition33));
+    std::set<ConditionPair> links_yz1;
+    links_yz1.insert(ConditionPair(condition22, condition35));
+    links_yz1.insert(ConditionPair(condition23, condition33));
+    links_yz1.insert(ConditionPair(condition24, condition34));
+    links_yz1.insert(ConditionPair(condition24, condition33));
 
     linker.update_links("x", "y", links_xy1);
     linker.update_links("y", "z", links_yz1);
@@ -473,6 +473,71 @@ TEST(LinkerTest, ThreeWayTest) {
     tuples_zxy1.insert(make_tuples(condition33, condition12, condition24));
     
     EXPECT_EQ(linker.make_tuples(make_string_list("z", "x", "y")), tuples_zxy1);
+}
+
+TEST(LinkerTest, UpdateWithMoreLinks) {
+    /*
+     * First Insert:
+     * <x, y> = <11, 21>, <12, 22>
+     *
+     * Then Insert:
+     * <x, y> = <11, 22>, <12, 21>, <12, 22>
+     * 
+     * Result should be the intersection of the two
+     * <x, y> = <12, 22>
+     * 
+     */
+
+    SimpleAssignmentAst stat11(11);
+    SimpleAssignmentAst stat12(12);
+
+    SimpleAssignmentAst stat21(21);
+    SimpleAssignmentAst stat22(22);
+
+    ConditionPtr condition11(new SimpleStatementCondition(&stat11));
+    ConditionPtr condition12(new SimpleStatementCondition(&stat12));
+
+    ConditionPtr condition21(new SimpleStatementCondition(&stat21));
+    ConditionPtr condition22(new SimpleStatementCondition(&stat22));
+
+    SimpleQueryLinker linker;
+
+    ConditionSet x1;
+    x1.insert(condition11);
+    x1.insert(condition12);
+
+    ConditionSet y1;
+    y1.insert(condition21);
+    y1.insert(condition22);
+
+    linker.update_results("x", x1);
+    linker.update_results("y", y1);
+
+    std::set<ConditionPair> links1;
+    links1.insert(ConditionPair(condition11, condition21));
+    links1.insert(ConditionPair(condition12, condition22));
+
+    linker.update_links("x", "y", links1);
+
+    std::set<ConditionPair> links2;
+    links2.insert(ConditionPair(condition11, condition22));
+    links2.insert(ConditionPair(condition12, condition21));
+    links2.insert(ConditionPair(condition12, condition22));
+
+    linker.update_links("x", "y", links2);
+
+    ConditionSet expected_x;
+    expected_x.insert(condition12);
+    EXPECT_EQ(linker.get_conditions("x"), expected_x);
+
+    ConditionSet expected_y;
+    expected_y.insert(condition22);
+    EXPECT_EQ(linker.get_conditions("y"), expected_y);
+
+    TupleList expected;
+    expected.insert(make_tuples(condition12, condition22));
+    
+    EXPECT_EQ(linker.make_tuples(make_string_list("x", "y")), expected);
 }
 
 TEST(LinkerTest, UnlinkedPermutations) {

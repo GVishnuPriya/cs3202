@@ -97,7 +97,7 @@ class QueryLinker {
     virtual void update_links(
             const std::string& qvar1, 
             const std::string& qvar2, 
-            const std::vector<ConditionPair>& links) = 0;
+            const std::set<ConditionPair>& links) = 0;
 
     /**
      * Update the result for a single query variable by intersecting 

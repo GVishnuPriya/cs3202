@@ -82,30 +82,43 @@ void SimpleQueryLinker::update_results(
 
 void SimpleQueryLinker::update_links(
     const std::string& qvar1, const std::string& qvar2, 
-    const std::vector<ConditionPair>& links)
+    const std::set<ConditionPair>& links)
 {
     if(!is_initialized(qvar1) || !is_initialized(qvar2)) {
         throw QueryLinkerError();
     }
 
-    ConditionSet new_set1;
-    ConditionSet new_set2;
+    if(has_link(qvar1, qvar2)) {
+        std::set<ConditionPair> old_links = get_links_as_tuples(qvar1, qvar2);
 
-    for(auto it = links.begin(); it != links.end(); ++it) {
-        ConditionPtr condition1 = it->first;
-        ConditionPtr condition2 = it->second;
+        for(auto it=old_links.begin(); it!=old_links.end(); ++it) {
+            ConditionPair old_link = *it;
 
-        if(add_link(qvar1, qvar2, condition1, condition2)) {
-            new_set1.insert(condition1);
-            new_set2.insert(condition2);
+            if(links.count(old_link) == 0) {
+                break_link(qvar1, qvar2, old_link.first, old_link.second);
+            }
         }
+
+    } else {
+        ConditionSet new_set1;
+        ConditionSet new_set2;
+
+        for(auto it = links.begin(); it != links.end(); ++it) {
+            ConditionPtr condition1 = it->first;
+            ConditionPtr condition2 = it->second;
+
+            if(add_link(qvar1, qvar2, condition1, condition2)) {
+                new_set1.insert(condition1);
+                new_set2.insert(condition2);
+            }
+        }
+
+        update_results(qvar1, new_set1);
+        update_results(qvar2, new_set2);
+
+        _qvar_link_table[qvar1].insert(qvar2);
+        _qvar_link_table[qvar2].insert(qvar1);
     }
-
-    update_results(qvar1, new_set1);
-    update_results(qvar2, new_set2);
-
-    _qvar_link_table[qvar1].insert(qvar2);
-    _qvar_link_table[qvar2].insert(qvar1);
 }
 
 bool SimpleQueryLinker::validate_tuple(
@@ -228,16 +241,24 @@ void SimpleQueryLinker::break_link(
     const std::string& qvar1, const std::string& qvar2,
     const ConditionPtr& condition1, const ConditionPtr& condition2)
 {
-    ConditionSet& set = _condition_link_table[QVarPair(qvar1, qvar2)][condition1];
-    set.remove(condition2);
+    ConditionSet& set1 = _condition_link_table[QVarPair(qvar1, qvar2)][condition1];
+    set1.remove(condition2);
 
-    if(set.is_empty()) {
+    if(set1.is_empty()) {
         /*
          * If there is no other condition link in condition1 to
          * other conditions in qvar2, then condition1 is 
          * invalidated and needs to be removed as well.
          */
         remove_condition(qvar1, condition1);
+    }
+
+    // Repeat for the other direction
+    ConditionSet& set2 = _condition_link_table[QVarPair(qvar2, qvar1)][condition1];
+    set2.remove(condition1);
+
+    if(set2.is_empty()) {
+        remove_condition(qvar2, condition2);
     }
 }
 
@@ -366,6 +387,30 @@ std::map<ConditionPtr, ConditionSet> SimpleQueryLinker::get_links(
     const std::string& qvar1, const std::string& qvar2)
 {
     return _condition_link_table[QVarPair(qvar1, qvar2)];
+}
+
+std::set<ConditionPair> SimpleQueryLinker::get_links_as_tuples(
+    const std::string& qvar1, const std::string& qvar2) 
+{
+    std::set<ConditionPair> result;
+
+    const std::map<ConditionPtr, ConditionSet>& link_table = 
+        _condition_link_table[QVarPair(qvar1, qvar2)];
+
+    for(auto it=link_table.begin(); it!=link_table.end(); ++it) {
+        ConditionPtr condition1 = it->first;
+        const ConditionSet& condition2_set = it->second;
+
+        for(auto it2=condition2_set.begin(); 
+            it2!=condition2_set.end(); ++it2)
+        {
+            ConditionPtr condition2 = *it2;
+
+            result.insert(ConditionPair(condition1, condition2));
+        }
+    }
+
+    return result;
 }
 
 bool SimpleQueryLinker::is_valid_state() {

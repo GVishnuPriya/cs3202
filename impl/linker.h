@@ -41,7 +41,7 @@ class SimpleQueryLinker : public QueryLinker {
 
     void update_links(
         const std::string& qvar1, const std::string& qvar2, 
-        const std::vector<ConditionPair>& links);
+        const std::set<ConditionPair>& links);
 
     void update_results(const std::string& qvar, const ConditionSet& conditions);
 
@@ -81,6 +81,9 @@ class SimpleQueryLinker : public QueryLinker {
     ConditionSet get_conditions(const std::string& qvar);
 
     std::map<ConditionPtr, ConditionSet> get_links(
+        const std::string& qvar1, const std::string& qvar2);
+
+    std::set<ConditionPair> get_links_as_tuples(
         const std::string& qvar1, const std::string& qvar2);
 
     bool has_indirect_links(

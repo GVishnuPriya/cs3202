@@ -87,7 +87,7 @@ void QueryProcessor::solve_clause<PqlVariableTerm, PqlVariableTerm>(
         ConditionSet conditions1 = get_qvar(qvar1);
         ConditionSet conditions2 = get_qvar(qvar2);
 
-        std::vector<ConditionPair> links;
+        std::set<ConditionPair> links;
 
         if(conditions1.get_size() <= conditions2.get_size()) {
             for(auto it = conditions1.begin(); it != conditions1.end(); ++it) {
@@ -96,7 +96,7 @@ void QueryProcessor::solve_clause<PqlVariableTerm, PqlVariableTerm>(
                 right_result.intersect_with(conditions2);
 
                 for(auto it2=right_result.begin(); it2 != right_result.end(); ++it2) {
-                    links.push_back(ConditionPair(left, *it2));
+                    links.insert(ConditionPair(left, *it2));
                 }
             }
         } else {
@@ -106,7 +106,7 @@ void QueryProcessor::solve_clause<PqlVariableTerm, PqlVariableTerm>(
                 left_result.intersect_with(conditions1);
 
                 for(auto it2=left_result.begin(); it2 != left_result.end(); ++it2) {
-                    links.push_back(ConditionPair(*it2, right));
+                    links.insert(ConditionPair(*it2, right));
                 }
             }
         }
