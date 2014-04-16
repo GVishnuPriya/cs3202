@@ -498,6 +498,7 @@ std::shared_ptr<PqlSelector> SimplePqlParser::parse_tuple_selector() {
     std::string first = current_token_as<IdentifierToken>()->get_content();
     tuples.push_back(first);
     next_token();
+    eat_field();
 
     while(current_token_is<CommaToken>()) {
         next_token(); // eat ','
