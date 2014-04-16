@@ -383,7 +383,7 @@ b,c,d,e,m,i,k,x,y,z
 77 - Uses, Typed :: Uses(SYNONYM,IDENT)
 procedure p;
 Select p such that Uses(p,"e")
-q,a
+q,a,p
 5000
 78 - Uses, Typed :: Uses(SYNONYM,_)
 call c;
@@ -408,7 +408,7 @@ a,d,p,q
 82 - Uses, Typed :: Uses(IDENT,SYNONYM)
 variable v;
 Select v such that Uses("p",v)
-b,d,m,x,y,z
+b,c,d,e,i,k,m,x,y,z  
 5000
 83 - Uses, Typed :: Uses(IDENT,_)
 call c;
@@ -543,12 +543,12 @@ false
 109 - Next, NextStar ::
 stmt foo;
 Select BOOLEAN such that Next*(foo,foo)
-false
+true
 5000
 110 - Next, NextStar ::
 stmt foo;
 Select BOOLEAN such that Next(foo,foo)
-true
+false
 5000
 111 - Affects :: 
 assign a; 
