@@ -127,9 +127,9 @@ std::vector<std::string> format_selector<PqlBooleanSelector>(
     std::vector<std::string> result;
 
     if(linker->is_valid_state()) {
-        result.push_back("TRUE");
+        result.push_back("true");
     } else {
-        result.push_back("FALSE");
+        result.push_back("false");
     }
 
     return result;
