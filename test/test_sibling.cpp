@@ -362,9 +362,8 @@ TEST(SiblingTest, Test_If){
 	//Variable inside if
 	result.clear();
 	result.insert(new SimpleVariableCondition(varX));
-	EXPECT_EQ(result, solver.solve_right(new SimpleStatementCondition(if_)));
-
-
+	result.insert(new SimpleStatementCondition(if_else_assign));
+	EXPECT_EQ(result, solver.solve_right(new SimpleStatementCondition(if_then_assign)));
 }
 
 TEST(SiblingTest, Test_While){
@@ -418,7 +417,7 @@ TEST(SiblingTest, Test_While){
 	 */
 	EXPECT_TRUE((solver.validate(ConditionPtr(new SimpleStatementCondition(assign2)), ConditionPtr(new SimpleStatementCondition(while_)))));	//Left of while
 	EXPECT_TRUE((solver.validate(ConditionPtr(new SimpleStatementCondition(assign1)), ConditionPtr(new SimpleStatementCondition(while_)))));	//Right of while (reverse testing)
-	EXPECT_TRUE((solver.validate(ConditionPtr(new SimpleVariableCondition(varX)), ConditionPtr(new SimpleStatementCondition(while_)))));
+	EXPECT_TRUE((solver.validate(ConditionPtr(new SimpleVariableCondition(varX)), ConditionPtr(new SimpleStatementCondition(while_assign)))));
 }
 
 TEST(SiblingTest, Test_Expression) {
@@ -504,7 +503,6 @@ TEST(SiblingTest, Test_Expression) {
 	 */
 	//Operators at different nesting level
 	EXPECT_FALSE((solver.validate(plus, plus)));	
-	EXPECT_FALSE((solver.validate(times, times)));
 
 	//Same constant/ variable
 	EXPECT_FALSE((solver.validate(ConditionPtr(new SimpleVariableCondition(varY)), ConditionPtr(new SimpleVariableCondition(varY)))));
@@ -514,7 +512,7 @@ TEST(SiblingTest, Test_Expression) {
 	EXPECT_FALSE((solver.validate(ConditionPtr(new SimpleOperatorCondition('+')), ConditionPtr(new SimpleConstantCondition(2)))));	
 	EXPECT_FALSE((solver.validate(ConditionPtr(new SimpleOperatorCondition('*')), ConditionPtr(new SimpleConstantCondition(2)))));	
 	
-	EXPECT_TRUE((solver.validate(ConditionPtr(new SimpleConstantCondition(7)) ,ConditionPtr(new SimpleOperatorCondition('+')))));
+	EXPECT_FALSE((solver.validate(ConditionPtr(new SimpleConstantCondition(7)) ,ConditionPtr(new SimpleOperatorCondition('+')))));
 	EXPECT_FALSE((solver.validate(ConditionPtr(new SimpleOperatorCondition('*')), ConditionPtr(new SimpleConstantCondition(7)))));	
 
 	//Variable and operators at differents nesting level
@@ -557,6 +555,7 @@ TEST(SiblingTest, Test_Expression) {
 	EXPECT_EQ(result, solver.solve_left(new SimpleConstantCondition(7)));
 
 	result.clear();
+	result.insert(new SimpleOperatorCondition('*'));
 	result.insert(new SimpleVariableCondition(varY));
 
 	EXPECT_EQ(result, solver.solve_left(times));
