@@ -45,6 +45,12 @@ class SimpleQueryLinker : public QueryLinker {
 
     void update_results(const std::string& qvar, const ConditionSet& conditions);
 
+    bool validate_condition_pair(
+        const Qvar& qvar1, 
+        const Qvar& qvar2, 
+        const ConditionPtr& condition1, 
+        const ConditionPtr& condition2);
+    
     bool validate_tuple(const Qvar& qvar1, 
         const ConditionPtr& condition1,
         const QvarList& rest_qvars,
@@ -109,6 +115,12 @@ class SimpleQueryLinker : public QueryLinker {
     void invalidate_state();
     
   private:
+    std::set< std::pair<QVarPair, ConditionPair> >
+    _valid_pair_cache;
+
+    std::set< std::pair<QVarPair, ConditionPair> >
+    _invalid_pair_cache;
+
     std::map< QVarPair, bool > 
     _has_indirect_links_cache;
     

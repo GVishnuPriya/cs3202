@@ -121,6 +121,33 @@ void SimpleQueryLinker::update_links(
     }
 }
 
+bool SimpleQueryLinker::validate_condition_pair(
+    const Qvar& qvar1, 
+    const Qvar& qvar2, 
+    const ConditionPtr& condition1, 
+    const ConditionPtr& condition2)
+{
+    QVarPair qvar_pair(qvar1, qvar2);
+    ConditionPair condition_pair(condition1, condition2);
+
+    std::pair<QVarPair, ConditionPair> key(qvar_pair, condition_pair);
+
+    if(_valid_pair_cache.count(key) > 0) return true;
+    if(_invalid_pair_cache.count(key) > 0) return false;
+
+    ConditionSet links = cached_get_indirect_links(qvar1, qvar2, condition1);
+
+    if(links.has_element(condition2)) {
+        _valid_pair_cache.insert(key);
+
+        return true;
+    } else {
+        _invalid_pair_cache.insert(key);
+
+        return false;
+    }
+}
+
 bool SimpleQueryLinker::validate_tuple(
     const Qvar& qvar1, 
     const ConditionPtr& condition1,
@@ -134,14 +161,13 @@ bool SimpleQueryLinker::validate_tuple(
 
         ConditionPtr condition2 = tuple->get_condition();
 
-        if(qvar1 == qvar2) {
-            if(condition1 != condition2) return false;
-        }
+        if(qvar1 == qvar2 && condition1 != condition2) return false;
 
         if(!cached_has_indirect_links(qvar1, qvar2)) continue;
 
-        ConditionSet links = cached_get_indirect_links(qvar1, qvar2, condition1);
-        if(!links.has_element(condition2)) return false;
+        if(!validate_condition_pair(qvar1, qvar2, condition1, condition2)) {
+            return false;
+        }
     }
 
     return true;
