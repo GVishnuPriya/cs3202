@@ -67,6 +67,10 @@ class SimpleQueryLinker : public QueryLinker {
      */
     void break_link(const std::string& qvar1, const std::string& qvar2,
         const ConditionPtr& condition1, const ConditionPtr& condition2);
+    
+    void break_both_links(
+        const std::string& qvar1, const std::string& qvar2,
+        const ConditionPtr& condition1, const ConditionPtr& condition2);
 
     bool is_initialized(const std::string& qvar);
 

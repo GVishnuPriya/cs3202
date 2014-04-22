@@ -110,7 +110,7 @@ void SimpleQueryLinker::update_links(
             ConditionPair old_link = *it;
 
             if(links.count(old_link) == 0) {
-                break_link(qvar1, qvar2, old_link.first, old_link.second);
+                break_both_links(qvar1, qvar2, old_link.first, old_link.second);
             }
         }
 
@@ -255,6 +255,9 @@ void SimpleQueryLinker::remove_condition(
         ConditionSet linked_set = std::move(
             _condition_link_table[QVarPair(qvar, current_link)][condition]);
 
+        // Debug: just to be sure it is emptied
+        _condition_link_table[QVarPair(qvar, current_link)][condition].clear();
+
         if(linked_set.is_empty()) {
             continue;
         }
@@ -293,14 +296,14 @@ void SimpleQueryLinker::break_link(
          */
         remove_condition(qvar1, condition1);
     }
+}
 
-    // Repeat for the other direction
-    ConditionSet& set2 = _condition_link_table[QVarPair(qvar2, qvar1)][condition2];
-    set2.remove(condition1);
-
-    if(set2.is_empty()) {
-        remove_condition(qvar2, condition2);
-    }
+void SimpleQueryLinker::break_both_links(
+    const std::string& qvar1, const std::string& qvar2,
+    const ConditionPtr& condition1, const ConditionPtr& condition2)
+{
+    break_link(qvar1, qvar2, condition1, condition2);
+    break_link(qvar2, qvar1, condition2, condition1);
 }
 
 ConditionSet SimpleQueryLinker::get_linked_conditions(
