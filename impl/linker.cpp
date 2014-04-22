@@ -98,7 +98,7 @@ void SimpleQueryLinker::update_links(
             ConditionPair old_link = *it;
 
             if(links.count(old_link) == 0) {
-                break_both_links(qvar1, qvar2, old_link.first, old_link.second);
+                break_link(qvar1, qvar2, old_link.first, old_link.second);
             }
         }
 
@@ -219,12 +219,11 @@ void SimpleQueryLinker::remove_condition(
     const std::string& qvar, const ConditionPtr& condition)
 {
     ConditionSet& qvar_values = _qvar_table[qvar];
+    const std::set<std::string>& qvar_links = _qvar_link_table[qvar];
 
     if(!qvar_values.has_element(condition)) return;
 
     qvar_values.remove(condition);
-
-    const std::set<std::string>& qvar_links = _qvar_link_table[qvar];
 
     /*
      * If it is a removal of the last condition in a qvar and
@@ -282,14 +281,14 @@ void SimpleQueryLinker::break_link(
          */
         remove_condition(qvar1, condition1);
     }
-}
 
-void SimpleQueryLinker::break_both_links(
-    const std::string& qvar1, const std::string& qvar2,
-    const ConditionPtr& condition1, const ConditionPtr& condition2)
-{
-    break_link(qvar1, qvar2, condition1, condition2);
-    break_link(qvar2, qvar1, condition2, condition1);
+    // Repeat for the other direction
+    ConditionSet& set2 = _condition_link_table[QVarPair(qvar2, qvar1)][condition1];
+    set2.remove(condition1);
+
+    if(set2.is_empty()) {
+        remove_condition(qvar2, condition2);
+    }
 }
 
 ConditionSet SimpleQueryLinker::get_linked_conditions(
@@ -388,6 +387,19 @@ ConditionSet SimpleQueryLinker::get_indirect_links(
     }
     
     return result;
+}
+
+bool SimpleQueryLinker::validate(
+    const std::string& qvar1, const std::string& qvar2, 
+    const ConditionPtr& condition1, const ConditionPtr& condition2)
+{
+    if(has_link(qvar1, qvar2)) {
+        return get_linked_conditions(qvar1, qvar2, condition1)
+            .has_element(condition2);
+
+     } else {
+         return false;
+     }
 }
 
 ConditionSet SimpleQueryLinker::get_conditions(const std::string& qvar) {
