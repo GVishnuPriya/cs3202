@@ -1,4 +1,4 @@
-274
+276
 cat: All Category
 1 - All :: All variables?
 variable v;
@@ -1372,6 +1372,11 @@ p,q,a,d
 5000
 404 - Clauses, Typed ::
 assign a; variable v;
-select a Affects(a,a), Modifies(a,v) Uses(a,v)
+select a such that Affects(a,a) and Modifies(a,v) and Uses(a,v)
 6,27,28,43,70,72
+5000
+405 - Clauses, Typed ::
+call c; prog_line n;
+Select c such that Next(53,n) and Affects*(21,n)
+3,10,36,50,56
 5000
