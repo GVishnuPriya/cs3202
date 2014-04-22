@@ -80,6 +80,7 @@ TEST_P(FrontEndFixtureTest, BasicTest) {
         std::vector<std::string> result = frontend.process_query(
             it->query.begin(), it->query.end());
 
+        EXPECT_EQ(result, it->expected);
         EXPECT_EQ(result.size(), it->expected.size());
         EXPECT_TRUE(std::equal(result.begin(), result.end(), it->expected.begin()));
     }

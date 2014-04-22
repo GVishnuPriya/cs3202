@@ -105,8 +105,8 @@ void batch_process(SimpleProgramAnalyzer *spa, istream& in) {
 
     string batch_name = get_line(in);
 
-    cout << "Running " << total_queries << " queries for batch " 
-         << batch_name << endl << endl;
+    //cout << "Running " << total_queries << " queries for batch " 
+    //     << batch_name << endl << endl;
 
     for(int i=0; i < total_queries; ++i) {
         string query_name = get_line(in);
@@ -115,6 +115,9 @@ void batch_process(SimpleProgramAnalyzer *spa, istream& in) {
         string timeout = get_line(in);
 
         vector<string> result;
+        
+        //cout << "Running query #" << i << endl;
+        //cout << "Query: " << query << endl;
 
         try {
             result = spa->evaluate(query);

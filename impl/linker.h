@@ -31,11 +31,16 @@ using namespace simple;
 class SimpleQueryLinker : public QueryLinker {
   public:
     SimpleQueryLinker();
-    SimpleQueryLinker(ConditionSet global_set);
+    SimpleQueryLinker(
+        std::map<Qvar, PredicatePtr> pred_table, 
+        ConditionSet global_set);
 
     void update_links(
-        const std::string& qvar1, const std::string& qvar2, 
+        const Qvar& qvar1, const Qvar& qvar2, 
         const std::set<ConditionPair>& links);
+
+    void init_qvar(
+        const std::string& qvar, const ConditionSet& new_set);
 
     void update_results(const std::string& qvar, const ConditionSet& conditions);
 
@@ -50,7 +55,7 @@ class SimpleQueryLinker : public QueryLinker {
         const QvarList& rest_qvars,
         ConditionTuplePtr tuple);
 
-    TupleList make_tuples(std::vector<std::string> variables);
+    TupleSet make_tuples(const std::vector<std::string>& variables);
 
     bool add_link(const std::string& qvar1, const std::string& qvar2, 
         const ConditionPtr& condition1, const ConditionPtr& condition2);
@@ -133,30 +138,6 @@ class SimpleQueryLinker : public QueryLinker {
     bool _valid_state;
 
     ConditionSet _global_set;
-};
-
-class SimpleConditionTuple : public ConditionTuple {
-  public:
-    SimpleConditionTuple(ConditionPtr condition, 
-        ConditionTuplePtr next) :
-        _condition(condition), _next(next)
-    { }
-
-    SimpleConditionTuple(ConditionPtr condition) : 
-        _condition(condition), _next()
-    { }
-
-    ConditionPtr get_condition() {
-        return _condition;
-    }
-
-    ConditionTuplePtr next() {
-        return _next;
-    }
-
-  private:
-    ConditionPtr    _condition;
-    ConditionTuplePtr   _next;
 };
 
 }

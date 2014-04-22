@@ -1310,11 +1310,6 @@ stmt s1,s2; variable v1, v2; prog_line n; assign a;
 Select v1 such that Affects(s1, n) and Affects(n, s2) with s1.stmt# = n pattern a(v1, "m-1") such that Modifies(s2, v2)
 m, e
 5000
-274 - Multiple_Clauses, Typed ::
-stmt s1,s2; variable v1, v2; prog_line n; assign a,a1,a2,a3,a4;
-Select v1 such that Affects*(a1, a2) and Affects*(a2, a3) and Affects*(a3,a4) with s1.stmt# = n pattern a(v1, "m-1") such that Modifies(s2, v2)
-m, e
-5000
 275 - Multiple_Clauses, Typed ::
 stmt s1,s2; variable v1, v2; prog_line n; assign a,a1,a2,a3,a4;
 Select a3 such that Affects*(a1, a2) and Affects*(a2, a3) and Affects*(a3,a4) pattern a3(v1, "m-1") such that Modifies(s2, v2)

@@ -144,7 +144,7 @@ std::vector<std::string> format_selector<PqlTupleSelector>(
     PqlTupleSelector *selector, PqlQuerySet *query, QueryLinker *linker)
 {
     std::vector<std::string> selected_qvars = selector->get_tuples();
-    TupleList tuples = linker->make_tuples(selected_qvars);
+    TupleSet tuples = linker->make_tuples(selected_qvars);
 
     std::vector<std::string> result;
   

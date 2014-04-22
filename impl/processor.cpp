@@ -30,11 +30,7 @@ QueryProcessor::QueryProcessor(
         std::map<Qvar, PredicatePtr> predicates,
         PredicatePtr wildcard_pred) :
     _linker(linker), _wildcard_pred(wildcard_pred)
-{ 
-    for(auto it=predicates.begin(); it!=predicates.end(); ++it) {
-        _linker->update_results(it->first, it->second->global_set());
-    }
-}
+{ }
 
 class SolveClauseVisitorTraits {
   public:

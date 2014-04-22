@@ -121,7 +121,7 @@ class QueryLinker {
      * The return result is a list of variable-size tuple, with size of
      * the same as the size of list of variables supplied in the parameter.
      */
-    virtual TupleList make_tuples(std::vector<std::string> variables) = 0;
+    virtual TupleSet make_tuples(const std::vector<Qvar>&) = 0;
 
     /*
      * Indicates whether the qvar links are in a valid state.

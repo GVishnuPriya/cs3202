@@ -27,9 +27,15 @@ SimpleQueryLinker::SimpleQueryLinker() :
     _valid_state(true)
 { }
 
-SimpleQueryLinker::SimpleQueryLinker(ConditionSet global_set) : 
+SimpleQueryLinker::SimpleQueryLinker(
+    std::map<Qvar, PredicatePtr> pred_table, 
+    ConditionSet global_set) : 
     _valid_state(true), _global_set(global_set)
-{ }
+{ 
+    for(auto it=pred_table.begin(); it!=pred_table.end(); ++it) {
+        update_results(it->first, it->second->global_set());
+    }
+}
 
 bool SimpleQueryLinker::is_initialized(const std::string& qvar) {
     return _qvar_table.count(qvar) > 0;
@@ -82,6 +88,12 @@ void SimpleQueryLinker::update_results(
     for(auto it = difference.begin(); it != difference.end(); ++it) {
         remove_condition(qvar, *it);
     }
+}
+
+void SimpleQueryLinker::init_qvar(
+    const std::string& qvar, const ConditionSet& new_set)
+{
+    update_results(qvar, new_set);
 }
 
 void SimpleQueryLinker::update_links(
@@ -176,7 +188,7 @@ bool SimpleQueryLinker::validate_tuple(
     return true;
 }
 
-TupleList SimpleQueryLinker::make_tuples(std::vector<std::string> qvars) {
+TupleSet SimpleQueryLinker::make_tuples(const std::vector<std::string>& qvars) {
     auto qit = qvars.begin();
     Qvar qvar = *qit++; // current qvar
 
@@ -184,7 +196,7 @@ TupleList SimpleQueryLinker::make_tuples(std::vector<std::string> qvars) {
 
     // current qvar conditions
     ConditionSet conditions = get_conditions(qvar);
-    TupleList result;
+    TupleSet result;
 
     if(rest_qvars.empty()) {
         for(auto it = conditions.begin(); it != conditions.end(); ++it) {
@@ -196,7 +208,7 @@ TupleList SimpleQueryLinker::make_tuples(std::vector<std::string> qvars) {
         return result;
     }
 
-    TupleList rest_tuples = make_tuples(rest_qvars);
+    TupleSet rest_tuples = make_tuples(rest_qvars);
 
     for(auto cit=conditions.begin(); cit!=conditions.end(); ++cit) {
         const ConditionPtr& condition = *cit;

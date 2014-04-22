@@ -74,11 +74,11 @@ TEST(TupleTest, TuplePtrEquality) {
 
     EXPECT_EQ(tuple1, tuple2);
 
-    TupleList list1;
+    TupleSet list1;
     list1.insert(tuple1);
     list1.insert(tuple2);
 
-    TupleList list2;
+    TupleSet list2;
     list2.insert(tuple1);
     list2.insert(tuple2);
 
@@ -99,11 +99,11 @@ TEST(TupleTest, TuplePtrTripleEquality) {
 
     EXPECT_EQ(tuple1, tuple2);
 
-    TupleList list1;
+    TupleSet list1;
     list1.insert(tuple1);
     list1.insert(tuple2);
 
-    TupleList list2;
+    TupleSet list2;
     list2.insert(tuple1);
     list2.insert(tuple2);
 
@@ -167,8 +167,8 @@ TEST(LinkerTest, TrivialTest) {
     y1.insert(condition24);
     y1.insert(condition25);
 
-    linker1.update_results("x", x1);
-    linker1.update_results("y", y1);
+    linker1.init_qvar("x", x1);
+    linker1.init_qvar("y", y1);
 
     EXPECT_EQ(linker1.get_conditions("x"), x1);
     EXPECT_EQ(linker1.get_conditions("y"), y1);
@@ -207,11 +207,11 @@ TEST(LinkerTest, TrivialTest) {
     EXPECT_EQ(linker1.get_conditions("y"), new_y1);
 
 
-    TupleList tuples_xy;
+    TupleSet tuples_xy;
     tuples_xy.insert(make_tuples(condition11, condition23));
     tuples_xy.insert(make_tuples(condition13, condition25));
 
-    TupleList tuples_yx;
+    TupleSet tuples_yx;
     tuples_yx.insert(make_tuples(condition23, condition11));
     tuples_yx.insert(make_tuples(condition25, condition13));
 
@@ -260,7 +260,7 @@ TEST(LinkerTest, TrivialTest) {
      */
     EXPECT_EQ(linker1.get_conditions("x"), new_x2);
 
-    TupleList tuples_xy2;
+    TupleSet tuples_xy2;
     tuples_xy2.insert(make_tuples(condition11, condition23));
     EXPECT_EQ(linker1.make_tuples(make_string_list("x", "y")), tuples_xy2);
 }
@@ -372,9 +372,9 @@ TEST(LinkerTest, ThreeWayTest) {
 
     SimpleQueryLinker linker;
 
-    linker.update_results("x", x1);
-    linker.update_results("y", y1);
-    linker.update_results("z", z1);
+    linker.init_qvar("x", x1);
+    linker.init_qvar("y", y1);
+    linker.init_qvar("z", z1);
 
     std::set<ConditionPair> links_xy1;
     links_xy1.insert(ConditionPair(condition11, condition22));
@@ -410,7 +410,7 @@ TEST(LinkerTest, ThreeWayTest) {
     EXPECT_EQ(linker.get_conditions("y"), y2);
     EXPECT_EQ(linker.get_conditions("z"), z2);
 
-    TupleList tuples_xyz1;
+    TupleSet tuples_xyz1;
     tuples_xyz1.insert(make_tuples(condition11, condition22, condition35));
     tuples_xyz1.insert(make_tuples(condition11, condition23, condition33));
     tuples_xyz1.insert(make_tuples(condition13, condition23, condition33));
@@ -419,6 +419,7 @@ TEST(LinkerTest, ThreeWayTest) {
 
     EXPECT_EQ(linker.make_tuples(make_string_list("x", "y", "z")), tuples_xyz1);
 
+/*
     ConditionSet xz11_indirect;
     xz11_indirect.insert(condition33);
     xz11_indirect.insert(condition35);
@@ -446,8 +447,9 @@ TEST(LinkerTest, ThreeWayTest) {
     ConditionSet zx35_indirect;
     zx35_indirect.insert(condition11);
     EXPECT_EQ(linker.get_indirect_links("z", "x", condition35), zx35_indirect);
+*/
 
-    TupleList tuples_xz1;
+    TupleSet tuples_xz1;
     tuples_xz1.insert(make_tuples(condition11, condition35));
     tuples_xz1.insert(make_tuples(condition11, condition33));
     tuples_xz1.insert(make_tuples(condition13, condition33));
@@ -456,7 +458,7 @@ TEST(LinkerTest, ThreeWayTest) {
     
     EXPECT_EQ(linker.make_tuples(make_string_list("x", "z")), tuples_xz1);
 
-    TupleList tuples_yzx1;
+    TupleSet tuples_yzx1;
     tuples_yzx1.insert(make_tuples(condition22, condition35, condition11));
     tuples_yzx1.insert(make_tuples(condition23, condition33, condition11));
     tuples_yzx1.insert(make_tuples(condition23, condition33, condition13));
@@ -465,7 +467,7 @@ TEST(LinkerTest, ThreeWayTest) {
 
     EXPECT_EQ(linker.make_tuples(make_string_list("y", "z", "x")), tuples_yzx1);
 
-    TupleList tuples_zxy1;
+    TupleSet tuples_zxy1;
     tuples_zxy1.insert(make_tuples(condition35, condition11, condition22));
     tuples_zxy1.insert(make_tuples(condition33, condition11, condition23));
     tuples_zxy1.insert(make_tuples(condition33, condition13, condition23));
@@ -510,8 +512,8 @@ TEST(LinkerTest, UpdateWithMoreLinks) {
     y1.insert(condition21);
     y1.insert(condition22);
 
-    linker.update_results("x", x1);
-    linker.update_results("y", y1);
+    linker.init_qvar("x", x1);
+    linker.init_qvar("y", y1);
 
     std::set<ConditionPair> links1;
     links1.insert(ConditionPair(condition11, condition21));
@@ -534,7 +536,7 @@ TEST(LinkerTest, UpdateWithMoreLinks) {
     expected_y.insert(condition22);
     EXPECT_EQ(linker.get_conditions("y"), expected_y);
 
-    TupleList expected;
+    TupleSet expected;
     expected.insert(make_tuples(condition12, condition22));
     
     EXPECT_EQ(linker.make_tuples(make_string_list("x", "y")), expected);

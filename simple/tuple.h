@@ -20,6 +20,7 @@
 
 #include <memory>
 #include <set>
+#include <list>
 #include "simple/condition.h"
 #include "simple/condition_set.h"
 
@@ -51,7 +52,32 @@ class ConditionTuplePtr : public std::shared_ptr<ConditionTuple> {
     bool operator <(const ConditionTuplePtr& other) const;
 };
 
-typedef std::set<ConditionTuplePtr> TupleList;
+class SimpleConditionTuple : public ConditionTuple {
+  public:
+    SimpleConditionTuple(ConditionPtr condition, 
+        ConditionTuplePtr next) :
+        _condition(condition), _next(next)
+    { }
+
+    SimpleConditionTuple(ConditionPtr condition) : 
+        _condition(condition), _next()
+    { }
+
+    ConditionPtr get_condition() {
+        return _condition;
+    }
+
+    ConditionTuplePtr next() {
+        return _next;
+    }
+
+  private:
+    ConditionPtr    _condition;
+    ConditionTuplePtr   _next;
+};
+
+typedef std::list<ConditionTuplePtr> TupleList;
+typedef std::set<ConditionTuplePtr> TupleSet;
 
 std::string tuple_to_string(ConditionTuplePtr tuple);
 ::std::ostream& operator<<(::std::ostream& os, const ConditionTuplePtr& tuple);
