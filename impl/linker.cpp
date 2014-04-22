@@ -23,7 +23,8 @@ namespace impl {
 
 using namespace simple;
 
-SimpleQueryLinker::SimpleQueryLinker() : SimpleQueryLinker(ConditionSet())
+SimpleQueryLinker::SimpleQueryLinker() :
+    _valid_state(true)
 { }
 
 SimpleQueryLinker::SimpleQueryLinker(ConditionSet global_set) : 
