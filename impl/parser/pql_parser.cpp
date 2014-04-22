@@ -399,12 +399,20 @@ void SimplePqlParser::parse_pattern() {
     ClausePtr expr_clause(new SimplePqlClause(expr_solver, term1, term3));
     ClausePtr uses_clause(new SimplePqlClause(uses_solver, clone_term(term1), term2));
 
-    if(type2 != WildcardTT) {
+    if(type2 != WildcardTT && type3 == WildcardTT) {
         _query_set.clauses.insert(uses_clause);
-    } 
-    if(type3 != WildcardTT) {
+
+    } else if(type2 == WildcardTT && type3 != WildcardTT) {
         _query_set.clauses.insert(expr_clause);
-    } 
+
+    } else if(type2 == WildcardTT && type3 == WildcardTT) {
+        // if both term2 and term3 are wildcard we use direct uses to validate term1
+        _query_set.clauses.insert(uses_clause);
+
+    } else {
+        _query_set.clauses.insert(uses_clause);
+        _query_set.clauses.insert(expr_clause);
+    }
 }
 
 void SimplePqlParser::eat_field() {
