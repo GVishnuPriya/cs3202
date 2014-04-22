@@ -1366,12 +1366,12 @@ Select a1 such that Affects (a1, a2) and Affects(a2, a1)
 23
 5000
 403 - Clauses, Typed ::
-Proc p; 
+procedure p; 
 Select p such that Calls(_,_)
 p,q,a,d
 5000
 404 - Clauses, Typed ::
 assign a; variable v;
-select a such that Affects(a,a), Modifies(a,v) Uses(a,v)
+select a Affects(a,a), Modifies(a,v) Uses(a,v)
 6,27,28,43,70,72
 5000
