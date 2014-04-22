@@ -25,6 +25,17 @@ namespace impl {
 using namespace simple;
 using namespace simple::util;
 
+QueryProcessor::QueryProcessor(
+        const std::shared_ptr<QueryLinker>& linker,
+        std::map<Qvar, PredicatePtr> predicates,
+        PredicatePtr wildcard_pred) :
+    _linker(linker), _wildcard_pred(wildcard_pred)
+{ 
+    for(auto it=predicates.begin(); it!=predicates.end(); ++it) {
+        _linker->update_results(it->first, it->second->global_set());
+    }
+}
+
 class SolveClauseVisitorTraits {
   public:
     typedef bool            ResultType;
@@ -234,29 +245,14 @@ void QueryProcessor::solve_clause<PqlWildcardTerm, PqlConditionTerm>(
 }
 
 ConditionSet QueryProcessor::get_qvar(const std::string& qvar) {
-    return _linker->get_conditions(qvar, get_predicate(qvar));
+    return _linker->get_conditions(qvar);
 }
 
 void QueryProcessor::set_qvar(const std::string& qvar, 
         const ConditionSet& conditions)
 {
-    // Initialize the qvar first
-    if(!_linker->is_initialized(qvar)) {
-        _linker->update_results(qvar, get_predicate(qvar)->global_set());
-    }
-
     _linker->update_results(qvar, conditions);
 }
-
-SimplePredicate* QueryProcessor::get_predicate(const std::string& qvar) 
-{
-    if(_predicates.count(qvar) > 0) {
-        return _predicates[qvar].get();
-    } else {
-        return _wildcard_pred.get();
-    }
-}
-
 
 
 } // namespace impl

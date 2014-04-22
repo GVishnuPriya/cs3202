@@ -23,8 +23,11 @@ namespace impl {
 
 using namespace simple;
 
-SimpleQueryLinker::SimpleQueryLinker() : 
-    _valid_state(true) 
+SimpleQueryLinker::SimpleQueryLinker() : SimpleQueryLinker(ConditionSet())
+{ }
+
+SimpleQueryLinker::SimpleQueryLinker(ConditionSet global_set) : 
+    _valid_state(true), _global_set(global_set)
 { }
 
 bool SimpleQueryLinker::is_initialized(const std::string& qvar) {
@@ -84,9 +87,8 @@ void SimpleQueryLinker::update_links(
     const std::string& qvar1, const std::string& qvar2, 
     const std::set<ConditionPair>& links)
 {
-    if(!is_initialized(qvar1) || !is_initialized(qvar2)) {
-        throw QueryLinkerError();
-    }
+    if(!is_initialized(qvar1)) _qvar_table[qvar1] = _global_set;
+    if(!is_initialized(qvar2)) _qvar_table[qvar2] = _global_set;
 
     if(has_link(qvar1, qvar2)) {
         std::set<ConditionPair> old_links = get_links_as_tuples(qvar1, qvar2);
@@ -395,18 +397,12 @@ bool SimpleQueryLinker::validate(
      }
 }
 
-ConditionSet SimpleQueryLinker::get_conditions(
-    const std::string& qvar, SimplePredicate *pred) 
-{
-    if(!is_initialized(qvar)) {
-        _qvar_table[qvar] = pred->global_set();
-    }
-    
-    return _qvar_table[qvar];
-}
-
 ConditionSet SimpleQueryLinker::get_conditions(const std::string& qvar) {
-    return _qvar_table[qvar];
+    if(is_initialized(qvar)) return _qvar_table[qvar];
+
+    _qvar_table[qvar] = _global_set;
+
+    return _global_set;
 }
 
 std::map<ConditionPtr, ConditionSet> SimpleQueryLinker::get_links(

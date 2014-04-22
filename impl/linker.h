@@ -21,7 +21,6 @@
 #include <map>
 #include <string>
 #include <utility>
-#include <exception>
 #include "simple/linker.h"
 
 namespace simple {
@@ -29,15 +28,10 @@ namespace impl {
 
 using namespace simple;
 
-typedef std::string Qvar;
-typedef std::vector<Qvar> QvarList;
-typedef std::pair<Qvar, Qvar> QVarPair;
-
-class QueryLinkerError : public std::exception { };
-
 class SimpleQueryLinker : public QueryLinker {
   public:
     SimpleQueryLinker();
+    SimpleQueryLinker(ConditionSet global_set);
 
     void update_links(
         const std::string& qvar1, const std::string& qvar2, 
@@ -80,9 +74,6 @@ class SimpleQueryLinker : public QueryLinker {
     ConditionSet get_linked_conditions(
         const std::string& qvar1, const std::string& qvar2,
         const ConditionPtr& condition1);
-
-    ConditionSet get_conditions(const std::string& qvar,
-        SimplePredicate *pred);
 
     ConditionSet get_conditions(const std::string& qvar);
 
@@ -140,6 +131,8 @@ class SimpleQueryLinker : public QueryLinker {
     _initialize_table;
 
     bool _valid_state;
+
+    ConditionSet _global_set;
 };
 
 class SimpleConditionTuple : public ConditionTuple {

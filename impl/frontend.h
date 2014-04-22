@@ -57,7 +57,8 @@ class SimplePqlFrontEnd {
     template <typename Iterator>
     std::vector<std::string> process_query(Iterator begin, Iterator end)
     {
-        std::shared_ptr<QueryLinker> linker(new SimpleQueryLinker());
+        std::shared_ptr<QueryLinker> linker(
+            new SimpleQueryLinker(_wildcard_pred->global_set()));
 
         SimplePqlParser parser(std::shared_ptr<SimpleTokenizer>(
                 new IteratorTokenizer<Iterator>(begin, end)),

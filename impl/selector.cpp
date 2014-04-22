@@ -42,7 +42,9 @@ template <>
 std::vector<std::string> format_selector<PqlSingleVarSelector>(
     PqlSingleVarSelector *var_selector, PqlQuerySet *query, QueryLinker *linker)
 {
-    std::string qvar = var_selector->get_qvar_name();
+    Qvar qvar = var_selector->get_qvar_name();
+    ConditionSet conditions = linker->get_conditions(qvar);
+    
     SimplePredicate *pred;
 
     if(query->predicates.count(qvar) > 0) {
@@ -51,8 +53,6 @@ std::vector<std::string> format_selector<PqlSingleVarSelector>(
         pred = query->predicates["*"].get();
     }
 
-    ConditionSet conditions = linker->get_conditions(qvar, pred);
-    
     std::vector<std::string> result;
     
 	if(!linker->is_valid_state()){
@@ -98,12 +98,16 @@ std::vector<std::string> format_selector<PqlSingleVarSelector>(
             case Default:
                 result.push_back(condition_to_string(*it));
                 break;
+            
             case ProcName:
                 if (pred->get_predicate_name() == "procedure") {
                     result.push_back(condition_to_string(*it));
+                
                 } else if (pred->get_predicate_name() == "call") {
                     StatementCondition *state_cond = condition_cast<StatementCondition>(*it);
+                    
                     CallAst *call_statement = statement_cast<CallAst>(state_cond->get_statement_ast());
+                    
                     if(std::find(result.begin(), result.end(), call_statement->get_proc_called()->get_name()) == result.end()) {
                         result.push_back(call_statement->get_proc_called()->get_name());
                     } 

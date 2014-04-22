@@ -19,6 +19,7 @@
 #pragma once
 
 #include <vector>
+#include "simple/query.h"
 #include "simple/tuple.h"
 #include "simple/predicate.h"
 #include "simple/condition_set.h"
@@ -142,8 +143,7 @@ class QueryLinker {
      * not yet initialized, use pred to initialize the qvar and return
      * the result.
      */
-    virtual ConditionSet get_conditions(const std::string& qvar,
-            SimplePredicate *pred) = 0;
+    virtual ConditionSet get_conditions(const std::string& qvar) = 0;
 };
 
 

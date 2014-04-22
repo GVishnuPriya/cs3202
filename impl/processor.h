@@ -31,11 +31,8 @@ class QueryProcessor {
   public:
     QueryProcessor(
             const std::shared_ptr<QueryLinker>& linker,
-            std::map<std::string, PredicatePtr> predicates,
-            PredicatePtr wildcard_pred) :
-        _linker(linker), _predicates(predicates), 
-        _wildcard_pred(wildcard_pred)
-    { }
+            std::map<Qvar, PredicatePtr> predicates,
+            PredicatePtr wildcard_pred);
 
     std::shared_ptr<QueryLinker> get_linker() {
         return _linker;
@@ -44,9 +41,7 @@ class QueryProcessor {
     void solve_clause(PqlClause *clause);
 
     template <typename Term1, typename Term2>
-    void solve_clause(QuerySolver *solver, Term1 *term1, Term2 *term2) {
-
-    }
+    void solve_clause(QuerySolver *solver, Term1 *term1, Term2 *term2);
 
     ConditionSet get_qvar(const std::string& qvar);
 

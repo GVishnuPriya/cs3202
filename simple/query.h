@@ -28,6 +28,10 @@
 
 namespace simple {
 
+typedef std::string Qvar;
+typedef std::vector<Qvar> QvarList;
+typedef std::pair<Qvar, Qvar> QVarPair;
+
 class PqlTermVisitor;
 
 class PqlTerm {
@@ -128,7 +132,7 @@ typedef std::set<ClausePtr> ClauseSet;
 
 struct PqlQuerySet {
   public:
-    std::map< std::string, 
+    std::map< Qvar, 
         std::shared_ptr<SimplePredicate> >      predicates;
 
     std::shared_ptr<PqlSelector>                selector;
