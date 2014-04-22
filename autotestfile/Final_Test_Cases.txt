@@ -1,4 +1,4 @@
-270
+274
 cat: All Category
 1 - All :: All variables?
 variable v;
@@ -1372,6 +1372,6 @@ p,q,a,d
 5000
 404 - Clauses, Typed ::
 assign a; variable v;
-select a Affects(a,a), Modifies(a,v) Uses(a,v)
+select a such that Affects(a,a), Modifies(a,v) Uses(a,v)
 6,27,28,43,70,72
 5000
