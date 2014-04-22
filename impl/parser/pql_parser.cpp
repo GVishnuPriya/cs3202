@@ -383,12 +383,6 @@ void SimplePqlParser::parse_pattern() {
     current_token_as<CloseBracketToken>();
     next_token();
     
-    PqlVariableTerm *cast_term1;
-    cast_term1 = static_cast<SimplePqlVariableTerm*>(term1);
-    
-    std::string qvar = cast_term1->get_query_variable();
-    std::shared_ptr<SimplePredicate> pred = _query_set.predicates[qvar];
-    
     PqlTermType type2 = get_term_type(term2);
     PqlTermType type3 = get_term_type(term3);
 
@@ -399,18 +393,13 @@ void SimplePqlParser::parse_pattern() {
 
     ClausePtr expr_clause(new SimplePqlClause(expr_solver, term1, term3));
     ClausePtr uses_clause(new SimplePqlClause(uses_solver, clone_term(term1), term2));
-    
-    if (pred == get_predicate("assign")) {
-        if(type2 != WildcardTT) {
-            _query_set.clauses.insert(uses_clause);
-        } 
-        if(type3 != WildcardTT) {
-            _query_set.clauses.insert(expr_clause);
-        } 
-    } else if (pred == get_predicate("if") || pred == get_predicate("while")) {
+
+    if(type2 != WildcardTT) {
         _query_set.clauses.insert(uses_clause);
-    }
-    
+    } 
+    if(type3 != WildcardTT) {
+        _query_set.clauses.insert(expr_clause);
+    } 
 }
 
 void SimplePqlParser::eat_field() {

@@ -134,8 +134,8 @@ bool SimpleQueryLinker::validate_condition_pair(
 
     std::pair<QVarPair, ConditionPair> key(qvar_pair, condition_pair);
 
-    if(_valid_pair_cache.count(key) > 0) return true;
-    if(_invalid_pair_cache.count(key) > 0) return false;
+    // if(_valid_pair_cache.count(key) > 0) return true;
+    // if(_invalid_pair_cache.count(key) > 0) return false;
 
     ConditionSet links = cached_get_indirect_links(qvar1, qvar2, condition1);
 
@@ -305,6 +305,8 @@ ConditionSet SimpleQueryLinker::get_linked_conditions(
 bool SimpleQueryLinker::cached_has_indirect_links(
     const std::string& qvar1, const std::string& qvar2)
 {
+    return has_indirect_links(qvar1, qvar2);
+
     QVarPair key(qvar1, qvar2);
     if(_has_indirect_links_cache.count(key)) return _has_indirect_links_cache[key];
 
@@ -318,6 +320,8 @@ ConditionSet SimpleQueryLinker::cached_get_indirect_links(
     const std::string& qvar1, const std::string& qvar2,
     const ConditionPtr& condition1)
 {
+    return get_indirect_links(qvar1, qvar2, condition1);
+
     std::pair<QVarPair, ConditionPtr> key(QVarPair(qvar1, qvar2), condition1);
 
     if(_indirect_links_cache.count(key)) return _indirect_links_cache[key];
