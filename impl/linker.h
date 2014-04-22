@@ -63,6 +63,9 @@ class SimpleQueryLinker : public QueryLinker {
     void break_link(const std::string& qvar1, const std::string& qvar2,
         const ConditionPtr& condition1, const ConditionPtr& condition2);
 
+    void break_both_links(const std::string& qvar1, const std::string& qvar2,
+        const ConditionPtr& condition1, const ConditionPtr& condition2);
+
     bool is_initialized(const std::string& qvar);
 
     bool has_condition(const std::string& qvar, 
@@ -98,9 +101,6 @@ class SimpleQueryLinker : public QueryLinker {
     ConditionSet cached_get_indirect_links(
         const std::string& qvar1, const std::string& qvar2,
         const ConditionPtr& condition1);
-
-    bool validate(const std::string& qvar1, const std::string& qvar2, 
-        const ConditionPtr& condition1, const ConditionPtr& condition2);
 
     bool is_valid_state();
     void invalidate_state();
