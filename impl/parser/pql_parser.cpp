@@ -280,9 +280,14 @@ PqlTerm* SimplePqlParser::parse_term() {
     } else if(current_token_is<IntegerToken>()) {
         int line = current_token_as<IntegerToken>()->get_value();
         next_token();
-        return new SimplePqlConditionTerm(
+
+        if(_line_table.count(line) > 0) {
+            return new SimplePqlConditionTerm(
                new SimpleStatementCondition(get_statement(line)));
-        
+        } else {
+            return new SimplePqlConditionTerm(
+                new SimpleConstantCondition(line));
+        }
     } else if(current_token_is<IdentifierToken>()) {
         std::string var_name = current_token_as<
                 IdentifierToken>()->get_content();
