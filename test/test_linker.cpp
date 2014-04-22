@@ -542,6 +542,74 @@ TEST(LinkerTest, UpdateWithMoreLinks) {
     EXPECT_EQ(linker.make_tuples(make_string_list("x", "y")), expected);
 }
 
+TEST(LinkerTest, TwoWayLinks) {
+    /*
+     * First Insert:
+     * <x, y> = <11, 21>, <11, 22>, <12, 22>
+     *
+     * Then Insert:
+     * <y, x> = <21, 11>, <22, 12>, <22, 13>
+     * 
+     * Result should be the intersection of the two
+     * <x, y> = <11, 21>, <12, 22>
+     * 
+     */
+
+    SimpleAssignmentAst stat11(11);
+    SimpleAssignmentAst stat12(12);
+    SimpleAssignmentAst stat13(13);
+
+    SimpleAssignmentAst stat21(21);
+    SimpleAssignmentAst stat22(22);
+
+    ConditionPtr condition11(new SimpleStatementCondition(&stat11));
+    ConditionPtr condition12(new SimpleStatementCondition(&stat12));
+    ConditionPtr condition13(new SimpleStatementCondition(&stat13));
+
+    ConditionPtr condition21(new SimpleStatementCondition(&stat21));
+    ConditionPtr condition22(new SimpleStatementCondition(&stat22));
+
+    SimpleQueryLinker linker;
+
+    ConditionSet x1;
+    x1.insert(condition11);
+    x1.insert(condition12);
+    x1.insert(condition13);
+
+    ConditionSet y1;
+    y1.insert(condition21);
+    y1.insert(condition22);
+
+    linker.init_qvar("x", x1);
+    linker.init_qvar("y", y1);
+
+    std::set<ConditionPair> links1;
+    links1.insert(ConditionPair(condition11, condition21));
+    links1.insert(ConditionPair(condition11, condition22));
+    links1.insert(ConditionPair(condition12, condition22));
+
+    linker.update_links("x", "y", links1);
+
+    std::set<ConditionPair> links2;
+    links2.insert(ConditionPair(condition21, condition11));
+    links2.insert(ConditionPair(condition22, condition12));
+    links2.insert(ConditionPair(condition22, condition13));
+
+    linker.update_links("y", "x", links2);
+
+    TupleSet expected1;
+    expected1.insert(make_tuples(condition11, condition21));
+    expected1.insert(make_tuples(condition12, condition22));
+    
+    EXPECT_EQ(linker.make_tuples(make_string_list("x", "y")), expected1);
+
+    TupleSet expected2;
+    expected2.insert(make_tuples(condition21, condition11));
+    expected2.insert(make_tuples(condition22, condition12));
+    
+    EXPECT_EQ(linker.make_tuples(make_string_list("y", "x")), expected2);
+}
+
 TEST(LinkerTest, UnlinkedPermutations) {
 
 }

@@ -295,7 +295,7 @@ void SimpleQueryLinker::break_link(
     }
 
     // Repeat for the other direction
-    ConditionSet& set2 = _condition_link_table[QVarPair(qvar2, qvar1)][condition1];
+    ConditionSet& set2 = _condition_link_table[QVarPair(qvar2, qvar1)][condition2];
     set2.remove(condition1);
 
     if(set2.is_empty()) {
