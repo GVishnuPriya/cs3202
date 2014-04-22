@@ -1367,7 +1367,7 @@ Select a1 such that Affects (a1, a2) and Affects(a2, a1)
 5000
 403 - Clauses, Typed ::
 procedure p; 
-Select p such that Calls(_,_)
+Select <p> such that Calls(_,_)
 p,q,a,d
 5000
 404 - Clauses, Typed ::
