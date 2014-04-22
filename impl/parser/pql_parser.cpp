@@ -166,7 +166,17 @@ void SimplePqlParser::parse_main_query() {
                 }
             }
         } else if(keyword == "pattern") {
-            parse_pattern();
+            while(true) {
+                parse_pattern();
+
+                if(current_token_is<IdentifierToken>() &&
+                    current_token_as_keyword() == "and")
+                {
+                    next_token(); // eat "and"
+                } else {
+                    break;
+                }
+            }
         } else {
             throw ParseError("Invalid keyword " + keyword);
         }
