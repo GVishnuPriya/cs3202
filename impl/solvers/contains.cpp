@@ -110,13 +110,18 @@ ConditionSet ContainsSolver::index_while(WhileAst *while_ast) {
     ConditionPtr parent(new SimpleStatementCondition(while_ast));
 
     StatementAst *statement = while_ast->get_body();
+    SimpleVariable var = *while_ast->get_variable();
+
     ConditionSet contained = index_statement_list(statement);
+    contained.insert(new SimpleVariableCondition(var));
 
     return index_contains_set(parent, contained);
 }
 
 ConditionSet ContainsSolver::index_if(IfAst *if_ast) {
     ConditionPtr parent(new SimpleStatementCondition(if_ast));
+
+    SimpleVariable var = *if_ast->get_variable();
     
     StatementAst *then_branch = if_ast->get_then_branch();
     StatementAst *else_branch = if_ast->get_else_branch();
@@ -124,7 +129,9 @@ ConditionSet ContainsSolver::index_if(IfAst *if_ast) {
     ConditionSet left_contained = index_statement_list(then_branch);
     ConditionSet right_contained = index_statement_list(else_branch);
 
+    left_contained.insert(new SimpleVariableCondition(var));
     left_contained.union_with(right_contained);
+
     return index_contains_set(parent, left_contained);
 }
 
