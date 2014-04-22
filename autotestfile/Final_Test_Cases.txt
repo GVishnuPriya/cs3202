@@ -1,4 +1,4 @@
-277
+278
 cat: All Category
 1 - All :: All variables?
 variable v;
@@ -1384,4 +1384,9 @@ Select c such that Next(53,n) and Affects*(21,n)
 assign a1, a2;
 Select <a1, a2> such that Affects(a1, a2) and Affects(a2, a1)
 24 23, 23 24, 24 25, 25 24, 32 43, 43 32
+5000
+407 - Clauses, Typed:: 
+Stmt s1,s2;
+select s1 such that Next(s1,s2) and Next(s2,s1)
+51, 52
 5000
